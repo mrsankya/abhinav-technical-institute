@@ -1,11 +1,12 @@
 # Abhinav Technical Institute — Project Memory & Architecture
 
 ## 🌐 Live URLs & Endpoints
-- **Primary Site:** https://master.abhinav-institute.pages.dev
-- **Certificate Verification Portal:** `http://localhost:5173/#verify` (or `/#verify?id=ATI-2024-884920`)
-- **Admin Panel:** `http://localhost:5173/#admin` (or Header Admin button)
-- **Super Admin Console:** `http://localhost:5173/#super-admin`
-- **Backend API:** `http://localhost:4000/api` (`/api/certificates`, `/api/inquiries`, `/api/announcements`)
+- **Primary Site:** https://abhinav-institute.pages.dev
+- **GitHub Repository:** https://github.com/mrsankya/abhinav-technical-institute
+- **Certificate Verification Portal:** https://abhinav-institute.pages.dev/#verify
+- **Admin Panel:** https://abhinav-institute.pages.dev/#admin
+- **Super Admin Console:** https://abhinav-institute.pages.dev/#super-admin
+- **Backend API:** `http://localhost:4000/api` (`/api/certificates`, `/api/inquiries`, `/api/announcements`, `/api/content`)
 
 ---
 
