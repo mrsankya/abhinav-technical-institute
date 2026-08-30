@@ -9,7 +9,7 @@
     "type-check": "tsc --noEmit",
     "lint": "oxlint",
     "preview": "vite preview",
-    "start:server": "node server/server.js"
+    "start:server": "node server/server.cjs"
   },
   "dependencies": {
     "@types/qrcode": "^1.5.6",

@@ -55,185 +55,172 @@ export const HERO_CAROUSEL_IMAGES = [
 
 export const COURSES: Course[] = [
   {
+    id: 'construction-supervisor',
+    name: 'CONSTRUCTION SUPERVISOR – 1 YEAR',
+    nameMr: 'कन्स्ट्रक्शन सुपरवायझर – १ वर्ष कालावधी (बांधकाम पर्यवेक्षक / स्थापत्य अभियंत्रिकी सहायक)',
+    code: '304202',
+    category: 'Civil & Construction',
+    categoryMr: 'बांधकाम व स्थापत्य',
+    description: 'Civil construction supervision, surveying, estimation, costing & site management.',
+    descriptionMr: 'कन्स्ट्रक्शन सुपरवायझर – १ वर्ष कालावधी (बांधकाम पर्यवेक्षक / स्थापत्य अभियंत्रिकी सहायक)',
+    fullDescription: 'MSBSVET Course Code 304202. Government ITI alternative qualification. Equivalent to 12th Std & ITI. Eligible for Class 7-B Govt Contractor registration up to ₹10 Lakhs.',
+    fullDescriptionMr: 'महाराष्ट्र शासन MSBSVET मान्यताप्राप्त कोर्स (कोर्स कोड: 304202). आयटीआय व १२ वी समकक्ष मान्यता. जिल्हा परिषद, पीडब्ल्यूडी, नगररचना, सिडको, म्हाडा भरतीसाठी पात्र.',
+    duration: '1 Year',
+    durationMr: '१ वर्ष कालावधी',
+    timing: '10:00 AM - 2:00 PM',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
+    admissionsOpen: true,
+    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&auto=format&fit=crop&q=80',
+    eligibility: '10th / 12th / College Student / Graduate',
+    eligibilityMr: '१०वी किंवा १२वी किंवा कॉलेज विद्यार्थी किंवा पदवीधर',
+    subjects: [
+      { name: 'Construction Material and Practices (TH-1)', code: '30420211' },
+      { name: 'Estimating and Costing (TH-II)', code: '30420212' },
+      { name: 'Surveying and Leveling (TH-III)', code: '30420213' },
+      { name: 'Construction Material and Practices (PR-I)', code: '30420221' },
+      { name: 'Surveying and Leveling (PR-III)', code: '30420222' }
+    ],
+    syllabus: [
+      'Construction Material and Practices (TH-1) [Subject Code: 30420211]',
+      'Estimating and Costing (TH-II) [Subject Code: 30420212]',
+      'Surveying and Leveling (TH-III) [Subject Code: 30420213]',
+      'Construction Material and Practices (PR-I) [Subject Code: 30420221]',
+      'Surveying and Leveling (PR-III) [Subject Code: 30420222]'
+    ],
+    careerOpportunities: [
+      'PWD & Zilla Parishad Construction Supervisor',
+      'Government Registered Contractor (Class 7-B)',
+      'Direct 2nd Year Entry to Civil Diploma',
+      'Site Estimator, Surveyor & Quality Engineer'
+    ],
+    certification: 'MSBSVET Govt. Recognized & ITI Equivalent',
+    batchCapacity: 30,
+    enrolled: 26
+  },
+  {
     id: 'electrician',
-    name: 'Electrician',
-    code: 'ATI-ELE-101',
+    name: 'ELECTRICIAN – 2 YEARS',
+    nameMr: 'इलेक्ट्रिशियन – २ वर्ष कालावधी (वीजतंत्री)',
+    code: '302409',
     category: 'Electrical Trades',
-    description: 'Practical training on electrical systems, wiring and equipment.',
-    fullDescription: 'Comprehensive hands-on training covering domestic, commercial, and industrial electrical installations, safety standards, motor controls, circuit breaker maintenance, and power distribution systems.',
-    duration: '6 Months',
-    timing: '10AM - 2PM',
-    startDate: '15th Oct',
+    categoryMr: 'इलेक्ट्रिकल ट्रेड',
+    description: 'Comprehensive 2-year trade training covering electrical wiring, power systems & practice.',
+    descriptionMr: 'इलेक्ट्रिशियन – २ वर्ष कालावधी (वीजतंत्री)',
+    fullDescription: 'MSBSVET Course Code 302409. 2-Year comprehensive trade with 2 months compulsory summer internship. Includes Wireman License & Mahavitaran recruitment eligibility.',
+    fullDescriptionMr: 'महाराष्ट्र शासन MSBSVET मान्यताप्राप्त २ वर्षांचा कोर्स (कोर्स कोड: 302409). महावितरण भरती, वीजतंत्री (Wireman) व सुपरवायझर परवाना मिळवण्यासाठी उपयुक्त.',
+    duration: '2 Years',
+    durationMr: '२ वर्ष कालावधी',
+    timing: '8:00 AM - 12:00 PM',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
     admissionsOpen: true,
     image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80',
-    eligibility: '10th Standard (SSC) Passed',
+    eligibility: '10th / 12th / College Student / Graduate',
+    eligibilityMr: '१०वी किंवा १२वी किंवा कॉलेज विद्यार्थी किंवा पदवीधर',
+    subjects: [
+      { name: 'English (Communication Skills)', code: '90000001' },
+      { name: 'Business Economics', code: '90000012' },
+      { name: 'Computer Application', code: '90000022' },
+      { name: 'Basic Electricity and Measurement', code: '30240011' },
+      { name: 'Electrician Practice', code: '30240012' },
+      { name: 'Workshop Calculation, Science and Drawing', code: '30240013' }
+    ],
     syllabus: [
-      'Basic Electrical Theory & Ohm\'s Law',
-      'Residential & Industrial Wiring Standards',
-      'Transformers & Electric Motors (AC/DC)',
-      'Solar Panel Basics & Power Inverter Setup',
-      'Safety Protocols & Earth Grounding',
-      'Testing Equipment & Multimeter Diagnostics'
+      'English (Communication Skills) [Subject Code: 90000001]',
+      'Business Economics [Subject Code: 90000012]',
+      'Computer Application [Subject Code: 90000022]',
+      'Basic Electricity and Measurement [Subject Code: 30240011]',
+      'Electrician Practice [Subject Code: 30240012]',
+      'Workshop Calculation, Science and Drawing [Subject Code: 30240013]'
     ],
     careerOpportunities: [
-      'Licensed Electrical Contractor',
+      'Wireman & Supervisor License Holder',
+      'Mahavitaran (MSEDCL) Electrical Assistant',
       'Industrial Maintenance Electrician',
-      'Building Wireman',
-      'Power Grid Substation Assistant'
+      'NCVT/DGT National Apprenticeship Certificate Holder'
     ],
-    certification: 'Government Recognized & ISO 9001:2015 Certified',
-    batchCapacity: 30,
-    enrolled: 24
+    certification: 'MSBSVET Govt ITI Equivalent Certified',
+    batchCapacity: 35,
+    enrolled: 29
   },
   {
-    id: 'copa',
-    name: 'COPA',
-    code: 'ATI-COP-102',
-    category: 'Computer & IT',
-    description: 'Computer Operator and Programming Assistant certification.',
-    fullDescription: 'Specialized program equipping students with IT fundamentals, office automation, database management, web basics, software operations, and data processing skills aligned with modern enterprise needs.',
-    duration: '1 Year',
-    timing: '8AM - 12PM',
-    startDate: '20th Oct',
+    id: 'dmlt',
+    name: 'DMLT – 2 YEARS',
+    nameMr: 'DMLT (डी.एम.एल.टी. - मेडिकल लॅबोरेटरी टेक्नॉलॉजी)',
+    code: 'MSBQ201404',
+    category: 'Paramedical & Medical',
+    categoryMr: 'पॅरामेडिकल व लॅब',
+    description: 'Medical Laboratory Technology diploma registered with Maharashtra Paramedical Council.',
+    descriptionMr: 'DMLT (डी.एम.एल.टी. - मेडिकल लॅबोरेटरी टेक्नॉलॉजी)',
+    fullDescription: 'MSBSVET Course Code MSBQ201404. Registered with Maharashtra Paramedical Council. Practical training in clinical pathology, biochemistry, hematology, and diagnostic lab operations.',
+    fullDescriptionMr: 'महाराष्ट्र शासन MSBSVET मान्यताप्राप्त व महाराष्ट्र पॅरामेडिकल कौन्सिलमध्ये नोंदणीकृत २ वर्षांचा डिप्लोमा.',
+    duration: '2 Years',
+    durationMr: '२ वर्ष कालावधी',
+    timing: '10:00 AM - 2:00 PM',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
     admissionsOpen: true,
-    image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&auto=format&fit=crop&q=80',
-    eligibility: '10th / 12th Standard Passed',
+    image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&auto=format&fit=crop&q=80',
+    eligibility: '12th Science / B.Sc. Appeared / Graduate',
+    eligibilityMr: '१२वी सायन्स किंवा B.Sc. किंवा पदवीधर',
+    subjects: [
+      { name: 'Clinical Pathology & Biochemistry', code: '20140411' },
+      { name: 'Microbiology & Serological Diagnostics', code: '20140412' },
+      { name: 'Hematology & Blood Banking Techniques', code: '20140413' },
+      { name: 'Histopathology & Lab Automation', code: '20140421' }
+    ],
     syllabus: [
-      'Operating Systems & Computer Hardware Basics',
-      'Advanced MS Office Suite (Word, Excel, PowerPoint)',
-      'Database Concepts (SQL / Access)',
-      'HTML, CSS & Web Page Design Basics',
-      'Cybersecurity & Internet Essentials',
-      'Tally ERP & Digital Accounting Overview'
+      'Clinical Pathology & Biochemistry [Code: 20140411]',
+      'Microbiology & Serological Diagnostics [Code: 20140412]',
+      'Hematology & Blood Banking Techniques [Code: 20140413]',
+      'Histopathology & Lab Automation [Code: 20140421]'
     ],
     careerOpportunities: [
-      'Computer Operator / Data Entry Executive',
-      'Junior IT Assistant / Lab Administrator',
-      'Back-office Operations Associate',
-      'Freelance Web Specialist'
+      'Registered Medical Laboratory Technician',
+      'Pathology Lab & Diagnostic Center Supervisor',
+      'Government & Private Hospital Lab Officer'
     ],
-    certification: 'Government Recognized & ISO 9001:2015 Certified',
-    batchCapacity: 25,
-    enrolled: 21
-  },
-  {
-    id: 'wireman',
-    name: 'Wireman',
-    code: 'ATI-WIR-103',
-    category: 'Electrical Trades',
-    description: 'Advanced practical training in commercial and residential wiring.',
-    fullDescription: 'In-depth master practical course focusing on multi-storey residential blueprints, conduits, switchgear installation, load calculations, 3-phase wiring, and emergency troubleshooting.',
-    duration: '6 Months',
-    timing: '2PM - 6PM',
-    startDate: '05th Nov',
-    admissionsOpen: true,
-    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80',
-    eligibility: '8th / 10th Standard Passed',
-    syllabus: [
-      'Single Phase & Three Phase Distribution',
-      'Concealed Wiring & Conduit Layouts',
-      'Earthing Systems & Lightning Arresters',
-      'MCB, RCCB & Fuse Board Wiring',
-      'Industrial Panel Fabrication Basics',
-      'Electrical Blueprint Reading'
-    ],
-    careerOpportunities: [
-      'Certified Commercial Wireman',
-      'Site Electrical Supervisor',
-      'Appliance Repair Technician',
-      'Self-employed Contractor'
-    ],
-    certification: 'Government Recognized & ISO 9001:2015 Certified',
-    batchCapacity: 25,
-    enrolled: 18
-  },
-  {
-    id: 'welder',
-    name: 'Welder',
-    code: 'ATI-WLD-104',
-    category: 'Mechanical Trades',
-    description: 'Industrial welding techniques and safety protocols.',
-    fullDescription: 'Comprehensive training in ARC, MIG, TIG, and Gas welding technologies, metal fabrication, pipe welding, and industrial metallurgical safety.',
-    duration: '1 Year',
-    timing: '10AM - 2PM',
-    startDate: '10th Nov',
-    admissionsOpen: true,
-    image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&auto=format&fit=crop&q=80',
-    eligibility: '8th / 10th Standard Passed',
-    syllabus: [
-      'Shielded Metal Arc Welding (SMAW)',
-      'Gas Metal Arc Welding (GMAW / MIG)',
-      'Gas Tungsten Arc Welding (GTAW / TIG)',
-      'Gas Cutting & Joint Preparation',
-      'Weld Inspection & Quality Control',
-      'Workshop Safety Standards'
-    ],
-    careerOpportunities: [
-      'Industrial Fabricator',
-      'Pipeline Welder',
-      'Automotive Fabrication Specialist',
-      'Structural Welder (Domestic & Overseas)'
-    ],
-    certification: 'Government Recognized & ISO 9001:2015 Certified',
-    batchCapacity: 20,
-    enrolled: 16
-  },
-  {
-    id: 'mscit',
-    name: 'MS-CIT',
-    code: 'ATI-CIT-105',
-    category: 'Computer & IT',
-    description: 'Maharashtra State Certificate in Information Technology.',
-    fullDescription: 'Authorized computer literacy course covering operating systems, 21st-century digital skills, online banking, governance portals, and office productivity.',
-    duration: '3 Months',
-    timing: 'Flexible Batches (Morning / Evening)',
-    startDate: 'Every Monday',
-    admissionsOpen: true,
-    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=80',
-    eligibility: 'Open to All Students',
-    syllabus: [
-      'Windows OS & Essential File Management',
-      'Word Processing & Spreadsheet Analysis',
-      'Internet, Email & Digital Payments',
-      'Government Schemes & Citizen Services Online'
-    ],
-    careerOpportunities: [
-      'Government Job Qualification Requirement',
-      'Office Assistant',
-      'Customer Service Executive'
-    ],
-    certification: 'MKCL & Govt. of Maharashtra Certified',
-    batchCapacity: 40,
-    enrolled: 35
-  },
-  {
-    id: 'tally',
-    name: 'Tally Prime & GST',
-    code: 'ATI-TAL-106',
-    category: 'Commerce & Finance',
-    description: 'Computerized accounting, inventory management and GST filing.',
-    fullDescription: 'Professional practical accounting training with live company voucher entries, balance sheets, GST calculation, TDS, and e-invoicing.',
-    duration: '3 Months',
-    timing: '4PM - 6PM',
-    startDate: '1st & 15th of Every Month',
-    admissionsOpen: true,
-    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&auto=format&fit=crop&q=80',
-    eligibility: '10th / 12th / Commerce Background',
-    syllabus: [
-      'Accounting Principles & Ledger Creation',
-      'Inventory Management & Stock Items',
-      'GST Returns (GSTR-1, GSTR-3B) & E-Way Bills',
-      'Payroll Management & Bank Reconciliation'
-    ],
-    careerOpportunities: [
-      'Accountant',
-      'Audit Assistant',
-      'GST Filing Specialist',
-      'Billing Executive'
-    ],
-    certification: 'Tally Certified Professional',
+    certification: 'Maharashtra Paramedical Council Registered & MSBSVET Recognized',
     batchCapacity: 25,
     enrolled: 22
+  },
+  {
+    id: 'health-sanitary-inspector',
+    name: 'HEALTH SANITARY INSPECTOR (S.I.) – 1 YEAR',
+    nameMr: 'हेल्थ सॅनेटरी इन्स्पेक्टर (स्वच्छता निरीक्षक S.I.)',
+    code: 'MSBQ201238',
+    category: 'Health & Sanitation',
+    categoryMr: 'आरोग्य व स्वच्छता',
+    description: 'Sanitary Inspector certification for Municipal Corporation, Public Health & Hospital Sanitation.',
+    descriptionMr: 'हेल्थ सॅनेटरी इन्स्पेक्टर (स्वच्छता निरीक्षक S.I.)',
+    fullDescription: 'Government-approved MSBSVET course MSBQ201238. Prepares students for Sanitary Inspector (S.I.) roles in Municipal Corporations, Railways, Public Health Dept, and Hospitals.',
+    fullDescriptionMr: 'महाराष्ट्र राज्य कौशल्य विकास मंडळ (MSBSVET) मान्यता प्राप्त कोर्स (कोर्स कोड: MSBQ201238). स्वच्छता निरीक्षक पद भरतीसाठी उपयुक्त.',
+    duration: '1 Year',
+    durationMr: '१ वर्ष कालावधी',
+    timing: '10:00 AM - 2:00 PM',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
+    admissionsOpen: true,
+    image: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=800&auto=format&fit=crop&q=80',
+    eligibility: '10th / 12th / College Student / Graduate',
+    eligibilityMr: '१०वी किंवा १२वी किंवा कॉलेज विद्यार्थी किंवा पदवीधर',
+    subjects: [
+      { name: 'Public Health & Hygiene Standards', code: '20123811' },
+      { name: 'Municipal Solid Waste & Sewage Management', code: '20123812' },
+      { name: 'Water Purification & Epidemic Control', code: '20123813' },
+      { name: 'Food Safety & Sanitation Inspection', code: '20123821' }
+    ],
+    syllabus: [
+      'Public Health & Hygiene Standards [Code: 20123811]',
+      'Municipal Solid Waste & Sewage Management [Code: 20123812]',
+      'Water Purification & Epidemic Control [Code: 20123813]',
+      'Food Safety & Sanitation Inspection [Code: 20123821]'
+    ],
+    careerOpportunities: [
+      'Sanitary Inspector (Mahanagarpalika / Nagar Parishad)',
+      'Public Health Department Hygiene Officer',
+      'Indian Railways Sanitation Inspector'
+    ],
+    certification: 'MSBSVET Govt. Recognized & ISO 9001:2015 Certified',
+    batchCapacity: 30,
+    enrolled: 24
   }
 ];
 

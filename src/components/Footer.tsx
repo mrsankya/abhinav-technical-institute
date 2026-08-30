@@ -20,16 +20,12 @@ export const Footer: React.FC<FooterProps> = ({
   const t = (key: string) => getTranslation(key, language);
 
   const coursesList = [
+    'Construction Supervisor',
     'Electrician',
-    'COPA',
-    'Wireman',
-    'MS-CIT',
-    'Tally',
-    'DTP',
-    'Hardware & Networking',
-    'Beautician',
-    'Fashion Design',
-    'Web Design'
+    'DMLT',
+    'Health Sanitary Inspector (S.I.)',
+    'Computer & AI Skills',
+    'Diesel Mechanic'
   ];
 
   return (

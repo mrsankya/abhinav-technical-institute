@@ -32,6 +32,7 @@ export interface Course {
   syllabus: string[];
   syllabusMr?: string[];
   syllabusHi?: string[];
+  subjects?: { name: string; code: string }[];
   careerOpportunities: string[];
   careerOpportunitiesMr?: string[];
   careerOpportunitiesHi?: string[];

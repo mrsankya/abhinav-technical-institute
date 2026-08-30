@@ -169,7 +169,10 @@ export async function fetchSiteContent(): Promise<SiteContent> {
   const stored = localStorage.getItem('ati_site_content');
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      if (parsed && parsed.courses && parsed.courses.length >= 4) {
+        return parsed;
+      }
     } catch {}
   }
 

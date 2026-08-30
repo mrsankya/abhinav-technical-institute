@@ -220,7 +220,6 @@ export default function App() {
             handleNavigateSection(sec);
           }
         }}
-        onOpenStudentSection={() => setIsStudentSectionOpen(true)}
         onOpenAdminPanel={() => setIsAdminPanelOpen(true)}
         onOpenAboutUs={() => {
           setCurrentPage('about');
@@ -301,7 +300,7 @@ export default function App() {
 
           {/* 2. Upcoming Batches (10 Trades) */}
           <UpcomingBatches
-            courses={siteContent.courses || COURSES}
+            courses={COURSES}
             language={language}
             onSelectCourse={(course) => setSelectedCourse(course)}
             onOpenEnquiryWithCourse={(name) => handleOpenEnquiry(name)}
@@ -407,18 +406,7 @@ export default function App() {
         onAddEnquiry={handleAddEnquiry}
       />
 
-      {/* Student Section Modal (With Quiz, Fee Calculator, Timetable, Syllabus) */}
-      <StudentSectionModal
-        isOpen={isStudentSectionOpen}
-        onClose={() => setIsStudentSectionOpen(false)}
-        language={language}
-        onOpenEnquiry={(course) => handleOpenEnquiry(course)}
-        onOpenVerifyPage={() => {
-          setIsStudentSectionOpen(false);
-          setCurrentPage('verify');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-      />
+
 
       {/* Admin Panel Modal (With CMS Editor, Leads CRM, Cert Authority, Fee Receipts, Admission Toggle) */}
       <AdminPanelModal

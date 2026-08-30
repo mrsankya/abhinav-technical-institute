@@ -92,16 +92,10 @@ export const StudentSectionModal: React.FC<StudentSectionModalProps> = ({
 
   // Fee calculation helper
   const feesMap: Record<string, number> = {
+    'construction-supervisor': 14000,
     electrician: 15000,
-    copa: 12000,
-    solar: 14000,
-    ac_repair: 12000,
-    welder: 10000,
-    fitter: 12000,
-    wireman: 14000,
-    cnc_vmc: 16000,
-    automobile: 15000,
-    plumbing: 9000,
+    dmlt: 16000,
+    'health-sanitary-inspector': 14000,
   };
 
   const selectedCalcCourse = COURSES[calcCourseIdx] || COURSES[0];

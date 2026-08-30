@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Course, Announcement, Review } from '../types';
+import { COURSES } from '../data/instituteData';
 import { getTranslation, type Language } from '../translations/translations';
 
 interface ModalsProps {
@@ -280,17 +281,11 @@ export const Modals: React.FC<ModalsProps> = ({
                         onChange={(e) => setEnquiryForm({ ...enquiryForm, course: e.target.value })}
                         className="w-full bg-[#F4F8FD] border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:border-[#1557C0] font-bold text-[#002760]"
                       >
-                        <option value="Electrician">Electrician (इलेक्ट्रिशियन)</option>
-                        <option value="Wireman">Wireman (वायरमन)</option>
-                        <option value="Welder">Welder & Fabrication (वेल्डर)</option>
-                        <option value="Fitter">Fitter (फिटर)</option>
-                        <option value="Motor Mechanic">Motor Mechanic / Automobile</option>
-                        <option value="COPA">COPA (Computer Operator)</option>
-                        <option value="MS-CIT">MS-CIT & IT Skills</option>
-                        <option value="Tally Prime">Tally Prime & GST</option>
-                        <option value="Graphic Design">Graphic Design & DTP</option>
-                        <option value="Hardware & Networking">Hardware & Networking</option>
-                        <option value="Other Vocational Trade">Other Vocational Trade</option>
+                        {COURSES.map((c) => (
+                          <option key={c.id} value={c.name}>
+                            {c.name} ({c.code})
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>

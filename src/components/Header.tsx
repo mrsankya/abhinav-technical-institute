@@ -285,14 +285,6 @@ export const Header: React.FC<HeaderProps> = ({
               <span>{t('nav.certVerification')}</span>
             </button>
 
-            {/* 7. Student Section */}
-            <button
-              onClick={handleStudentSectionClick}
-              className="bg-[#1557C0]/10 hover:bg-[#1557C0] text-[#1557C0] hover:text-white transition-all cursor-pointer flex items-center gap-1 py-1 px-2.5 rounded-lg font-bold text-xs border border-[#1557C0]/20"
-            >
-              <span className="material-symbols-outlined text-[15px]">school</span>
-              <span>{t('nav.studentSection')}</span>
-            </button>
           </nav>
 
           {/* Actions: Phone, WhatsApp, Language & Quick Enquiry */}
@@ -510,14 +502,7 @@ export const Header: React.FC<HeaderProps> = ({
 
 
 
-          {/* 7. Student Section */}
-          <button
-            onClick={handleStudentSectionClick}
-            className="w-full flex items-center gap-3.5 text-[#172033]/80 hover:bg-[#F4F8FD] hover:text-[#1557C0] rounded-xl px-4 py-3 font-semibold text-sm text-left transition-colors cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-xl text-[#1557C0]">school</span>
-            {t('nav.studentSection')}
-          </button>
+
 
           <div className="pt-4 mt-4 border-t border-[#E6ECF3]">
             <button
