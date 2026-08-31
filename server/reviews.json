@@ -1,0 +1,52 @@
+[
+  {
+    "id": "rev-1",
+    "name": "Kiran Vispute",
+    "course": "MS-CIT & Computer",
+    "rating": 5,
+    "comment": "My MScIT experience was a rollercoaster! It is definitely a program that throws you into the deep end, covering a huge range of topics in a short time. Best class in Jalgaon district.",
+    "commentMr": "माझा MS-CIT चा अनुभव खूप छान राहिला! जळगाव जिल्ह्यातील सर्वोत्तम क्लास.",
+    "date": "17th March 2025",
+    "verified": true
+  },
+  {
+    "id": "rev-2",
+    "name": "Shubham",
+    "course": "Technical & Vocational",
+    "rating": 5,
+    "comment": "Abhinav Technical Institute is only one Class for all Type Courses fully study. Patil Sir Guidelines is right way and best suggestions.",
+    "commentMr": "अभिनव टेक्निकल इन्स्टिट्यूट हे सर्व प्रकारच्या कोर्सेससाठी जळगावमधील एकमेव सर्वोत्तम केंद्र आहे. पाटील सरांचे मार्गदर्शन खूप उत्तम आहे.",
+    "date": "22nd February 2023",
+    "verified": true
+  },
+  {
+    "id": "rev-3",
+    "name": "Rahul",
+    "course": "Electrician Trade",
+    "rating": 5,
+    "comment": "This institute is bright the future of student thus me and my friend is bright future thank you Abhinav Technical Institute Jalgaon.",
+    "commentMr": "या इन्स्टिट्यूटमुळे माझे आणि माझ्या मित्रांचे भविष्य उज्ज्वल झाले. खूप खूप धन्यवाद अभिनव टेक्निकल इन्स्टिट्यूट!",
+    "date": "6th September 2017",
+    "verified": true
+  },
+  {
+    "id": "rev-4",
+    "name": "Nikhil Patil",
+    "course": "Electrician Practical",
+    "rating": 5,
+    "comment": "This institute is bright future and career for student. Highly dedicated faculty and practical lab facilities.",
+    "commentMr": "विद्यार्थ्यांच्या करिअरसाठी अत्यंत उत्तम संस्था. धन्यवाद अभिनव टेक्निकल इन्स्टिट्यूट.",
+    "date": "1st September 2017",
+    "verified": true
+  },
+  {
+    "id": "rev-5",
+    "name": "Adil Shaikh",
+    "course": "Technical Vocational",
+    "rating": 5,
+    "comment": "ABHINAV TECHNICAL INSTITUTE is the best technical institute in Jalgaon Maharashtra.",
+    "commentMr": "अभिनव टेक्निकल इन्स्टिट्यूट ही जळगाव महाराष्ट्रातील सर्वोत्तम तांत्रिक शिक्षण संस्था आहे.",
+    "date": "7th July 2018",
+    "verified": true
+  }
+]

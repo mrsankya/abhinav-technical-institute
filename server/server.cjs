@@ -6,13 +6,17 @@ const bodyParser = require('body-parser');
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '25mb' }));
+app.use(bodyParser.urlencoded({ limit: '25mb', extended: true }));
 
 const CERTS_PATH = path.join(__dirname, 'certs.json');
 const LEADS_PATH = path.join(__dirname, 'leads.json');
 const ANNOUNCEMENTS_PATH = path.join(__dirname, 'announcements.json');
 const COURSES_PATH = path.join(__dirname, 'courses.json');
 const CONTENT_PATH = path.join(__dirname, 'content.json');
+const GR_PATH = path.join(__dirname, 'gr.json');
+const REVIEWS_PATH = path.join(__dirname, 'reviews.json');
+const ADMISSIONS_PATH = path.join(__dirname, 'admissions.json');
 
 function readJSON(filePath, defaultValue = []) {
   try {
@@ -182,6 +186,124 @@ app.post('/api/announcements', (req, res) => {
   list.unshift(newAnn);
   writeJSON(ANNOUNCEMENTS_PATH, list);
   return res.status(201).json(newAnn);
+});
+
+app.delete('/api/announcements/:id', (req, res) => {
+  const id = req.params.id;
+  let list = readJSON(ANNOUNCEMENTS_PATH, []);
+  list = list.filter((a) => a.id !== id);
+  writeJSON(ANNOUNCEMENTS_PATH, list);
+  return res.json({ success: true, message: 'Announcement deleted' });
+});
+
+// ----------------------
+// GOVERNMENT ORDERS & GR API
+// ----------------------
+app.get('/api/gr', (req, res) => {
+  const grList = readJSON(GR_PATH, []);
+  res.json(grList);
+});
+
+app.post('/api/gr', (req, res) => {
+  const gr = req.body;
+  if (!gr || !gr.titleMr || !gr.number) {
+    return res.status(400).json({ error: 'Title in Marathi and GR Number are required' });
+  }
+  const grList = readJSON(GR_PATH, []);
+  const grId = gr.id || `gr-${Date.now()}`;
+  const existingIdx = grList.findIndex((item) => item.id === grId);
+
+  const formattedGr = {
+    id: grId,
+    titleMr: gr.titleMr,
+    titleEn: gr.titleEn || gr.titleMr,
+    number: gr.number,
+    date: gr.date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    deptMr: gr.deptMr || 'महाराष्ट्र शासन, उच्च व तंत्र शिक्षण विभाग, मंत्रालय, मुंबई',
+    deptEn: gr.deptEn || 'Higher & Technical Education Department, Govt. of Maharashtra',
+    summaryMr: gr.summaryMr || '',
+    summaryEn: gr.summaryEn || gr.summaryMr || '',
+    pdfPath: gr.pdfPath || '/gr/gr-01-diploma-course-recognition-2013.pdf',
+    status: gr.status || 'GOVERNMENT RESOLUTION',
+    badgeColor: gr.badgeColor || 'bg-[#002760] text-white',
+    codeNumber: gr.codeNumber || '',
+  };
+
+  if (existingIdx >= 0) {
+    grList[existingIdx] = formattedGr;
+  } else {
+    grList.unshift(formattedGr);
+  }
+  writeJSON(GR_PATH, grList);
+  return res.status(201).json(formattedGr);
+});
+
+app.delete('/api/gr/:id', (req, res) => {
+  const id = req.params.id;
+  let grList = readJSON(GR_PATH, []);
+  grList = grList.filter((item) => item.id !== id);
+  writeJSON(GR_PATH, grList);
+  return res.json({ success: true, message: 'Government GR deleted' });
+});
+
+app.post('/api/gr/reset', (req, res) => {
+  try {
+    if (fs.existsSync(GR_PATH)) {
+      fs.unlinkSync(GR_PATH);
+    }
+  } catch (e) {}
+  return res.json({ success: true, message: 'GR list reset to default' });
+});
+
+// ----------------------
+// ADMISSIONS TOGGLE API
+// ----------------------
+app.get('/api/admissions', (req, res) => {
+  const admissions = readJSON(ADMISSIONS_PATH, {});
+  res.json(admissions);
+});
+
+app.post('/api/admissions', (req, res) => {
+  const admissions = req.body;
+  if (!admissions) return res.status(400).json({ error: 'Payload required' });
+  writeJSON(ADMISSIONS_PATH, admissions);
+  return res.json({ success: true, admissions });
+});
+
+// ----------------------
+// REVIEWS / TESTIMONIALS API
+// ----------------------
+app.get('/api/reviews', (req, res) => {
+  const reviews = readJSON(REVIEWS_PATH, []);
+  res.json(reviews);
+});
+
+app.post('/api/reviews', (req, res) => {
+  const rev = req.body;
+  if (!rev || !rev.name || !rev.comment) {
+    return res.status(400).json({ error: 'Name and comment are required' });
+  }
+  const list = readJSON(REVIEWS_PATH, []);
+  const newRev = {
+    id: rev.id || `rev-${Date.now()}`,
+    name: rev.name,
+    course: rev.course || 'Vocational Trade',
+    rating: Number(rev.rating) || 5,
+    comment: rev.comment,
+    date: rev.date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    verified: rev.verified !== false,
+  };
+  list.unshift(newRev);
+  writeJSON(REVIEWS_PATH, list);
+  return res.status(201).json(newRev);
+});
+
+app.delete('/api/reviews/:id', (req, res) => {
+  const id = req.params.id;
+  let list = readJSON(REVIEWS_PATH, []);
+  list = list.filter((r) => r.id !== id);
+  writeJSON(REVIEWS_PATH, list);
+  return res.json({ success: true, message: 'Review deleted' });
 });
 
 // ----------------------

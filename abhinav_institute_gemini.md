@@ -95,4 +95,19 @@
 ---
 
 ## 🕐 Last Updated
-**Date:** 2026-08-28 | Attached frontend designer's new UI with full backend Express API, Super Admin console, Admin CRM, Certificate QR authority, Fee & EMI calculator, Aptitude quiz, and Student ID/Receipt generator. Added continuous moving marquee ticker for #top-announcement-bar with hover-pause. Optimized #main-header layout with max-w-[1440px] and spacious responsive alignment for PC screens without congestion. Implemented direct image file uploading from PC/phone with automatic WebP/JPEG canvas compression for Principal photo, Hero Carousel, Course cards, and Workshop Gallery in the Admin Panel CMS. Removed password hints from the Admin login modal. Fixed printing in Admin Panel and Certificate Verification to generate clean isolated A4 PDF receipts and verification slips without printing the website UI. Added Admin ability to view student QR codes and directly download branded student QR code stickers (with Student Name, Reg ID, Course, and Institute branding). Renamed all nav/section labels to 'Certificate Verification'. Removed 1234/default fallback passwords and added dedicated '🔐 Change Password' tab in the Admin Panel allowing the client to set and change their custom admin password anytime. Successfully deployed live to Cloudflare Pages production at https://abhinav-institute.pages.dev.
+**Date:** 2026-09-01 | Fetched latest changes from GitHub repository `mrsankya/abhinav-technical-institute.git`. Updates pulled and implemented include:
+1. **Official Logo & Favicon:** Set `images/offlical logo.png` ("ATI - Skills Work For Employment - TRAINING SKILLS") as the official website logo (`src/assets/logo.png`, `public/logo.png`, `public/assets/logo.png`) and website favicon (`public/favicon.png`, `index.html`).
+2. **Govt. Orders & GR Admin Database & Management (`src/components/AdminPanelModal.tsx`, `server/server.cjs`, `server/gr.json`, `src/services/api.ts`, `src/components/GovernmentGrPage.tsx`):**
+   - Added dedicated `🏛️ Govt. Orders & GR` management tab inside the Admin Panel.
+   - Admin can add new GRs with file upload or path, edit title (Marathi/English), GR number, department, date, category tag, badge color style, summary, and code number.
+   - Supports deleting, searching, and resetting to official defaults.
+   - All changes persist to backend JSON database (`server/gr.json`) with offline LocalStorage fallback and dispatch dynamic DOM sync events (`ati_gr_updated`).
+3. **Database Persistence for Reviews & Admissions:** Added `/api/reviews` and `/api/admissions` endpoints with client synchronization.
+4. **Header Responsive Layout Fix (`src/components/Header.tsx`):** Fixed layout overflow on intermediate screens and mobile viewports so the yellow Quick Enquiry button, language switcher, and brand title stay strictly within the display without going off-screen.
+5. **Accreditation Logos Bar (`src/components/AccreditationLogosBar.tsx`):** Connected high-resolution official accreditation logos from `images/` into `public/assets/accreditations/`.
+6. **Built & Deployed:** Re-built production bundle (`npm run build`) and deployed live to Cloudflare Pages (`https://master.abhinav-institute.pages.dev`).
+7. **State-Level Awards & Honors Section (Lokmat Lokratna 2026 & Video Reel) (`src/components/AwardsSection.tsx`, `src/services/cms.ts`, `src/components/AdminPanelModal.tsx`, `src/App.tsx`):**
+   - Showcases the prestigious **"लोकमत लोकरत्न सन्मान सोहळा २०२६" (Lokmat Lokratna Award)** presented to Principal Prof. P. R. Patil by Lokmat Media Group & Godavari Foundation.
+   - Includes full HD optimized award ceremony photographs (`public/assets/awards/lokmat_award_1.jpg` to `5.jpg`) and compressed 1080p fast-streaming video reel (`public/assets/awards/lokmat_award_reel.mp4`).
+   - Integrated full CMS editor subtab `🏆 Awards & Media` in the Admin Panel to edit badge, heading, subtitle, citation, key highlight bullet points, video reel source & captions, and manage photo gallery (add, replace, delete, and edit photo titles).
+

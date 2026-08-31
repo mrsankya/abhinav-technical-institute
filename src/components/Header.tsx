@@ -175,27 +175,27 @@ export const Header: React.FC<HeaderProps> = ({
       {/* 2. Header */}
       <header
         id="main-header"
-        className={`sticky top-0 left-0 right-0 z-40 transition-all duration-300 bg-white border-b border-[#E6ECF3] ${
-          isScrolled ? 'shadow-md py-2' : 'shadow-xs py-2.5 xl:py-3.5'
+        className={`sticky top-0 left-0 right-0 z-40 transition-all duration-300 bg-white border-b border-[#E6ECF3] w-full ${
+          isScrolled ? 'shadow-md py-2' : 'shadow-xs py-2 xl:py-3'
         }`}
       >
-        <div className="flex justify-between items-center w-full px-3 sm:px-6 xl:px-8 max-w-[1440px] mx-auto gap-3">
+        <div className="flex justify-between items-center w-full px-2.5 sm:px-4 lg:px-6 xl:px-8 max-w-[1440px] mx-auto gap-2 sm:gap-3 min-w-0">
           {/* Brand */}
           <div
             onClick={() => handleNavClick('hero')}
-            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group shrink-0"
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer group min-w-0 flex-1 lg:flex-initial"
             id="header-brand"
           >
-            <InstituteLogo className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 group-hover:scale-105 transition-transform drop-shadow-xs" />
-            <div className="flex flex-col">
-              <span className="font-['Manrope','Yantramanav',sans-serif] text-sm sm:text-base xl:text-lg font-black text-[#002760] tracking-tight leading-snug">
+            <InstituteLogo className="w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 xl:w-12 xl:h-12 group-hover:scale-105 transition-transform drop-shadow-xs shrink-0" />
+            <div className="flex flex-col min-w-0">
+              <span className="font-['Manrope','Yantramanav',sans-serif] text-xs sm:text-base xl:text-lg font-black text-[#002760] tracking-tight leading-snug truncate sm:whitespace-nowrap">
                 {language === 'en'
                   ? 'Abhinav Technical Institute'
                   : language === 'hi'
                   ? 'अभिनव टेक्निकल इंस्टीट्यूट'
                   : 'अभिनव टेक्निकल इन्स्टिट्यूट'}
               </span>
-              <span className="text-[10px] sm:text-[11px] font-bold text-[#1557C0] tracking-wide flex items-center gap-1">
+              <span className="text-[9px] sm:text-[11px] font-bold text-[#1557C0] tracking-wide items-center gap-1 hidden sm:flex">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#F57C00]"></span>
                 <span>{t('nav.tagline')}</span>
               </span>
@@ -203,11 +203,11 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-2.5 xl:gap-4 text-xs xl:text-sm font-bold text-[#172033]/80 shrink-0">
+          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-3 text-xs xl:text-sm font-bold text-[#172033]/80 shrink-0">
             {/* 1. Home */}
             <button
               onClick={() => handleNavClick('hero')}
-              className={`transition-colors cursor-pointer py-1 px-1.5 rounded-md ${
+              className={`transition-colors cursor-pointer py-1 px-1.5 rounded-md whitespace-nowrap ${
                 activeTab === 'home'
                   ? 'text-[#1557C0] font-black'
                   : 'hover:text-[#1557C0]'
@@ -222,7 +222,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setIsMenuOpen(false);
                 onOpenAboutUs();
               }}
-              className={`transition-colors cursor-pointer py-1 px-1.5 rounded-md ${
+              className={`transition-colors cursor-pointer py-1 px-1.5 rounded-md whitespace-nowrap ${
                 activeTab === 'about'
                   ? 'text-[#1557C0] font-black'
                   : 'hover:text-[#1557C0]'
@@ -234,7 +234,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 3. Courses */}
             <button
               onClick={() => handleNavClick('batches')}
-              className="hover:text-[#1557C0] transition-colors cursor-pointer py-1 px-1.5 rounded-md"
+              className="hover:text-[#1557C0] transition-colors cursor-pointer py-1 px-1.5 rounded-md whitespace-nowrap"
             >
               {t('nav.courses')}
             </button>
@@ -245,7 +245,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setIsMenuOpen(false);
                 onOpenPlacements();
               }}
-              className={`transition-colors cursor-pointer py-1 px-1.5 rounded-md ${
+              className={`transition-colors cursor-pointer py-1 px-1.5 rounded-md whitespace-nowrap ${
                 activeTab === 'placements'
                   ? 'text-[#1557C0] font-black'
                   : 'hover:text-[#1557C0]'
@@ -260,7 +260,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setIsMenuOpen(false);
                 onOpenGovernmentGr();
               }}
-              className={`transition-colors cursor-pointer py-1 px-1.5 rounded-md ${
+              className={`transition-colors cursor-pointer py-1 px-1.5 rounded-md whitespace-nowrap ${
                 activeTab === 'gr'
                   ? 'text-[#1557C0] font-black'
                   : 'hover:text-[#1557C0]'
@@ -275,7 +275,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setIsMenuOpen(false);
                 onOpenCertificateVerify();
               }}
-              className={`transition-all cursor-pointer py-1 px-2.5 rounded-lg flex items-center gap-1 font-bold text-xs ${
+              className={`transition-all cursor-pointer py-1 px-2 xl:px-2.5 rounded-lg flex items-center gap-1 font-bold text-xs whitespace-nowrap ${
                 activeTab === 'verify'
                   ? 'bg-emerald-600 text-white shadow-2xs'
                   : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
@@ -284,13 +284,12 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="material-symbols-outlined text-[15px]">verified_user</span>
               <span>{t('nav.certVerification')}</span>
             </button>
-
           </nav>
 
           {/* Actions: Phone, WhatsApp, Language & Quick Enquiry */}
-          <div className="flex items-center gap-2 xl:gap-3 shrink-0">
-            {/* Call / WhatsApp Quick Contact Pill (Desktop) */}
-            <div className="hidden lg:flex items-center bg-[#F4F8FD] hover:bg-[#EBF3FC] border border-[#1557C0]/25 rounded-xl px-2.5 py-1.5 transition-all shadow-2xs">
+          <div className="flex items-center gap-1.5 sm:gap-2 xl:gap-3 shrink-0">
+            {/* Call / WhatsApp Quick Contact Pill (Large Desktop >= 1340px) */}
+            <div className="hidden 2xl:flex items-center bg-[#F4F8FD] hover:bg-[#EBF3FC] border border-[#1557C0]/25 rounded-xl px-2.5 py-1.5 transition-all shadow-2xs">
               <a
                 href="tel:+919423488174"
                 className="flex items-center gap-1.5 font-['Manrope'] font-bold text-xs text-[#002760] hover:text-[#1557C0] whitespace-nowrap transition-colors mr-2"
@@ -318,15 +317,15 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Language Switcher Dropdown (मराठी | हिंदी | English) */}
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative shrink-0" ref={dropdownRef}>
               <button
                 onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="flex items-center gap-1 h-8 px-2.5 rounded-xl border border-[#1557C0]/30 bg-[#F4F8FD] hover:bg-[#1557C0] hover:text-white text-[#002760] font-bold text-xs transition-all cursor-pointer shadow-2xs"
+                className="flex items-center gap-1 h-8 px-2 sm:px-2.5 rounded-xl border border-[#1557C0]/30 bg-[#F4F8FD] hover:bg-[#1557C0] hover:text-white text-[#002760] font-bold text-xs transition-all cursor-pointer shadow-2xs whitespace-nowrap"
                 title={t('nav.selectLanguage')}
               >
-                <span className="material-symbols-outlined text-[16px] text-[#1557C0] group-hover:text-white">translate</span>
-                <span>{LANGUAGES.find((l) => l.id === language)?.nativeName}</span>
-                <span className="material-symbols-outlined text-[14px]">expand_more</span>
+                <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#1557C0] group-hover:text-white">translate</span>
+                <span className="text-[11px] sm:text-xs">{LANGUAGES.find((l) => l.id === language)?.nativeName}</span>
+                <span className="material-symbols-outlined text-[13px] sm:text-[14px]">expand_more</span>
               </button>
 
               {/* Language Dropdown Menu */}
@@ -358,23 +357,30 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Quick Enquiry CTA */}
             <button
               onClick={onOpenEnquiry}
-              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] font-['Manrope'] font-black text-xs rounded-xl shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 xl:px-4 py-1.5 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] font-['Manrope'] font-black text-xs rounded-xl shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0 whitespace-nowrap"
             >
               <span className="material-symbols-outlined text-[15px]">edit_document</span>
               <span className="hidden sm:inline">{t('nav.quickEnquiry')}</span>
               <span className="sm:hidden">{language === 'mr' ? 'अर्ज करा' : 'Apply'}</span>
             </button>
 
-            {/* Mobile Hamburger Button */}
+            {/* Mobile Hamburger 3-Line Menu Button */}
             <button
-              className="flex items-center justify-center w-9 h-9 text-[#002760] hover:text-[#1557C0] transition-colors lg:hidden rounded-lg hover:bg-gray-100 cursor-pointer"
+              className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-[#002760] hover:bg-[#1557C0] active:scale-95 text-white transition-all lg:hidden rounded-xl shadow-md border border-[#FFD21F]/40 cursor-pointer shrink-0"
               id="menu-btn"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
+              aria-label={isMenuOpen ? 'Close navigation sidebar' : 'Open navigation sidebar'}
+              title="Menu / मेनू"
             >
-              <span className="material-symbols-outlined text-[26px]">
-                {isMenuOpen ? 'close' : 'menu'}
-              </span>
+              {isMenuOpen ? (
+                <svg className="w-5 h-5 text-[#FFD21F]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
             </button>
           </div>
         </div>

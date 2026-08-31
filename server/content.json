@@ -1,1 +1,98 @@
-null
+{
+  "hero": {
+    "badgeText": "Govt. Recognized & ISO 9001:2015 Certified Vocational Institute",
+    "badgeTextMr": "महाराष्ट्र शासनमान्य व ISO 9001:2015 प्रमाणित तंत्रशिक्षण संस्था",
+    "heading": "Build Your Technical Career with 100% Practical Training & Govt. Certification",
+    "headingMr": "प्रत्यक्ष प्रॅक्टिकल ट्रेनिंग व शासनमान्य प्रमाणपत्रासह आपले तांत्रिक भविष्य घडवा",
+    "subheading": "Join Jalgaon's leading vocational institute offering Electrician, Wireman, DMLT, Welder, COPA, and solar technical courses since 1999.",
+    "subheadingMr": "१९९९ पासून जळगावमधील अग्रगण्य संस्था. महावितरण, रेल्वे, व नामांकित खाजगी उद्योगांमध्ये उज्ज्वल नोकरीच्या संधी."
+  },
+  "contact": {
+    "phone": "+91 94234 88174",
+    "altPhone": "+91 98227 25265",
+    "whatsapp": "919423488174",
+    "email": "abhinavtechnicaljalgaon@gmail.com",
+    "address": "Shop No. 12 to 16, 1st Floor, Manasingh Market, Z P Road, Near Ramnivas Hotel / Railway Station, Navi Peth, Jalgaon - 425001, Maharashtra",
+    "workingHours": "Mon - Sat: 9:00 AM - 6:00 PM | Sun: Closed"
+  },
+  "about": {
+    "principalName": "Prof. P. R. Patil",
+    "principalTitle": "Founder & Principal Director",
+    "principalPhoto": "/assets/awards/lokmat_award_4.jpg",
+    "directorMessage": "Since 1999, our mission has been to transform aspiring youth into highly skilled, employable technical professionals through rigorous hands-on workshop training and discipline.",
+    "directorMessageMr": "१९९९ पासून आमचा एकच ध्यास आहे — ग्रामीण व शहरी भागातील विद्यार्थ्यांना आधुनिक उपकरणांवर प्रत्यक्ष प्रॅक्टिकल शिकवून त्यांना स्वतःच्या पायावर उभे करणे.",
+    "statsYears": "26+",
+    "statsAlumni": "5,000+",
+    "statsLabs": "6+",
+    "statsTrades": "10"
+  },
+  "awards": {
+    "badge": "State Level Prestigious Honor 2026",
+    "badgeMr": "विशेष राज्यस्तरीय गौरव व सन्मान",
+    "heading": "Lokmat Lokratna Sanman Award 2026",
+    "headingMr": "लोकमत लोकरत्न सन्मान सोहळा २०२६",
+    "subheading": "Conferred upon Principal Prof. P. R. Patil by Lokmat Media Group & Godavari Foundation for 26+ years of distinguished excellence in technical and vocational training.",
+    "subheadingMr": "तांत्रिक व व्यावसायिक शिक्षण क्षेत्रातील २६+ वर्षांच्या उत्तुंग कार्याबद्दल संस्थापक संचालक प्रा. पी. आर. पाटील यांना प्रदान.",
+    "mainAwardTitle": "Lokmat Lokratna Sanman 2026",
+    "mainAwardTitleMr": "लोकमत लोकरत्न सन्मान २०२६",
+    "presentedBy": "Lokmat Media Group & Godavari Foundation",
+    "presentedByMr": "सन्माननीय लोकमत वृत्तपत्र समूह व गोदावरी फाउंडेशन",
+    "recipientName": "Prof. P. R. Patil",
+    "recipientNameMr": "प्रा. पी. आर. पाटील",
+    "recipientRole": "Founder & Director, Abhinav Technical Institute",
+    "recipientRoleMr": "संस्थापक व संचालक, अभिनव टेक्निकल इन्स्टिट्यूट, जळगाव",
+    "year": "2026",
+    "description": "Honored with the state-level Lokmat Lokratna Award in recognition of outstanding contributions in empowering rural and urban youth through employment-oriented vocational skills, electrical lab training, and high career placements.",
+    "descriptionMr": "उत्तर महाराष्ट्रात तांत्रिक व कौशल्य शिक्षणाचा प्रसार करून हजारो तरुणांना रोजगारक्षम बनविल्याबद्दल लोकमत मीडिया व गोदावरी फाउंडेशनच्या वतीने राज्यस्तरीय विशेष गौरव.",
+    "featuredVideo": {
+      "id": "vid-lokmat-award-reel",
+      "type": "video",
+      "src": "/assets/awards/lokmat_award_reel.mp4",
+      "title": "Lokmat Lokratna Award Ceremony Highlight Reel",
+      "titleMr": "लोकमत लोकरत्न सन्मान सोहळा - विशेष व्हिडिओ रील",
+      "badge": "Official Video Reel"
+    },
+    "gallery": [
+      {
+        "id": "lokmat-img-4",
+        "type": "image",
+        "src": "/assets/awards/lokmat_award_4.jpg",
+        "title": "Principal Prof. P. R. Patil Receiving Prestigious Lokmat Lokratna Trophy & Citation",
+        "titleMr": "मा. प्रा. पी. आर. पाटील लोकरत्न सन्मानचिन्ह व मानपत्र स्वीकारताना",
+        "badge": "Main Award Ceremony"
+      },
+      {
+        "id": "lokmat-img-1",
+        "type": "image",
+        "src": "/assets/awards/lokmat_award_1.jpg",
+        "title": "Dignitaries & Guests of Honor on Stage Felicitation",
+        "titleMr": "मान्यवरांच्या शुभहस्ते सन्मान सोहळ्याचे दीपप्रज्वलन व गौरव",
+        "badge": "Stage Felicitation"
+      },
+      {
+        "id": "lokmat-img-2",
+        "type": "image",
+        "src": "/assets/awards/lokmat_award_2.jpg",
+        "title": "Felicitation with Traditional Shawl & Floral Bouquet",
+        "titleMr": "शाल, श्रीफळ व पुष्पगुच्छ देऊन विशेष सत्कार",
+        "badge": "Honor Ceremony"
+      },
+      {
+        "id": "lokmat-img-3",
+        "type": "image",
+        "src": "/assets/awards/lokmat_award_3.jpg",
+        "title": "Official Lokmat Lokratna 2026 Sanmanpatra Citation",
+        "titleMr": "लोकमत लोकरत्न २०२६ अधिकृत मानपत्र व सन्मान गौरव",
+        "badge": "Sanmanpatra Citation"
+      },
+      {
+        "id": "lokmat-img-5",
+        "type": "image",
+        "src": "/assets/awards/lokmat_award_5.jpg",
+        "title": "Celebration & Congratulations by Well-Wishers & Faculty",
+        "titleMr": "संस्थेचे प्राध्यापक व हितचिंतकांसोबत आनंदाचा क्षण",
+        "badge": "Celebration"
+      }
+    ]
+  }
+}

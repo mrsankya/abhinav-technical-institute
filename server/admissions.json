@@ -1,0 +1,12 @@
+{
+  "electrician-1yr": true,
+  "electrician-2yr": true,
+  "dmlt": true,
+  "wireman": true,
+  "copa": true,
+  "welder": true,
+  "construction-supervisor": true,
+  "ac-refrigeration": true,
+  "motor-rewinding": true,
+  "solar-technician": true
+}

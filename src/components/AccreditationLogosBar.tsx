@@ -6,6 +6,63 @@ interface AccreditationLogosBarProps {
   className?: string;
 }
 
+const ACCREDITATIONS = [
+  {
+    id: 'msbsvet',
+    name: 'MSBSVET Board',
+    subNameMr: 'महाराष्ट्र राज्य कौशल्य मंडळ',
+    subNameHi: 'महाराष्ट्र राज्य कौशल्य मंडल',
+    subNameEn: 'Govt. of Maharashtra',
+    logo: '/assets/accreditations/msbsvet_kaushalyam.jpg',
+    tag: 'Govt. Board',
+  },
+  {
+    id: 'ncvet',
+    name: 'NCVET',
+    subNameMr: 'कौशल गुणवत्ता प्रगति',
+    subNameHi: 'कौशल गुणवत्ता प्रगति',
+    subNameEn: 'Govt. of India',
+    logo: '/assets/accreditations/ncvet_logo.jpeg',
+    tag: 'National Council',
+  },
+  {
+    id: 'mssds',
+    name: 'MSSDS',
+    subNameMr: 'महाराष्ट्र कौशल्य विकास',
+    subNameHi: 'महाराष्ट्र कौशल विकास सोसायटी',
+    subNameEn: 'Maha Skill Society',
+    logo: '/assets/accreditations/mssds_logo.jpg',
+    tag: 'State Mission',
+  },
+  {
+    id: 'pmkvy',
+    name: 'PMKVY',
+    subNameMr: 'प्रधानमंत्री कौशल विकास',
+    subNameHi: 'प्रधानमंत्री कौशल विकास योजना',
+    subNameEn: 'Skill Scheme',
+    logo: '/assets/accreditations/pmkvy_logo.png',
+    tag: 'Govt. of India',
+  },
+  {
+    id: 'nsdc',
+    name: 'Skill India / NSDC',
+    subNameMr: 'कौशल भारत - कुशल भारत',
+    subNameHi: 'कौशल भारत - कुशल भारत',
+    subNameEn: 'National Skill Corp',
+    logo: '/assets/accreditations/skill_india_nsdc.png',
+    tag: 'Skill Mission',
+  },
+  {
+    id: 'ati',
+    name: 'ATI Training Skills',
+    subNameMr: 'कौशल्याने रोजगार प्राप्ती',
+    subNameHi: 'कौशल से रोजगार',
+    subNameEn: 'Skills For Employment',
+    logo: '/assets/accreditations/ati_skills_logo.png',
+    tag: 'Certified Center',
+  },
+];
+
 export const AccreditationLogosBar: React.FC<AccreditationLogosBarProps> = ({
   language = 'mr',
   className = '',
@@ -82,152 +139,41 @@ export const AccreditationLogosBar: React.FC<AccreditationLogosBarProps> = ({
               onScroll={checkScroll}
               className="w-full overflow-x-auto hide-scrollbar flex items-center gap-4 sm:gap-6 py-2 px-6 scroll-smooth"
             >
-              {/* 1. MSBVET Maharashtra State Vocational Board Logo */}
-              <div
-                className="w-36 h-36 sm:w-40 sm:h-40 shrink-0 bg-white rounded-2xl p-3 border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center cursor-pointer group"
-                title="Maharashtra State Board of Vocational Education & Training"
-              >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mb-2 relative flex items-center justify-center">
-                  <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <circle cx="50" cy="50" r="46" fill="none" stroke="#002760" strokeWidth="6" />
-                    <circle cx="50" cy="50" r="38" fill="none" stroke="#1557C0" strokeWidth="2" />
-                    {/* Inner Shield */}
-                    <path d="M50 18 L75 30 L75 62 L50 82 L25 62 L25 30 Z" fill="#002760" stroke="#FFD21F" strokeWidth="2" />
-                    <path d="M50 18 L75 30 L75 50 L50 50 Z" fill="#DC2626" />
-                    <path d="M25 30 L50 18 L50 50 L25 50 Z" fill="#1557C0" />
-                    {/* Icons inside shield */}
-                    <path d="M38 35 L40 45 L34 45 Z" fill="#FFF" />
-                    <circle cx="62" cy="38" r="4" fill="#FFF" />
-                    <path d="M35 62 L45 55 M58 62 L65 58" stroke="#FFF" strokeWidth="3" />
-                  </svg>
-                </div>
-                <span className="text-[10px] sm:text-[11px] font-extrabold text-[#002760] leading-tight block">
-                  MSBVET Board
-                </span>
-                <span className="text-[9px] text-gray-500 font-medium leading-none block mt-0.5">
-                  महाराष्ट्र राज्य कौशल्य मंडळ
-                </span>
-              </div>
+              {ACCREDITATIONS.map((item) => (
+                <div
+                  key={item.id}
+                  className="w-40 sm:w-44 shrink-0 bg-white rounded-2xl p-3.5 border border-slate-200/90 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col items-center justify-between text-center cursor-pointer group hover:border-[#1557C0]/40"
+                  title={item.name}
+                >
+                  <div className="w-full flex justify-center mb-1.5">
+                    <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 group-hover:bg-[#1557C0] group-hover:text-white transition-colors">
+                      {item.tag}
+                    </span>
+                  </div>
 
-              {/* 2. NCVET Logo */}
-              <div
-                className="w-36 h-36 sm:w-40 sm:h-40 shrink-0 bg-white rounded-2xl p-3 border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center cursor-pointer group"
-                title="National Council for Vocational Education and Training"
-              >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mb-2 relative flex items-center justify-center">
-                  <svg viewBox="0 0 100 100" className="w-full h-full">
-                    {/* Blue Gear */}
-                    <path
-                      d="M50 20 L55 10 L65 15 L65 25 L75 30 L85 25 L90 35 L80 43 L83 55 L93 60 L90 72 L78 72 L73 82 L80 90 L70 98 L60 90 L50 95 L40 90 L30 98 L20 90 L27 82 L22 72 L10 72 L7 60 L17 55 L20 43 L10 35 L15 25 L25 30 L35 25 L35 15 L45 10 Z"
-                      fill="#0284C7"
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 mb-2.5 flex items-center justify-center p-1.5 rounded-xl bg-slate-50/80 group-hover:bg-blue-50/40 transition-colors">
+                    <img
+                      src={item.logo}
+                      alt={item.name}
+                      className="max-w-full max-h-full object-contain group-hover:scale-108 transition-transform duration-300 drop-shadow-xs"
+                      loading="lazy"
                     />
-                    <circle cx="50" cy="55" r="22" fill="#FFF" />
-                    {/* Red & Green Figure */}
-                    <circle cx="50" cy="42" r="5" fill="#16A34A" />
-                    <path d="M42 58 Q50 48 58 58 Z" fill="#DC2626" />
-                  </svg>
-                </div>
-                <span className="text-xs sm:text-sm font-black text-[#DC2626] leading-tight block tracking-wider">
-                  NCVET
-                </span>
-                <span className="text-[9px] text-gray-500 font-medium leading-none block mt-0.5">
-                  कौशल गुणवत्ता प्रगति
-                </span>
-              </div>
+                  </div>
 
-              {/* 3. MSSDS Logo */}
-              <div
-                className="w-36 h-36 sm:w-40 sm:h-40 shrink-0 bg-white rounded-2xl p-3 border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center cursor-pointer group"
-                title="Maharashtra State Skill Development Society"
-              >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mb-2 relative flex items-center justify-center">
-                  <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <polygon points="50,10 85,30 85,70 50,90 15,70 15,30" fill="none" stroke="#0284C7" strokeWidth="5" />
-                    <circle cx="50" cy="50" r="16" fill="#0284C7" />
-                    <circle cx="50" cy="50" r="8" fill="#FFF" />
-                  </svg>
+                  <div className="w-full">
+                    <span className="text-xs sm:text-[13px] font-extrabold text-[#002760] leading-tight block tracking-tight group-hover:text-[#1557C0] transition-colors">
+                      {item.name}
+                    </span>
+                    <span className="text-[10px] text-gray-500 font-medium leading-tight block mt-0.5 truncate">
+                      {currentLang === 'en'
+                        ? item.subNameEn
+                        : currentLang === 'hi'
+                        ? item.subNameHi
+                        : item.subNameMr}
+                    </span>
+                  </div>
                 </div>
-                <span className="text-xs sm:text-sm font-black text-[#0284C7] leading-tight block tracking-wider">
-                  MSSDS
-                </span>
-                <span className="text-[8px] sm:text-[9px] text-gray-500 font-semibold leading-tight block mt-0.5">
-                  Maha Skill Society
-                </span>
-              </div>
-
-              {/* 4. PMKVY Logo */}
-              <div
-                className="w-36 h-36 sm:w-40 sm:h-40 shrink-0 bg-white rounded-2xl p-3 border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center cursor-pointer group"
-                title="Pradhan Mantri Kaushal Vikas Yojana"
-              >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mb-2 relative flex items-center justify-center">
-                  <svg viewBox="0 0 100 100" className="w-full h-full">
-                    {/* Orange Rising Figure */}
-                    <circle cx="65" cy="25" r="7" fill="#EA580C" />
-                    <path d="M45 65 L60 38 L75 52 L65 75 Z" fill="#EA580C" />
-                    <path d="M25 75 L45 45 L58 55 L40 85 Z" fill="#CA8A04" />
-                  </svg>
-                </div>
-                <span className="text-xs sm:text-sm font-black text-[#EA580C] leading-tight block tracking-wider">
-                  PMKVY
-                </span>
-                <span className="text-[8px] sm:text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">
-                  कौशल विकास योजना
-                </span>
-              </div>
-
-              {/* 5. ITES Mumbai Logo */}
-              <div
-                className="w-36 h-36 sm:w-40 sm:h-40 shrink-0 bg-white rounded-2xl p-3 border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center cursor-pointer group"
-                title="Indian Technical Education Society Mumbai (Est. 1941)"
-              >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mb-2 relative flex items-center justify-center">
-                  <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <rect width="90" height="90" rx="10" x="5" y="5" fill="#1D4ED8" />
-                    <circle cx="50" cy="50" r="36" fill="none" stroke="#FFF" strokeWidth="3" />
-                    <text x="50" y="55" textAnchor="middle" fill="#FFF" fontWeight="900" fontSize="22" fontFamily="sans-serif">
-                      ITES
-                    </text>
-                    <text x="50" y="74" textAnchor="middle" fill="#FFD21F" fontWeight="bold" fontSize="11" fontFamily="sans-serif">
-                      1941
-                    </text>
-                  </svg>
-                </div>
-                <span className="text-xs sm:text-sm font-black text-[#1D4ED8] leading-tight block tracking-wider">
-                  ITES MUMBAI
-                </span>
-                <span className="text-[8px] sm:text-[9px] text-gray-500 font-semibold leading-tight block mt-0.5">
-                  Est. 1941 Society
-                </span>
-              </div>
-
-              {/* 6. Skill India / NSDC Logo */}
-              <div
-                className="w-36 h-36 sm:w-40 sm:h-40 shrink-0 bg-white rounded-2xl p-3 border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center cursor-pointer group"
-                title="Skill India - National Skill Development Corporation"
-              >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mb-2 relative flex items-center justify-center">
-                  <svg viewBox="0 0 100 100" className="w-full h-full">
-                    {/* Skill India Monitor */}
-                    <rect x="10" y="20" width="35" height="28" rx="3" fill="#0284C7" />
-                    <path d="M22 48 L27 58 L18 58 Z" fill="#0284C7" />
-                    {/* NSDC 3 figures */}
-                    <circle cx="65" cy="30" r="4" fill="#0284C7" />
-                    <circle cx="78" cy="25" r="4" fill="#EA580C" />
-                    <circle cx="88" cy="32" r="4" fill="#16A34A" />
-                    <path d="M58 55 L65 38 L72 55 Z" fill="#0284C7" />
-                    <path d="M72 55 L78 33 L83 55 Z" fill="#EA580C" />
-                    <path d="M83 55 L88 40 L93 55 Z" fill="#16A34A" />
-                  </svg>
-                </div>
-                <span className="text-xs sm:text-sm font-black text-[#0284C7] leading-tight block tracking-wider">
-                  Skill India / NSDC
-                </span>
-                <span className="text-[8px] sm:text-[9px] text-gray-500 font-semibold leading-tight block mt-0.5">
-                  कौशल भारत - कुशल भारत
-                </span>
-              </div>
-
+              ))}
             </div>
 
             {/* Right Scroll Arrow */}

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ann-1",
+    "title": "Admissions Open for Academic Year 2026-27",
+    "titleMr": "शैक्षणिक वर्ष २०२६-२७ साठी प्रवेश सुरू",
+    "description": "Direct admissions for Electrician, Wireman, Welder, COPA and MSBSVET approved diploma trade courses. Special scholarship available.",
+    "descriptionMr": "इलेक्ट्रिशियन, वायरमन, वेल्डर, कोपा आणि MSBSVET मान्यताप्राप्त पदविका अभ्यासक्रमांसाठी थेट प्रवेश सुरू.",
+    "tag": "Admissions",
+    "tagMr": "प्रवेश",
+    "date": "February 2026",
+    "icon": "school",
+    "isNew": true
+  },
+  {
+    "id": "ann-2",
+    "title": "New Morning & Evening Batch Starting Soon",
+    "titleMr": "नवीन सकाळ व संध्याकाळ बॅच लवकरच सुरू",
+    "description": "Industrial wiring and electrical maintenance course begins next week. Limited seats available in the morning batch.",
+    "descriptionMr": "औद्योगिक वायरिंग आणि इलेक्ट्रिकल मेंटेनन्स कोर्स पुढील आठवड्यात सुरू होत आहे.",
+    "tag": "Batches",
+    "tagMr": "बॅचेस",
+    "date": "Starting Next Week",
+    "icon": "bolt",
+    "isNew": true
+  },
+  {
+    "id": "ann-3",
+    "title": "Important Notice for Students: Online Certificate Verification Live",
+    "titleMr": "विद्यार्थ्यांसाठी महत्त्वाची सूचना: ऑनलाइन प्रमाणपत्र पडताळणी लाइव्ह",
+    "description": "Online Certificate Verification portal is now active for all current students and alumni with instant QR verification.",
+    "descriptionMr": "सर्व माजी आणि चालू विद्यार्थ्यांसाठी ऑनलाइन प्रमाणपत्र पडताळणी पोर्टल आता सुरू झाले आहे.",
+    "tag": "Notice",
+    "tagMr": "सूचना",
+    "date": "System Update",
+    "icon": "info",
+    "isNew": true
+  },
+  {
+    "id": "ann-4",
+    "title": "Campus Placement Drive 2026",
+    "titleMr": "कॅम्पस प्लेसमेंट मोहीम २०२६",
+    "description": "Top industrial manufacturing companies from Jalgaon, Pune & Nashik visiting ATI campus next month for hiring certified technicians.",
+    "descriptionMr": "जळगाव, पुणे आणि नाशिकमधील आघाडीच्या औद्योगिक कंपन्या पुढील महिन्यात कॅम्पसला भेट देणार आहेत.",
+    "tag": "Placements",
+    "tagMr": "प्लेसमेंट",
+    "date": "Upcoming",
+    "icon": "work",
+    "isNew": false
+  }
+]

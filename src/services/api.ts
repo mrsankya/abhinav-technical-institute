@@ -1,10 +1,12 @@
-import type { StudentCertificate, Review } from '../types';
+import type { StudentCertificate, Review, Announcement } from '../types';
 import { MOCK_CERTIFICATES, REVIEWS } from '../data/instituteData';
 import { INITIAL_CERTIFICATES } from '../data/initialCertificates';
+import { GOVERNMENT_GR_LIST, type GovernmentGrItem } from '../data/grData';
 
-const API_BASE = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
-  ? 'http://localhost:4000/api'
-  : '/api';
+const API_BASE =
+  typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:4000/api'
+    : '/api';
 
 export interface Lead {
   id: string;
@@ -263,5 +265,191 @@ export async function deleteLead(id: string): Promise<boolean> {
   const current = await fetchLeads();
   const updated = current.filter((l) => l.id !== id);
   localStorage.setItem('ati_leads', JSON.stringify(updated));
+  return true;
+}
+
+// ----------------------
+// GOVERNMENT ORDERS & GR API
+// ----------------------
+export async function fetchGovernmentGrs(): Promise<GovernmentGrItem[]> {
+  try {
+    const res = await fetch(`${API_BASE}/gr`, { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        localStorage.setItem('ati_government_grs', JSON.stringify(data));
+        return data;
+      }
+    }
+  } catch (e) {}
+
+  const stored = localStorage.getItem('ati_government_grs');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch {}
+  }
+
+  localStorage.setItem('ati_government_grs', JSON.stringify(GOVERNMENT_GR_LIST));
+  return GOVERNMENT_GR_LIST;
+}
+
+export async function saveGovernmentGr(gr: GovernmentGrItem): Promise<GovernmentGrItem> {
+  try {
+    await fetch(`${API_BASE}/gr`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(gr),
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch (e) {}
+
+  const current = await fetchGovernmentGrs();
+  const existingIdx = current.findIndex((item) => item.id === gr.id);
+  let updated: GovernmentGrItem[];
+  if (existingIdx >= 0) {
+    updated = [...current];
+    updated[existingIdx] = gr;
+  } else {
+    updated = [gr, ...current];
+  }
+  localStorage.setItem('ati_government_grs', JSON.stringify(updated));
+  window.dispatchEvent(new CustomEvent('ati_gr_updated', { detail: updated }));
+  return gr;
+}
+
+export async function deleteGovernmentGr(id: string): Promise<boolean> {
+  try {
+    await fetch(`${API_BASE}/gr/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch (e) {}
+
+  const current = await fetchGovernmentGrs();
+  const updated = current.filter((item) => item.id !== id);
+  localStorage.setItem('ati_government_grs', JSON.stringify(updated));
+  window.dispatchEvent(new CustomEvent('ati_gr_updated', { detail: updated }));
+  return true;
+}
+
+export async function resetGovernmentGrs(): Promise<GovernmentGrItem[]> {
+  try {
+    await fetch(`${API_BASE}/gr/reset`, {
+      method: 'POST',
+      signal: AbortSignal.timeout(2000),
+    });
+  } catch (e) {}
+
+  localStorage.setItem('ati_government_grs', JSON.stringify(GOVERNMENT_GR_LIST));
+  window.dispatchEvent(new CustomEvent('ati_gr_updated', { detail: GOVERNMENT_GR_LIST }));
+  return GOVERNMENT_GR_LIST;
+}
+
+// ----------------------
+// ADMISSIONS TOGGLE API
+// ----------------------
+export async function fetchAdmissions(): Promise<Record<string, boolean>> {
+  try {
+    const res = await fetch(`${API_BASE}/admissions`, { signal: AbortSignal.timeout(2500) });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+        localStorage.setItem('ati_course_admissions', JSON.stringify(data));
+        return data;
+      }
+    }
+  } catch (e) {}
+
+  const stored = localStorage.getItem('ati_course_admissions');
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {}
+  }
+  return {};
+}
+
+export async function saveAdmissions(admissions: Record<string, boolean>): Promise<Record<string, boolean>> {
+  try {
+    await fetch(`${API_BASE}/admissions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(admissions),
+      signal: AbortSignal.timeout(2500),
+    });
+  } catch (e) {}
+
+  localStorage.setItem('ati_course_admissions', JSON.stringify(admissions));
+  window.dispatchEvent(new CustomEvent('ati_admissions_updated', { detail: admissions }));
+  return admissions;
+}
+
+// ----------------------
+// ANNOUNCEMENTS
+// ----------------------
+export async function deleteAnnouncement(id: string): Promise<boolean> {
+  try {
+    await fetch(`${API_BASE}/announcements/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch (e) {}
+  return true;
+}
+
+// ----------------------
+// REVIEWS / TESTIMONIALS
+// ----------------------
+export async function fetchReviews(): Promise<Review[]> {
+  try {
+    const res = await fetch(`${API_BASE}/reviews`, { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        localStorage.setItem('ati_reviews', JSON.stringify(data));
+        return data;
+      }
+    }
+  } catch (e) {}
+
+  const stored = localStorage.getItem('ati_reviews');
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {}
+  }
+  localStorage.setItem('ati_reviews', JSON.stringify(REVIEWS));
+  return REVIEWS;
+}
+
+export async function saveReview(review: Review): Promise<Review> {
+  try {
+    await fetch(`${API_BASE}/reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(review),
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch (e) {}
+
+  const current = await fetchReviews();
+  const updated = [review, ...current.filter((r) => r.id !== review.id)];
+  localStorage.setItem('ati_reviews', JSON.stringify(updated));
+  return review;
+}
+
+export async function deleteReview(id: string): Promise<boolean> {
+  try {
+    await fetch(`${API_BASE}/reviews/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch (e) {}
+
+  const current = await fetchReviews();
+  const updated = current.filter((r) => r.id !== id);
+  localStorage.setItem('ati_reviews', JSON.stringify(updated));
   return true;
 }

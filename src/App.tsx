@@ -15,6 +15,7 @@ import { StudentSectionModal } from './components/StudentSectionModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { AboutUsPage } from './components/AboutUsPage';
 import { AccreditationLogosBar } from './components/AccreditationLogosBar';
+import { AwardsSection } from './components/AwardsSection';
 import { PlacementsPage } from './components/PlacementsPage';
 import { GovernmentGrPage } from './components/GovernmentGrPage';
 import { CertificateVerifyPage } from './components/CertificateVerifyPage';
@@ -35,6 +36,8 @@ import {
   fetchLeads,
   saveLead,
   updateLeadStatus,
+  fetchReviews,
+  saveReview,
   type Lead,
 } from './services/api';
 import {
@@ -87,6 +90,9 @@ export default function App() {
     fetchCertificates().then((certs) => setCertificates(certs));
     fetchLeads().then((leads) => setEnquiriesList(leads));
     fetchSiteContent().then((content) => setSiteContent(content));
+    fetchReviews().then((revs) => {
+      if (revs && revs.length > 0) setReviewsList(revs);
+    });
 
     const handleCmsUpdate = (e: any) => {
       if (e.detail) {
@@ -130,7 +136,7 @@ export default function App() {
   }, []);
 
   const handleOpenEnquiry = (courseName?: string) => {
-    setSelectedCourseForEnquiry(courseName || 'Electrician');
+    setSelectedCourseForEnquiry(courseName || '');
     setIsEnquiryOpen(true);
   };
 
@@ -151,7 +157,7 @@ export default function App() {
     }
   };
 
-  const handleAddReview = (newReview: Partial<Review>) => {
+  const handleAddReview = async (newReview: Partial<Review>) => {
     const created: Review = {
       id: `rev-${Date.now()}`,
       name: newReview.name || 'Anonymous Student',
@@ -161,11 +167,8 @@ export default function App() {
       date: 'Just now',
       category: (newReview.category as any) || 'Practical Training',
     };
-    const updated = [created, ...reviewsList];
-    setReviewsList(updated);
-    try {
-      localStorage.setItem('ati_reviews', JSON.stringify(updated));
-    } catch {}
+    const saved = await saveReview(created);
+    setReviewsList((prev) => [saved, ...prev.filter((r) => r.id !== saved.id)]);
   };
 
   const handleAddEnquiry = async (newEnquiry: any) => {
@@ -319,7 +322,14 @@ export default function App() {
           {/* Official Accreditations Carousel Bar */}
           <AccreditationLogosBar language={language} />
 
-          {/* 5. What Our Community Says & Student Reviews */}
+          {/* 5. State Awards & Honors Section (Lokmat Lokratna 2026 & Video Reel) */}
+          <AwardsSection
+            language={language}
+            awardsData={siteContent.awards}
+            onOpenEnquiry={() => handleOpenEnquiry()}
+          />
+
+          {/* 6. What Our Community Says & Student Reviews */}
           <CommunityReviews
             reviews={reviewsList}
             language={language}

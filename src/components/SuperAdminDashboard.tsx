@@ -50,16 +50,38 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onBackToHome 
   // Load all system data
   const refreshAllData = () => {
     try {
-      const inq = JSON.parse(localStorage.getItem('abhinav_inquiries') || '[]');
+      const inqStored = localStorage.getItem('ati_leads') || localStorage.getItem('abhinav_inquiries');
+      const inq = inqStored ? JSON.parse(inqStored) : [];
       setInquiries(inq);
 
-      const certs = JSON.parse(localStorage.getItem('abhinav_certificates') || '[]');
-      setCertificates(certs.length > 0 ? certs : INITIAL_CERTIFICATES);
+      const certsStored = localStorage.getItem('ati_certificates') || localStorage.getItem('abhinav_certificates');
+      let certsList: Certificate[] = [];
+      if (certsStored) {
+        const parsed = JSON.parse(certsStored);
+        if (Array.isArray(parsed)) {
+          certsList = parsed;
+        } else if (typeof parsed === 'object') {
+          certsList = Object.values(parsed).map((c: any) => ({
+            id: c.regNumber || c.id,
+            studentName: c.studentName,
+            fatherName: c.fatherName || '',
+            course: c.courseName || c.course,
+            grade: c.grade || 'A Grade',
+            startDate: c.startDate || '01-Aug-2023',
+            endDate: c.endDate || '31-Jul-2024',
+            issueDate: c.issueDate || 'Recent',
+            isValid: c.status === 'Valid' || c.isValid !== false,
+            remarks: c.remarks || '',
+          }));
+        }
+      }
+      setCertificates(certsList.length > 0 ? certsList : INITIAL_CERTIFICATES);
 
       const syl = JSON.parse(localStorage.getItem('abhinav_syllabi') || '[]');
       setSyllabi(syl.length > 0 ? syl : INITIAL_SYLLABUS_LIST);
 
-      const adm = JSON.parse(localStorage.getItem('abhinav_admissions') || '{}');
+      const admStored = localStorage.getItem('ati_course_admissions') || localStorage.getItem('abhinav_admissions');
+      const adm = admStored ? JSON.parse(admStored) : {};
       setAdmissions(adm);
 
       const not = localStorage.getItem('abhinav_notice') || 

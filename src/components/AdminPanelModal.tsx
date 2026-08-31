@@ -12,8 +12,15 @@ import {
   fetchCertificates,
   saveCertificate,
   deleteCertificate,
+  fetchGovernmentGrs,
+  saveGovernmentGr,
+  deleteGovernmentGr,
+  resetGovernmentGrs,
+  fetchAdmissions,
+  saveAdmissions,
   type Lead,
 } from '../services/api';
+import { type GovernmentGrItem } from '../data/grData';
 import {
   fetchSiteContent,
   saveSiteContent,
@@ -21,6 +28,7 @@ import {
   INITIAL_SITE_CONTENT,
   type SiteContent,
   type GalleryItem,
+  type AwardMediaItem,
 } from '../services/cms';
 import { compressAndReadFile } from '../utils/imageUtils';
 import {
@@ -57,7 +65,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const [pin, setPin] = useState('');
   const [pinError, setPinError] = useState(false);
   const [activeAdminTab, setActiveAdminTab] = useState<
-    'overview' | 'cms' | 'leads' | 'certificates' | 'receipts' | 'batches' | 'notices' | 'security'
+    'overview' | 'cms' | 'gr' | 'leads' | 'certificates' | 'receipts' | 'batches' | 'notices' | 'security'
   >('overview');
 
   // Password change state
@@ -69,8 +77,30 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   // CMS Content State
   const [siteContent, setSiteContent] = useState<SiteContent>(INITIAL_SITE_CONTENT);
-  const [cmsSubTab, setCmsSubTab] = useState<'hero' | 'about' | 'courses' | 'gallery' | 'contact'>('hero');
+  const [cmsSubTab, setCmsSubTab] = useState<'hero' | 'about' | 'awards' | 'courses' | 'gallery' | 'contact'>('hero');
   const [cmsSaveSuccess, setCmsSaveSuccess] = useState(false);
+
+  // Government GR State
+  const [grList, setGrList] = useState<GovernmentGrItem[]>([]);
+  const [grSearchQuery, setGrSearchQuery] = useState('');
+  const [editingGr, setEditingGr] = useState<GovernmentGrItem | null>(null);
+  const [isAddGrModalOpen, setIsAddGrModalOpen] = useState(false);
+  const [grSaveSuccess, setGrSaveSuccess] = useState(false);
+  const [newGr, setNewGr] = useState<GovernmentGrItem>({
+    id: '',
+    titleMr: '',
+    titleEn: '',
+    number: '',
+    date: '',
+    deptMr: 'महाराष्ट्र शासन, उच्च व तंत्र शिक्षण विभाग, मंत्रालय, मुंबई',
+    deptEn: 'Higher & Technical Education Department, Govt. of Maharashtra',
+    summaryMr: '',
+    summaryEn: '',
+    pdfPath: '/gr/gr-01-diploma-course-recognition-2013.pdf',
+    status: 'GOVT DIPLOMA GR',
+    badgeColor: 'bg-[#002760] text-white',
+    codeNumber: '',
+  });
 
   // Leads state
   const [leadsList, setLeadsList] = useState<Lead[]>(enquiries);
@@ -146,6 +176,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       fetchLeads().then((data) => setLeadsList(data));
       fetchCertificates().then((data) => setCertsList(data));
       fetchSiteContent().then((data) => setSiteContent(data));
+      fetchGovernmentGrs().then((data) => setGrList(data));
+      fetchAdmissions().then((data) => {
+        if (data && Object.keys(data).length > 0) setCourseAdmissions(data);
+      });
     }
   }, [isOpen]);
 
@@ -308,6 +342,98 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     });
   };
 
+  const handleUploadAwardImage = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await compressAndReadFile(file, 1400, 1000, 0.85);
+      setSiteContent((prev) => {
+        const awards = prev.awards || INITIAL_SITE_CONTENT.awards;
+        const updatedGallery = [...awards.gallery];
+        updatedGallery[index] = { ...updatedGallery[index], src: dataUrl };
+        return {
+          ...prev,
+          awards: {
+            ...awards,
+            gallery: updatedGallery,
+          },
+        };
+      });
+    } catch (err) {
+      alert('Failed to read image');
+    }
+  };
+
+  const handleUploadNewAwardImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await compressAndReadFile(file, 1400, 1000, 0.85);
+      const newMedia: AwardMediaItem = {
+        id: `award-img-${Date.now()}`,
+        type: 'image',
+        src: dataUrl,
+        title: 'Award Ceremony Photograph',
+        titleMr: 'सन्मान सोहळा छायाचित्र',
+        description: 'Prestigious award ceremony moment',
+        descriptionMr: 'सन्मान सोहळ्यातील अविस्मरणीय क्षण',
+        badge: 'New Photo',
+      };
+      setSiteContent((prev) => {
+        const awards = prev.awards || INITIAL_SITE_CONTENT.awards;
+        return {
+          ...prev,
+          awards: {
+            ...awards,
+            gallery: [newMedia, ...awards.gallery],
+          },
+        };
+      });
+    } catch (err) {
+      alert('Failed to read image');
+    }
+  };
+
+  const handleDeleteAwardImage = (id: string) => {
+    setSiteContent((prev) => {
+      const awards = prev.awards || INITIAL_SITE_CONTENT.awards;
+      return {
+        ...prev,
+        awards: {
+          ...awards,
+          gallery: awards.gallery.filter((g) => g.id !== id),
+        },
+      };
+    });
+  };
+
+  const handleUploadAwardVideo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) {
+      alert('Video is larger than 25MB. Please choose an optimized MP4 under 25MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      setSiteContent((prev) => {
+        const awards = prev.awards || INITIAL_SITE_CONTENT.awards;
+        return {
+          ...prev,
+          awards: {
+            ...awards,
+            featuredVideo: {
+              ...awards.featuredVideo,
+              src: dataUrl,
+            },
+          },
+        };
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleStatusChange = async (
     id: string,
     newStatus: 'New' | 'Contacted' | 'Enrolled' | 'Closed'
@@ -405,12 +531,79 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     }
   };
 
-  const handleToggleAdmission = (courseId: string) => {
-    setCourseAdmissions((prev) => {
-      const next = { ...prev, [courseId]: !prev[courseId] };
-      localStorage.setItem('ati_course_admissions', JSON.stringify(next));
-      return next;
+  const handleToggleAdmission = async (courseId: string) => {
+    const next = { ...courseAdmissions, [courseId]: !courseAdmissions[courseId] };
+    setCourseAdmissions(next);
+    await saveAdmissions(next);
+  };
+
+  const handleSaveGr = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const grToSave: GovernmentGrItem = editingGr
+      ? { ...editingGr }
+      : {
+          ...newGr,
+          id: newGr.id.trim() || `gr-${Date.now()}`,
+          date: newGr.date.trim() || new Date().toLocaleDateString('mr-IN'),
+        };
+
+    if (!grToSave.titleMr || !grToSave.number) {
+      alert('Please enter at least the Marathi Title and GR Number.');
+      return;
+    }
+
+    await saveGovernmentGr(grToSave);
+    const updatedGrs = await fetchGovernmentGrs();
+    setGrList(updatedGrs);
+    setGrSaveSuccess(true);
+    setTimeout(() => setGrSaveSuccess(false), 3000);
+    setIsAddGrModalOpen(false);
+    setEditingGr(null);
+    setNewGr({
+      id: '',
+      titleMr: '',
+      titleEn: '',
+      number: '',
+      date: '',
+      deptMr: 'महाराष्ट्र शासन, उच्च व तंत्र शिक्षण विभाग, मंत्रालय, मुंबई',
+      deptEn: 'Higher & Technical Education Department, Govt. of Maharashtra',
+      summaryMr: '',
+      summaryEn: '',
+      pdfPath: '/gr/gr-01-diploma-course-recognition-2013.pdf',
+      status: 'GOVT DIPLOMA GR',
+      badgeColor: 'bg-[#002760] text-white',
+      codeNumber: '',
     });
+  };
+
+  const handleDeleteGr = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this Government Resolution (GR)?')) {
+      await deleteGovernmentGr(id);
+      setGrList((prev) => prev.filter((item) => item.id !== id));
+    }
+  };
+
+  const handleResetGr = async () => {
+    if (window.confirm('Reset all Government GR records back to official default 6 documents?')) {
+      const def = await resetGovernmentGrs();
+      setGrList(def);
+      alert('Government Resolutions reset to defaults!');
+    }
+  };
+
+  const handleUploadGrPdf = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (isEdit && editingGr) {
+        setEditingGr({ ...editingGr, pdfPath: dataUrl });
+      } else {
+        setNewGr({ ...newGr, pdfPath: dataUrl });
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handlePrintSlip = async (cert: StudentCertificate) => {
@@ -567,6 +760,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               {[
                 { id: 'overview', label: 'Overview', icon: 'dashboard' },
                 { id: 'cms', label: '🎨 Site Content & Images (CMS)', icon: 'edit_note', highlight: true },
+                { id: 'gr', label: `🏛️ Govt. Orders & GR (${grList.length})`, icon: 'policy', highlight: true },
                 { id: 'leads', label: `Leads CRM (${leadsList.length})`, icon: 'group' },
                 { id: 'certificates', label: `Certificates (${Object.keys(certsList).length})`, icon: 'verified' },
                 { id: 'receipts', label: 'Fee Receipt & ID Card', icon: 'badge' },
@@ -595,6 +789,463 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
             {/* Admin Tab Content */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-7 space-y-6">
+              {/* TAB: GOVERNMENT ORDERS & GR MANAGER */}
+              {activeAdminTab === 'gr' && (
+                <div className="space-y-6">
+                  {/* Top Action Banner */}
+                  <div className="bg-gradient-to-r from-[#002760] via-[#0A3D80] to-[#1557C0] text-white p-5 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#FFD21F] bg-[#FFD21F]/20 px-2.5 py-0.5 rounded-md border border-[#FFD21F]/30">
+                        Official Government Resolution (GR) Authority
+                      </span>
+                      <h4 className="font-['Manrope'] text-xl font-black mt-1">
+                        Government Orders, GRs & Affiliation Letters
+                      </h4>
+                      <p className="text-xs text-white/80 mt-0.5">
+                        Add, edit, or upload official Maharashtra & Central Government Resolutions, ITI equivalencies & apprentice circulars.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={handleResetGr}
+                        className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl border border-white/20 transition-all cursor-pointer"
+                        title="Reset GR list to original default 6 files"
+                      >
+                        Reset Defaults
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingGr(null);
+                          setNewGr({
+                            id: `gr-${Date.now()}`,
+                            titleMr: '',
+                            titleEn: '',
+                            number: '',
+                            date: new Date().toLocaleDateString('mr-IN'),
+                            deptMr: 'महाराष्ट्र शासन, उच्च व तंत्र शिक्षण विभाग, मंत्रालय, मुंबई',
+                            deptEn: 'Higher & Technical Education Department, Govt. of Maharashtra',
+                            summaryMr: '',
+                            summaryEn: '',
+                            pdfPath: '/gr/gr-01-diploma-course-recognition-2013.pdf',
+                            status: 'GOVT DIPLOMA GR',
+                            badgeColor: 'bg-[#002760] text-white',
+                            codeNumber: '',
+                          });
+                          setIsAddGrModalOpen(true);
+                        }}
+                        className="px-4 py-2 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] font-black text-xs rounded-xl shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5"
+                      >
+                        <span className="material-symbols-outlined text-base">add_circle</span>
+                        Add New GR / Order
+                      </button>
+                    </div>
+                  </div>
+
+                  {grSaveSuccess && (
+                    <div className="p-3.5 bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold rounded-2xl text-center animate-fadeIn">
+                      ✓ Government Resolution saved and updated in database successfully!
+                    </div>
+                  )}
+
+                  {/* Search Bar */}
+                  <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-[#F8FAFC] p-3 rounded-2xl border border-[#E6ECF3]">
+                    <div className="relative flex-1 w-full">
+                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
+                        search
+                      </span>
+                      <input
+                        type="text"
+                        value={grSearchQuery}
+                        onChange={(e) => setGrSearchQuery(e.target.value)}
+                        placeholder="Search by GR Number, Title, or Department..."
+                        className="w-full pl-9 pr-4 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-medium focus:outline-none focus:border-[#1557C0]"
+                      />
+                    </div>
+                    <div className="text-xs font-bold text-[#002760] shrink-0 px-2">
+                      Total: {grList.length} GRs
+                    </div>
+                  </div>
+
+                  {/* GR Items List / Cards */}
+                  <div className="space-y-3">
+                    {grList
+                      .filter((gr) => {
+                        if (!grSearchQuery.trim()) return true;
+                        const q = grSearchQuery.toLowerCase();
+                        return (
+                          gr.titleMr.toLowerCase().includes(q) ||
+                          gr.titleEn.toLowerCase().includes(q) ||
+                          gr.number.toLowerCase().includes(q) ||
+                          gr.deptMr.toLowerCase().includes(q) ||
+                          (gr.codeNumber && gr.codeNumber.toLowerCase().includes(q))
+                        );
+                      })
+                      .map((gr, idx) => (
+                        <div
+                          key={gr.id}
+                          className="bg-white border border-[#E6ECF3] rounded-2xl p-4 sm:p-5 hover:shadow-md transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+                        >
+                          <div className="space-y-1.5 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="w-6 h-6 rounded-full bg-[#002760] text-[#FFD21F] font-black text-xs flex items-center justify-center shrink-0">
+                                {idx + 1}
+                              </span>
+                              <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${gr.badgeColor || 'bg-[#002760] text-white'}`}>
+                                {gr.status}
+                              </span>
+                              <span className="font-mono text-xs font-bold text-[#002760] bg-[#F1F5F9] px-2 py-0.5 rounded border border-[#E2E8F0]">
+                                {gr.number}
+                              </span>
+                              {gr.codeNumber && (
+                                <span className="font-mono text-[11px] text-gray-500">
+                                  सांकेतांक: {gr.codeNumber}
+                                </span>
+                              )}
+                            </div>
+
+                            <h5 className="font-['Manrope'] font-bold text-sm text-[#002760] leading-snug">
+                              {gr.titleMr}
+                            </h5>
+                            {gr.titleEn && (
+                              <p className="text-xs text-gray-600 font-medium">
+                                {gr.titleEn}
+                              </p>
+                            )}
+
+                            <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#1557C0] font-semibold">
+                              <span>🏛️ {gr.deptMr}</span>
+                              <span>•</span>
+                              <span className="text-gray-500">📅 {gr.date}</span>
+                              <span>•</span>
+                              <span className="text-gray-400 font-mono text-[10px] truncate max-w-xs">
+                                📄 {gr.pdfPath.substring(0, 45)}...
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end pt-2 md:pt-0 border-t md:border-t-0 border-gray-100">
+                            <a
+                              href={gr.pdfPath}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#1557C0] text-xs font-bold rounded-lg transition-colors flex items-center gap-1"
+                              title="Preview PDF"
+                            >
+                              <span className="material-symbols-outlined text-sm">visibility</span>
+                              <span>View PDF</span>
+                            </a>
+
+                            <button
+                              onClick={() => {
+                                setEditingGr(gr);
+                                setIsAddGrModalOpen(true);
+                              }}
+                              className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined text-sm">edit</span>
+                              <span>Edit</span>
+                            </button>
+
+                            <button
+                              onClick={() => handleDeleteGr(gr.id)}
+                              className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined text-sm">delete</span>
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+
+                  {/* Add / Edit GR Modal */}
+                  {isAddGrModalOpen && (
+                    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-[#001738]/80 backdrop-blur-xs animate-fadeIn">
+                      <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-[#CBD5E1] overflow-hidden">
+                        <div className="p-4 sm:p-5 bg-gradient-to-r from-[#002760] to-[#1557C0] text-white flex justify-between items-center">
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-xl text-[#FFD21F]">
+                              {editingGr ? 'edit_document' : 'add_circle'}
+                            </span>
+                            <h4 className="font-['Manrope'] text-base sm:text-lg font-bold">
+                              {editingGr ? 'Edit Government Resolution (GR)' : 'Add New Government Resolution (GR)'}
+                            </h4>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setIsAddGrModalOpen(false);
+                              setEditingGr(null);
+                            }}
+                            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-base">close</span>
+                          </button>
+                        </div>
+
+                        <form onSubmit={handleSaveGr} className="p-5 sm:p-6 overflow-y-auto space-y-4 text-xs">
+                          <div>
+                            <label className="font-bold text-[#172033]/80 block mb-1">
+                              मराठीत शासन निर्णय / आदेश शीर्षक (Title in Marathi) *
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={editingGr ? editingGr.titleMr : newGr.titleMr}
+                              onChange={(e) =>
+                                editingGr
+                                  ? setEditingGr({ ...editingGr, titleMr: e.target.value })
+                                  : setNewGr({ ...newGr, titleMr: e.target.value })
+                              }
+                              placeholder="उदा: व्यवसाय शिक्षण परीक्षा मंडळाच्या २ वर्ष कालावधीच्या अभ्यासक्रमांना पदविका मान्यता..."
+                              className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-bold text-xs"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="font-bold text-[#172033]/80 block mb-1">
+                              English Title (शासन निर्णय शीर्षक - इंग्रजीत)
+                            </label>
+                            <input
+                              type="text"
+                              value={editingGr ? editingGr.titleEn : newGr.titleEn}
+                              onChange={(e) =>
+                                editingGr
+                                  ? setEditingGr({ ...editingGr, titleEn: e.target.value })
+                                  : setNewGr({ ...newGr, titleEn: e.target.value })
+                              }
+                              placeholder="e.g. Academic Recognition of 2-Year Vocational Courses as Diploma Course..."
+                              className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="font-bold text-[#172033]/80 block mb-1">
+                                शासन निर्णय क्र. / जा.क्र. (GR / Letter Number) *
+                              </label>
+                              <input
+                                type="text"
+                                required
+                                value={editingGr ? editingGr.number : newGr.number}
+                                onChange={(e) =>
+                                  editingGr
+                                    ? setEditingGr({ ...editingGr, number: e.target.value })
+                                    : setNewGr({ ...newGr, number: e.target.value })
+                                }
+                                placeholder="उदा: शासन निर्णय क्र: व्हीओसी-२०१२/६९७/प्र.क्र.२९२/व्यशि-४"
+                                className="w-full px-3.5 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-bold font-mono text-xs"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="font-bold text-[#172033]/80 block mb-1">
+                                दिनांक / Issue Date
+                              </label>
+                              <input
+                                type="text"
+                                value={editingGr ? editingGr.date : newGr.date}
+                                onChange={(e) =>
+                                  editingGr
+                                    ? setEditingGr({ ...editingGr, date: e.target.value })
+                                    : setNewGr({ ...newGr, date: e.target.value })
+                                }
+                                placeholder="उदा: २१ जानेवारी, २०१३ (21st January 2013)"
+                                className="w-full px-3.5 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="font-bold text-[#172033]/80 block mb-1">
+                                विभाग / मंत्रालय (Department in Marathi)
+                              </label>
+                              <input
+                                type="text"
+                                value={editingGr ? editingGr.deptMr : newGr.deptMr}
+                                onChange={(e) =>
+                                  editingGr
+                                    ? setEditingGr({ ...editingGr, deptMr: e.target.value })
+                                    : setNewGr({ ...newGr, deptMr: e.target.value })
+                                }
+                                placeholder="उदा: महाराष्ट्र शासन, उच्च व तंत्र शिक्षण विभाग, मंत्रालय, मुंबई"
+                                className="w-full px-3.5 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="font-bold text-[#172033]/80 block mb-1">
+                                Department in English
+                              </label>
+                              <input
+                                type="text"
+                                value={editingGr ? editingGr.deptEn : newGr.deptEn}
+                                onChange={(e) =>
+                                  editingGr
+                                    ? setEditingGr({ ...editingGr, deptEn: e.target.value })
+                                    : setNewGr({ ...newGr, deptEn: e.target.value })
+                                }
+                                placeholder="e.g. Higher & Technical Education Department, Govt. of Maharashtra"
+                                className="w-full px-3.5 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                              <label className="font-bold text-[#172033]/80 block mb-1">
+                                Category / Status Badge
+                              </label>
+                              <input
+                                type="text"
+                                value={editingGr ? editingGr.status : newGr.status}
+                                onChange={(e) =>
+                                  editingGr
+                                    ? setEditingGr({ ...editingGr, status: e.target.value })
+                                    : setNewGr({ ...newGr, status: e.target.value })
+                                }
+                                placeholder="e.g. GOVT DIPLOMA GR"
+                                className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-bold uppercase text-xs"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="font-bold text-[#172033]/80 block mb-1">
+                                Badge Color Style
+                              </label>
+                              <select
+                                value={editingGr ? editingGr.badgeColor : newGr.badgeColor}
+                                onChange={(e) =>
+                                  editingGr
+                                    ? setEditingGr({ ...editingGr, badgeColor: e.target.value })
+                                    : setNewGr({ ...newGr, badgeColor: e.target.value })
+                                }
+                                className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-bold text-xs"
+                              >
+                                <option value="bg-[#002760] text-white">Navy Blue (Default)</option>
+                                <option value="bg-emerald-700 text-white">Emerald Green (ITI / Equiv)</option>
+                                <option value="bg-amber-700 text-white">Amber (Gazette of India)</option>
+                                <option value="bg-blue-700 text-white">Blue (HAL / Industry)</option>
+                                <option value="bg-purple-700 text-white">Purple (Circular / Board)</option>
+                                <option value="bg-rose-700 text-white">Rose (Urgent Notice)</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="font-bold text-[#172033]/80 block mb-1">
+                                सांकेतांक क्र. (Computer Code No)
+                              </label>
+                              <input
+                                type="text"
+                                value={editingGr ? (editingGr.codeNumber || '') : (newGr.codeNumber || '')}
+                                onChange={(e) =>
+                                  editingGr
+                                    ? setEditingGr({ ...editingGr, codeNumber: e.target.value })
+                                    : setNewGr({ ...newGr, codeNumber: e.target.value })
+                                }
+                                placeholder="उदा: २०१३०१२११५४५२६३५०८"
+                                className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-mono text-xs"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="font-bold text-[#172033]/80 block mb-1">
+                              संक्षिप्त सारांश / स्पष्टीकरण (Summary in Marathi)
+                            </label>
+                            <textarea
+                              rows={2}
+                              value={editingGr ? editingGr.summaryMr : newGr.summaryMr}
+                              onChange={(e) =>
+                                editingGr
+                                  ? setEditingGr({ ...editingGr, summaryMr: e.target.value })
+                                  : setNewGr({ ...newGr, summaryMr: e.target.value })
+                              }
+                              placeholder="शासन निर्णयाचा संक्षिप्त तपशील प्रविष्ट करा..."
+                              className="w-full px-3.5 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="font-bold text-[#172033]/80 block mb-1">
+                              Summary in English
+                            </label>
+                            <textarea
+                              rows={2}
+                              value={editingGr ? editingGr.summaryEn : newGr.summaryEn}
+                              onChange={(e) =>
+                                editingGr
+                                  ? setEditingGr({ ...editingGr, summaryEn: e.target.value })
+                                  : setNewGr({ ...newGr, summaryEn: e.target.value })
+                              }
+                              placeholder="Enter brief description of the resolution in English..."
+                              className="w-full px-3.5 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                            />
+                          </div>
+
+                          {/* PDF Document URL & Upload */}
+                          <div className="bg-[#F1F5F9] p-3.5 rounded-2xl border border-[#CBD5E1] space-y-2">
+                            <label className="font-bold text-[#002760] block">
+                              PDF Document Path / File Upload
+                            </label>
+                            <div className="flex flex-col sm:flex-row gap-2 items-center">
+                              <input
+                                type="text"
+                                required
+                                value={editingGr ? editingGr.pdfPath : newGr.pdfPath}
+                                onChange={(e) =>
+                                  editingGr
+                                    ? setEditingGr({ ...editingGr, pdfPath: e.target.value })
+                                    : setNewGr({ ...newGr, pdfPath: e.target.value })
+                                }
+                                placeholder="/gr/my-gr-file.pdf or URL or upload from device"
+                                className="flex-1 w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-mono text-xs"
+                              />
+
+                              <label className="shrink-0 px-3.5 py-2 bg-[#002760] hover:bg-[#1557C0] text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5 transition-colors">
+                                <span className="material-symbols-outlined text-base">upload_file</span>
+                                <span>Upload PDF</span>
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  className="hidden"
+                                  onChange={(e) => handleUploadGrPdf(e, !!editingGr)}
+                                />
+                              </label>
+                            </div>
+                            <p className="text-[10px] text-gray-500">
+                              Tip: You can select existing paths like <code className="text-[#1557C0]">/gr/gr-01-diploma-course-recognition-2013.pdf</code> or upload a local PDF directly from your computer/mobile.
+                            </p>
+                          </div>
+
+                          <div className="flex justify-end gap-2 pt-3 border-t border-[#E6ECF3]">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsAddGrModalOpen(false);
+                                setEditingGr(null);
+                              }}
+                              className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="submit"
+                              className="px-6 py-2.5 bg-[#002760] hover:bg-[#1557C0] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center gap-1.5"
+                            >
+                              <span className="material-symbols-outlined text-base">save</span>
+                              <span>{editingGr ? 'Update Resolution' : 'Save & Publish GR'}</span>
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* TAB: CMS SITE CONTENT & MEDIA MANAGER */}
               {activeAdminTab === 'cms' && (
                 <div className="space-y-6">
@@ -641,6 +1292,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     {[
                       { id: 'hero', label: 'Hero & Headlines', icon: 'campaign' },
                       { id: 'about', label: 'About & Director Message', icon: 'person' },
+                      { id: 'awards', label: `🏆 Awards & Media (${(siteContent.awards?.gallery || []).length})`, icon: 'workspace_premium' },
                       { id: 'courses', label: 'Courses & Fees', icon: 'school' },
                       { id: 'gallery', label: `Workshop Gallery (${siteContent.gallery.length})`, icon: 'photo_library' },
                       { id: 'contact', label: 'Contact & Location', icon: 'call' },
@@ -869,7 +1521,421 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     </div>
                   )}
 
-                  {/* 3. COURSES & FEES EDITOR */}
+                  {/* 3. AWARDS & HONORS EDITOR (LOKMAT LOKRATNA & VIDEO REEL) */}
+                  {cmsSubTab === 'awards' && (
+                    <div className="space-y-6">
+                      {/* Section Top Info Card */}
+                      <div className="bg-gradient-to-br from-[#002760] to-[#001738] text-white p-5 rounded-3xl border border-[#FFD21F]/30 shadow-md">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#FFD21F] bg-[#FFD21F]/20 px-2.5 py-0.5 rounded-md border border-[#FFD21F]/30">
+                              🏆 State Level Honor & Recognition CMS
+                            </span>
+                            <h4 className="font-['Manrope'] text-lg sm:text-xl font-black mt-1 text-white">
+                              {siteContent.awards?.headingMr || 'लोकमत लोकरत्न सन्मान सोहळा २०२६'}
+                            </h4>
+                            <p className="text-xs text-slate-200 mt-0.5">
+                              Manage award details, highlight points, high-definition ceremony photographs, and featured video reel.
+                            </p>
+                          </div>
+                          <span className="px-3 py-1 bg-[#FFD21F] text-[#002760] font-black text-xs rounded-xl self-start sm:self-auto">
+                            {siteContent.awards?.year || '2026'} Edition
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* 1. Header Titles & Taglines */}
+                      <div className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-3xl p-5 sm:p-6 space-y-4">
+                        <h5 className="font-['Manrope'] text-base font-bold text-[#002760] flex items-center gap-2">
+                          <span className="material-symbols-outlined text-lg text-[#1557C0]">title</span>
+                          <span>Section Titles & Badges</span>
+                        </h5>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                          <div className="space-y-1">
+                            <label className="font-bold text-[#172033]/80 block">Section Badge (Marathi)</label>
+                            <input
+                              type="text"
+                              value={siteContent.awards?.badgeMr || ''}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  awards: { ...siteContent.awards, badgeMr: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-bold"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="font-bold text-[#172033]/80 block">Section Badge (English)</label>
+                            <input
+                              type="text"
+                              value={siteContent.awards?.badge || ''}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  awards: { ...siteContent.awards, badge: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-bold"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="font-bold text-[#172033]/80 block">Main Heading (Marathi)</label>
+                            <input
+                              type="text"
+                              value={siteContent.awards?.headingMr || ''}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  awards: { ...siteContent.awards, headingMr: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-black text-sm"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="font-bold text-[#172033]/80 block">Main Heading (English)</label>
+                            <input
+                              type="text"
+                              value={siteContent.awards?.heading || ''}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  awards: { ...siteContent.awards, heading: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-black text-sm"
+                            />
+                          </div>
+
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="font-bold text-[#172033]/80 block">Section Subheading (Marathi)</label>
+                            <textarea
+                              value={siteContent.awards?.subheadingMr || ''}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  awards: { ...siteContent.awards, subheadingMr: e.target.value },
+                                })
+                              }
+                              rows={2}
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 2. Award Citation & Details */}
+                      <div className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-3xl p-5 sm:p-6 space-y-4">
+                        <h5 className="font-['Manrope'] text-base font-bold text-[#002760] flex items-center gap-2">
+                          <span className="material-symbols-outlined text-lg text-[#1557C0]">military_tech</span>
+                          <span>Award Citation & Recipient Information</span>
+                        </h5>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                          <div className="space-y-1">
+                            <label className="font-bold text-[#172033]/80 block">Award Name (Marathi)</label>
+                            <input
+                              type="text"
+                              value={siteContent.awards?.mainAwardTitleMr || ''}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  awards: { ...siteContent.awards, mainAwardTitleMr: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-bold"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="font-bold text-[#172033]/80 block">Presented By (Marathi)</label>
+                            <input
+                              type="text"
+                              value={siteContent.awards?.presentedByMr || ''}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  awards: { ...siteContent.awards, presentedByMr: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-bold"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="font-bold text-[#172033]/80 block">Recipient Name (Marathi)</label>
+                            <input
+                              type="text"
+                              value={siteContent.awards?.recipientNameMr || ''}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  awards: { ...siteContent.awards, recipientNameMr: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-bold text-[#002760]"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="font-bold text-[#172033]/80 block">Recipient Role (Marathi)</label>
+                            <input
+                              type="text"
+                              value={siteContent.awards?.recipientRoleMr || ''}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  awards: { ...siteContent.awards, recipientRoleMr: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl"
+                            />
+                          </div>
+
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="font-bold text-[#172033]/80 block">Award Description / Citation (Marathi)</label>
+                            <textarea
+                              value={siteContent.awards?.descriptionMr || ''}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  awards: { ...siteContent.awards, descriptionMr: e.target.value },
+                                })
+                              }
+                              rows={3}
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 3. Featured Video Reel Settings */}
+                      <div className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-3xl p-5 sm:p-6 space-y-4">
+                        <h5 className="font-['Manrope'] text-base font-bold text-[#002760] flex items-center gap-2">
+                          <span className="material-symbols-outlined text-lg text-red-600">movie</span>
+                          <span>Featured Video Reel Player</span>
+                        </h5>
+
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs items-center">
+                          <div className="md:col-span-5 bg-black rounded-2xl overflow-hidden aspect-video relative border border-gray-300 w-full shadow-sm">
+                            <video
+                              src={siteContent.awards?.featuredVideo?.src || '/assets/awards/lokmat_award_reel.mp4'}
+                              controls
+                              className="w-full h-full object-contain bg-black"
+                            />
+                          </div>
+
+                          <div className="md:col-span-7 space-y-3">
+                            <div className="space-y-1.5">
+                              <label className="font-bold text-[#172033]/80 block">Video Source (MP4 File)</label>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#002760] hover:bg-[#1557C0] text-white text-xs font-bold rounded-xl cursor-pointer shadow-xs transition-all">
+                                  <span className="material-symbols-outlined text-sm">upload_file</span>
+                                  <span>📁 Upload Video from PC</span>
+                                  <input
+                                    type="file"
+                                    accept="video/mp4,video/*"
+                                    className="hidden"
+                                    onChange={handleUploadAwardVideo}
+                                  />
+                                </label>
+                                <span className="text-[11px] text-gray-500 font-medium">Max 25MB MP4</span>
+                              </div>
+                              <input
+                                type="text"
+                                value={siteContent.awards?.featuredVideo?.src || ''}
+                                onChange={(e) =>
+                                  setSiteContent({
+                                    ...siteContent,
+                                    awards: {
+                                      ...siteContent.awards,
+                                      featuredVideo: {
+                                        ...siteContent.awards.featuredVideo,
+                                        src: e.target.value,
+                                      },
+                                    },
+                                  })
+                                }
+                                placeholder="Or enter Video URL (e.g. /assets/awards/lokmat_award_reel.mp4)"
+                                className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-mono text-[11px]"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              <div>
+                                <label className="font-bold text-[#172033]/80 block mb-1">Video Title (Marathi)</label>
+                                <input
+                                  type="text"
+                                  value={siteContent.awards?.featuredVideo?.titleMr || ''}
+                                  onChange={(e) =>
+                                    setSiteContent({
+                                      ...siteContent,
+                                      awards: {
+                                        ...siteContent.awards,
+                                        featuredVideo: {
+                                          ...siteContent.awards.featuredVideo,
+                                          titleMr: e.target.value,
+                                        },
+                                      },
+                                    })
+                                  }
+                                  className="w-full px-2.5 py-1.5 bg-white border border-[#CBD5E1] rounded-xl font-bold"
+                                />
+                              </div>
+                              <div>
+                                <label className="font-bold text-[#172033]/80 block mb-1">Video Title (English)</label>
+                                <input
+                                  type="text"
+                                  value={siteContent.awards?.featuredVideo?.title || ''}
+                                  onChange={(e) =>
+                                    setSiteContent({
+                                      ...siteContent,
+                                      awards: {
+                                        ...siteContent.awards,
+                                        featuredVideo: {
+                                          ...siteContent.awards.featuredVideo,
+                                          title: e.target.value,
+                                        },
+                                      },
+                                    })
+                                  }
+                                  className="w-full px-2.5 py-1.5 bg-white border border-[#CBD5E1] rounded-xl font-bold"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 4. Award Ceremony Photographs Gallery */}
+                      <div className="space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div>
+                            <h5 className="font-['Manrope'] text-base font-bold text-[#002760] flex items-center gap-2">
+                              <span className="material-symbols-outlined text-lg text-[#1557C0]">photo_library</span>
+                              <span>Award Ceremony Photographs ({(siteContent.awards?.gallery || []).length} Photos)</span>
+                            </h5>
+                            <p className="text-xs text-[#172033]/70">
+                              Add, replace, or update captions for official stage & celebration photographs.
+                            </p>
+                          </div>
+
+                          <label className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] text-xs font-black rounded-xl shadow-xs cursor-pointer transition-all hover:scale-105 active:scale-95 self-start sm:self-auto">
+                            <span className="material-symbols-outlined text-base">add_photo_alternate</span>
+                            <span>Add New Ceremony Photo</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleUploadNewAwardImage}
+                            />
+                          </label>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {(siteContent.awards?.gallery || []).map((photo, idx) => (
+                            <div
+                              key={photo.id || idx}
+                              className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-2xl p-3.5 space-y-2.5 text-xs shadow-2xs hover:shadow-xs transition-shadow"
+                            >
+                              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-900 border border-[#E2E8F0]">
+                                <img
+                                  src={photo.src}
+                                  alt={photo.title}
+                                  className="w-full h-full object-cover"
+                                />
+                                {photo.badge && (
+                                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 text-[#FFD21F] text-[10px] font-black uppercase tracking-wider border border-white/20">
+                                    {photo.badge}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex items-center justify-between gap-2 pt-1">
+                                <label className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-[#CBD5E1] hover:bg-gray-100 rounded-lg text-[10px] font-bold cursor-pointer transition-all">
+                                  <span className="material-symbols-outlined text-[13px]">refresh</span>
+                                  <span>Replace Photo</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => handleUploadAwardImage(idx, e)}
+                                  />
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteAwardImage(photo.id)}
+                                  className="text-rose-600 hover:text-rose-700 text-[10px] font-bold underline cursor-pointer"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+
+                              <div className="space-y-1.5">
+                                <div>
+                                  <label className="text-[10px] text-[#172033]/70 font-bold block">Badge / Tag</label>
+                                  <input
+                                    type="text"
+                                    value={photo.badge || ''}
+                                    onChange={(e) => {
+                                      const updated = [...siteContent.awards.gallery];
+                                      updated[idx] = { ...updated[idx], badge: e.target.value };
+                                      setSiteContent({
+                                        ...siteContent,
+                                        awards: { ...siteContent.awards, gallery: updated },
+                                      });
+                                    }}
+                                    className="w-full px-2 py-1 bg-white border border-[#CBD5E1] rounded-lg text-xs"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="text-[10px] text-[#172033]/70 font-bold block">Caption (Marathi)</label>
+                                  <input
+                                    type="text"
+                                    value={photo.titleMr || ''}
+                                    onChange={(e) => {
+                                      const updated = [...siteContent.awards.gallery];
+                                      updated[idx] = { ...updated[idx], titleMr: e.target.value };
+                                      setSiteContent({
+                                        ...siteContent,
+                                        awards: { ...siteContent.awards, gallery: updated },
+                                      });
+                                    }}
+                                    className="w-full px-2 py-1 bg-white border border-[#CBD5E1] rounded-lg text-xs font-bold"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="text-[10px] text-[#172033]/70 font-bold block">Description (Marathi)</label>
+                                  <input
+                                    type="text"
+                                    value={photo.descriptionMr || ''}
+                                    onChange={(e) => {
+                                      const updated = [...siteContent.awards.gallery];
+                                      updated[idx] = { ...updated[idx], descriptionMr: e.target.value };
+                                      setSiteContent({
+                                        ...siteContent,
+                                        awards: { ...siteContent.awards, gallery: updated },
+                                      });
+                                    }}
+                                    className="w-full px-2 py-1 bg-white border border-[#CBD5E1] rounded-lg text-[11px]"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. COURSES & FEES EDITOR */}
                   {cmsSubTab === 'courses' && (
                     <div className="space-y-4">
                       <h5 className="font-['Manrope'] text-base font-bold text-[#002760]">
