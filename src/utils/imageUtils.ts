@@ -4,9 +4,9 @@
  */
 export async function compressAndReadFile(
   file: File,
-  maxWidth = 1200,
-  maxHeight = 800,
-  quality = 0.82
+  maxWidth = 900,
+  maxHeight = 600,
+  quality = 0.75
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

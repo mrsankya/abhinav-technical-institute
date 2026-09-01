@@ -77,6 +77,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   // CMS Content State
   const [siteContent, setSiteContent] = useState<SiteContent>(INITIAL_SITE_CONTENT);
+  const activeCourses = siteContent.courses && siteContent.courses.length > 0 ? siteContent.courses : COURSES;
   const [cmsSubTab, setCmsSubTab] = useState<'hero' | 'about' | 'awards' | 'courses' | 'gallery' | 'contact'>('hero');
   const [cmsSaveSuccess, setCmsSaveSuccess] = useState(false);
 
@@ -540,7 +541,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const dataUrl = await compressAndReadFile(file, 1200, 800, 0.85);
+      const dataUrl = await compressAndReadFile(file, 900, 600, 0.75);
       const currentCourses = siteContent.courses && siteContent.courses.length > 0 ? [...siteContent.courses] : [...COURSES];
       currentCourses[index] = { ...currentCourses[index], image: dataUrl };
       const updated = { ...siteContent, courses: currentCourses };
@@ -556,7 +557,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const dataUrl = await compressAndReadFile(file, 1200, 800, 0.85);
+      const dataUrl = await compressAndReadFile(file, 900, 600, 0.75);
       setCourseForm((prev) => ({ ...prev, image: dataUrl }));
       showToast('Course Image Attached', `Loaded photo "${file.name}".`, 'info');
     } catch (err) {
@@ -3491,7 +3492,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                       className="px-4 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs font-bold text-[#172033] focus:outline-none"
                     >
                       <option value="ALL">All Trade Courses</option>
-                      {courses.map((c) => (
+                      {activeCourses.map((c) => (
                         <option key={c.id} value={c.name}>
                           {c.name}
                         </option>
@@ -3648,7 +3649,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                             onChange={(e) => setNewCert({ ...newCert, courseName: e.target.value })}
                             className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold"
                           >
-                            {courses.map((c) => (
+                            {activeCourses.map((c) => (
                               <option key={c.id} value={c.name}>
                                 {c.name}
                               </option>
@@ -3870,7 +3871,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                               onChange={(e) => setReceiptData({ ...receiptData, course: e.target.value })}
                               className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-bold"
                             >
-                              {courses.map((c) => (
+                              {activeCourses.map((c) => (
                                 <option key={c.id} value={c.name}>
                                   {c.name}
                                 </option>
@@ -3998,7 +3999,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {courses.map((course) => {
+                    {activeCourses.map((course) => {
                       const isOpenNow = courseAdmissions[course.id] !== false;
                       return (
                         <div

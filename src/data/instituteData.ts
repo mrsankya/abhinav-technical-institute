@@ -68,7 +68,9 @@ export const COURSES: Course[] = [
     duration: '1 Year',
     durationMr: '१ वर्ष कालावधी',
     timing: '10:00 AM - 2:00 PM',
+    timingMr: 'सकाळी १०:०० ते दुपारी २:००',
     startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
     admissionsOpen: true,
     image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&auto=format&fit=crop&q=80',
     eligibility: '10th / 12th / College Student / Graduate',
@@ -87,11 +89,24 @@ export const COURSES: Course[] = [
       'Construction Material and Practices (PR-I) [Subject Code: 30420221]',
       'Surveying and Leveling (PR-III) [Subject Code: 30420222]'
     ],
+    syllabusMr: [
+      'बांधकाम साहित्य आणि पद्धती (थियरी-१) [कोड: 30420211]',
+      'अंदाजबजेट व मूल्यनिर्धारण (थियरी-२) [कोड: 30420212]',
+      'सर्व्हेइंग आणि लेव्हलिंग (थियरी-३) [कोड: 30420213]',
+      'बांधकाम साहित्य व पद्धती प्रॅक्टिकल (PR-I) [कोड: 30420221]',
+      'सर्व्हेइंग आणि लेव्हलिंग प्रॅक्टिकल (PR-III) [कोड: 30420222]'
+    ],
     careerOpportunities: [
       'PWD & Zilla Parishad Construction Supervisor',
       'Government Registered Contractor (Class 7-B)',
       'Direct 2nd Year Entry to Civil Diploma',
       'Site Estimator, Surveyor & Quality Engineer'
+    ],
+    careerOpportunitiesMr: [
+      'पीडब्ल्यूडी व जिल्हा परिषद बांधकाम पर्यवेक्षक',
+      'शासकीय नोंदणीकृत कंत्राटदार (वर्ग ७-ब १० लाखांपर्यंत)',
+      'थेट द्वितीय वर्ष सिव्हिल डिप्लोमा प्रवेश',
+      'साईट इस्टिमेटर, सर्व्हेअर व क्वालिटी सुपरवायझर'
     ],
     certification: 'MSBSVET Govt. Recognized & ITI Equivalent',
     batchCapacity: 30,
@@ -100,18 +115,20 @@ export const COURSES: Course[] = [
   {
     id: 'electrician',
     name: 'ELECTRICIAN – 2 YEARS',
-    nameMr: 'इलेक्ट्रिशियन – २ वर्ष कालावधी (वीजतंत्री)',
+    nameMr: 'इलेक्ट्रिशियन – २ वर्ष कालावधी (वीजतंत्री व औद्योगिक वायरिंग)',
     code: '302409',
     category: 'Electrical Trades',
     categoryMr: 'इलेक्ट्रिकल ट्रेड',
     description: 'Comprehensive 2-year trade training covering electrical wiring, power systems & practice.',
-    descriptionMr: 'इलेक्ट्रिशियन – २ वर्ष कालावधी (वीजतंत्री)',
+    descriptionMr: 'इलेक्ट्रिशियन – २ वर्ष कालावधी (वीजतंत्री व औद्योगिक वायरिंग)',
     fullDescription: 'MSBSVET Course Code 302409. 2-Year comprehensive trade with 2 months compulsory summer internship. Includes Wireman License & Mahavitaran recruitment eligibility.',
     fullDescriptionMr: 'महाराष्ट्र शासन MSBSVET मान्यताप्राप्त २ वर्षांचा कोर्स (कोर्स कोड: 302409). महावितरण भरती, वीजतंत्री (Wireman) व सुपरवायझर परवाना मिळवण्यासाठी उपयुक्त.',
     duration: '2 Years',
     durationMr: '२ वर्ष कालावधी',
     timing: '8:00 AM - 12:00 PM',
+    timingMr: 'सकाळी ८:०० ते दुपारी १२:००',
     startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
     admissionsOpen: true,
     image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80',
     eligibility: '10th / 12th / College Student / Graduate',
@@ -132,15 +149,82 @@ export const COURSES: Course[] = [
       'Electrician Practice [Subject Code: 30240012]',
       'Workshop Calculation, Science and Drawing [Subject Code: 30240013]'
     ],
+    syllabusMr: [
+      'संभाषण कौशल्य व इंग्रजी संवाद [कोड: 90000001]',
+      'व्यवसाय अर्थशास्त्र व उद्योजकता [कोड: 90000012]',
+      'संगणक ॲप्लिकेशन व आयटी टूल्स [कोड: 90000022]',
+      'मूलभूत विद्युतशास्त्र व मोजमापे [कोड: 30240011]',
+      'इलेक्ट्रिशियन प्रॅक्टिस व कार्यशाळा [कोड: 30240012]',
+      'वर्कशॉप कॅल्क्युलेशन, सायन्स व इंजिनिअरिंग ड्रॉइंग [कोड: 30240013]'
+    ],
     careerOpportunities: [
       'Wireman & Supervisor License Holder',
       'Mahavitaran (MSEDCL) Electrical Assistant',
       'Industrial Maintenance Electrician',
       'NCVT/DGT National Apprenticeship Certificate Holder'
     ],
+    careerOpportunitiesMr: [
+      'शासकीय वायरमन व सुपरवायझर परवाना धारक',
+      'महावितरण (MSEDCL) विद्युत सहायक भरती पात्र',
+      'औद्योगिक मेंटेनन्स इलेक्ट्रिशियन',
+      'थेट २ऱ्या वर्षात इलेक्ट्रिकल डिप्लोमा प्रवेश'
+    ],
     certification: 'MSBSVET Govt ITI Equivalent Certified',
     batchCapacity: 35,
     enrolled: 29
+  },
+  {
+    id: 'wireman',
+    name: 'WIREMAN – 1 YEAR',
+    nameMr: 'वायरमन – १ वर्ष कालावधी (औद्योगिक व घरगुती वायरिंग)',
+    code: '301201',
+    category: 'Electrical Trades',
+    categoryMr: 'इलेक्ट्रिकल ट्रेड',
+    description: 'Professional wireman trade training with government wireman permit exam preparation.',
+    descriptionMr: 'वायरमन – १ वर्ष कालावधी (औद्योगिक व घरगुती वायरिंग)',
+    fullDescription: 'MSBSVET Course Code 301201. 1-Year practical trade focusing on domestic wiring, industrial panels, switchgear, safety grounding, and PWD wireman licensing.',
+    fullDescriptionMr: 'महाराष्ट्र शासन MSBSVET मान्यताप्राप्त १ वर्षाचा कोर्स (कोर्स कोड: 301201). घरगुती व औद्योगिक वायरिंग, पॅनेल बोर्ड, अर्थिंग व शासकीय परवाना परीक्षा.',
+    duration: '1 Year',
+    durationMr: '१ वर्ष कालावधी',
+    timing: '10:00 AM - 2:00 PM',
+    timingMr: 'सकाळी १०:०० ते दुपारी २:००',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
+    admissionsOpen: true,
+    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop&q=80',
+    eligibility: '10th / 12th Pass',
+    eligibilityMr: '१०वी किंवा १२वी उत्तीर्ण',
+    subjects: [
+      { name: 'Basic Electrical Theory & Safety', code: '30120111' },
+      { name: 'Domestic & Commercial Wiring', code: '30120112' },
+      { name: 'Industrial Wiring & Control Panels', code: '30120113' },
+      { name: 'Electrical Workshop Practical', code: '30120121' }
+    ],
+    syllabus: [
+      'Basic Electrical Theory & Safety [Code: 30120111]',
+      'Domestic & Commercial Wiring Methods [Code: 30120112]',
+      'Industrial Wiring & Control Panels [Code: 30120113]',
+      'Electrical Workshop Practical & Earthing [Code: 30120121]'
+    ],
+    syllabusMr: [
+      'विद्युतशास्त्र थियरी व सुरक्षा नियम [कोड: 30120111]',
+      'घरगुती व व्यावसायिक वायरिंग तंत्र [कोड: 30120112]',
+      'औद्योगिक वायरिंग व कंट्रोल पॅनेल [कोड: 30120113]',
+      'इलेक्ट्रिकल वर्कशॉप प्रॅक्टिकल व अर्थिंग [कोड: 30120121]'
+    ],
+    careerOpportunities: [
+      'Govt. Certified Wireman License Holder',
+      'Industrial Electrical Maintenance Technician',
+      'Electrical Contractor & Service Shop Owner'
+    ],
+    careerOpportunitiesMr: [
+      'शासकीय अधिकृत वायरमन परवाना',
+      'औद्योगिक इलेक्ट्रिकल मेंटेनन्स तंत्रज्ञ',
+      'स्वतःचा स्वतंत्र इलेक्ट्रिकल व्यवसाय'
+    ],
+    certification: 'MSBSVET Govt. Recognized & ITI Equivalent',
+    batchCapacity: 30,
+    enrolled: 24
   },
   {
     id: 'dmlt',
@@ -156,7 +240,9 @@ export const COURSES: Course[] = [
     duration: '2 Years',
     durationMr: '२ वर्ष कालावधी',
     timing: '10:00 AM - 2:00 PM',
+    timingMr: 'सकाळी १०:०० ते दुपारी २:००',
     startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
     admissionsOpen: true,
     image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&auto=format&fit=crop&q=80',
     eligibility: '12th Science / B.Sc. Appeared / Graduate',
@@ -173,10 +259,21 @@ export const COURSES: Course[] = [
       'Hematology & Blood Banking Techniques [Code: 20140413]',
       'Histopathology & Lab Automation [Code: 20140421]'
     ],
+    syllabusMr: [
+      'क्लिनिकल पॅथॉलॉजी व बायोकेमिस्ट्री [कोड: 20140411]',
+      'मायक्रोबायोलॉजी व सेरोलॉजी डायग्नोस्टिक्स [कोड: 20140412]',
+      'हेमॅटॉलॉजी व ब्लड बँकिंग तंत्रज्ञान [कोड: 20140413]',
+      'हिस्टोपॅथॉलॉजी व लॅब ऑटोमेशन [कोड: 20140421]'
+    ],
     careerOpportunities: [
       'Registered Medical Laboratory Technician',
       'Pathology Lab & Diagnostic Center Supervisor',
       'Government & Private Hospital Lab Officer'
+    ],
+    careerOpportunitiesMr: [
+      'नोंदणीकृत मेडिकल लॅब तंत्रज्ञ (पॅथॉलॉजिस्ट सहायक)',
+      'स्वतःची पॅथॉलॉजी लॅब व कलेक्शन सेंटर',
+      'शासकीय व खाजगी हॉस्पिटल लॅब ऑफिसर'
     ],
     certification: 'Maharashtra Paramedical Council Registered & MSBSVET Recognized',
     batchCapacity: 25,
@@ -196,7 +293,9 @@ export const COURSES: Course[] = [
     duration: '1 Year',
     durationMr: '१ वर्ष कालावधी',
     timing: '10:00 AM - 2:00 PM',
+    timingMr: 'सकाळी १०:०० ते दुपारी २:००',
     startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
     admissionsOpen: true,
     image: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=800&auto=format&fit=crop&q=80',
     eligibility: '10th / 12th / College Student / Graduate',
@@ -213,14 +312,290 @@ export const COURSES: Course[] = [
       'Water Purification & Epidemic Control [Code: 20123813]',
       'Food Safety & Sanitation Inspection [Code: 20123821]'
     ],
+    syllabusMr: [
+      'सार्वजनिक आरोग्य व स्वच्छता मानके [कोड: 20123811]',
+      'घनकचरा व सांडपाणी व्यवस्थापन [कोड: 20123812]',
+      'जलशुद्धीकरण व साथरोग नियंत्रण [कोड: 20123813]',
+      'अन्न सुरक्षा व स्वच्छता तपासणी [कोड: 20123821]'
+    ],
     careerOpportunities: [
       'Sanitary Inspector (Mahanagarpalika / Nagar Parishad)',
       'Public Health Department Hygiene Officer',
       'Indian Railways Sanitation Inspector'
     ],
+    careerOpportunitiesMr: [
+      'महानगरपालिका / नगरपरिषद स्वच्छता निरीक्षक',
+      'सार्वजनिक आरोग्य विभाग स्वच्छता अधिकारी',
+      'भारतीय रेल्वे स्वच्छता निरीक्षक'
+    ],
     certification: 'MSBSVET Govt. Recognized & ISO 9001:2015 Certified',
     batchCapacity: 30,
     enrolled: 24
+  },
+  {
+    id: 'computer-operator',
+    name: 'COMPUTER OPERATOR & AI SKILLS (COPA) – 1 YEAR',
+    nameMr: 'संगणक ऑपरेटर व एआय स्किल्स (COPA / MS-CIT / Tally GST)',
+    code: 'MSBQ103001',
+    category: 'Computer & IT',
+    categoryMr: 'संगणक व आयटी',
+    description: 'Computer operations, digital accounting with Tally GST, modern AI productivity tools & office automation.',
+    descriptionMr: 'संगणक ऑपरेटर व एआय स्किल्स (COPA / MS-CIT / Tally GST)',
+    fullDescription: 'MSBSVET Course Code MSBQ103001. 1-Year computer trade covering MS Office, Tally Prime with GST, AI productivity, Marathi typing, DTP, and web applications.',
+    fullDescriptionMr: 'महाराष्ट्र शासन MSBSVET मान्यताप्राप्त १ वर्षाचा संगणक कोर्स. एमएस ऑफिस, टॅली प्राईम जीएसटी, एआय टूल्स, मराठी टायपिंग व शासकीय भरतीसाठी पात्र.',
+    duration: '1 Year',
+    durationMr: '१ वर्ष कालावधी',
+    timing: '8:00 AM - 12:00 PM',
+    timingMr: 'सकाळी ८:०० ते दुपारी १२:००',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
+    admissionsOpen: true,
+    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=80',
+    eligibility: '10th / 12th / College Student / Graduate',
+    eligibilityMr: '१०वी किंवा १२वी किंवा कॉलेज विद्यार्थी किंवा पदवीधर',
+    subjects: [
+      { name: 'Computer Fundamentals & OS', code: '10300111' },
+      { name: 'Advanced MS Office & AI Tools', code: '10300112' },
+      { name: 'Financial Accounting & Tally Prime GST', code: '10300113' },
+      { name: 'Computer Lab Practical & Typing', code: '10300121' }
+    ],
+    syllabus: [
+      'Computer Fundamentals & Operating Systems [Code: 10300111]',
+      'Advanced MS Office Suite & AI Productivity Tools [Code: 10300112]',
+      'Financial Accounting & Tally Prime with GST [Code: 10300113]',
+      'Computer Lab Practical, Typing & Web Operations [Code: 10300121]'
+    ],
+    syllabusMr: [
+      'संगणक मूलभूत ज्ञान व ऑपरेटिंग सिस्टीम्स [कोड: 10300111]',
+      'ॲडव्हान्स एमएस ऑफिस व एआय टूल्स [कोड: 10300112]',
+      'टॅली प्राईम विथ जीएसटी व फायनान्शियल अकाउंटिंग [कोड: 10300113]',
+      'कॉम्प्युटर लॅब प्रॅक्टिकल, टायपिंग व इंटरनेट ऑपरेशन्स [कोड: 10300121]'
+    ],
+    careerOpportunities: [
+      'Govt & Bank Data Entry Operator',
+      'Tally GST Accountant & Office Executive',
+      'IT Support & Digital Service Center Owner'
+    ],
+    careerOpportunitiesMr: [
+      'शासकीय व बँक डेटा एन्ट्री ऑपरेटर',
+      'टॅली जीएसटी अकाउंटंट व ऑफिस ॲडमिन',
+      'आपले सरकार सेवा केंद्र / सीएससी चालक'
+    ],
+    certification: 'MSBSVET Govt. ITI Equivalent Certified',
+    batchCapacity: 30,
+    enrolled: 25
+  },
+  {
+    id: 'diesel-mechanic',
+    name: 'DIESEL MECHANIC – 1 YEAR',
+    nameMr: 'डिझेल मेकॅनिक – १ वर्ष कालावधी (ऑटो इंजिनिअरिंग व मेकॅनिकल)',
+    code: 'MSBQ102001',
+    category: 'Mechanical Trades',
+    categoryMr: 'मेकॅनिकल व ऑटोमोबाइल',
+    description: 'Internal combustion engines, fuel injection systems, vehicle diagnostics & transmission repair.',
+    descriptionMr: 'डिझेल मेकॅनिक – १ वर्ष कालावधी (ऑटो इंजिनिअरिंग व मेकॅनिकल)',
+    fullDescription: 'MSBSVET Course Code MSBQ102001. 1-Year hands-on trade training on IC engines, fuel injection pumps, auto electricals, MSRTC bus maintenance, and commercial vehicle overhauling.',
+    fullDescriptionMr: 'महाराष्ट्र शासन MSBSVET मान्यताप्राप्त १ वर्षाचा मेकॅनिकल कोर्स. एसटी महामंडळ, रेल्वे, ऑटोमोबाइल वर्कशॉप व मेकॅनिक पदांसाठी पात्र.',
+    duration: '1 Year',
+    durationMr: '१ वर्ष कालावधी',
+    timing: '10:00 AM - 2:00 PM',
+    timingMr: 'सकाळी १०:०० ते दुपारी २:००',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
+    admissionsOpen: true,
+    image: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=800&auto=format&fit=crop&q=80',
+    eligibility: '10th Standard Pass',
+    eligibilityMr: '१०वी उत्तीर्ण',
+    subjects: [
+      { name: 'IC Engine Technology & Maintenance', code: '10200111' },
+      { name: 'Fuel Injection Pumps & Injectors', code: '10200112' },
+      { name: 'Auto Electrical Systems & Diagnostics', code: '10200113' },
+      { name: 'Workshop Practical & Overhauling', code: '10200121' }
+    ],
+    syllabus: [
+      'IC Engine Technology & Maintenance [Code: 10200111]',
+      'Fuel Injection Pumps & Injectors [Code: 10200112]',
+      'Auto Electrical Systems & Diagnostics [Code: 10200113]',
+      'Workshop Practical & Overhauling [Code: 10200121]'
+    ],
+    syllabusMr: [
+      'आय.सी. इंजिन तंत्रज्ञान व मेंटेनन्स [कोड: 10200111]',
+      'फ्युएल इंजेक्शन पंप्स व इंजेक्टर्स [कोड: 10200112]',
+      'ऑटो इलेक्ट्रिकल सिस्टीम व टेस्टिंग [कोड: 10200113]',
+      'वर्कशॉप प्रॅक्टिकल व इंजिन ओव्हरहॉलिंग [कोड: 10200121]'
+    ],
+    careerOpportunities: [
+      'MSRTC & Railway Workshop Mechanic',
+      'Automobile Service Center Technician',
+      'Commercial Vehicle Workshop Owner'
+    ],
+    careerOpportunitiesMr: [
+      'एसटी महामंडळ व रेल्वे वर्कशॉप मेकॅनिक',
+      'ऑटोमोबाइल सर्व्हिस सेंटर तंत्रज्ञ',
+      'स्वतःचे व्यावसायिक वर्कशॉप'
+    ],
+    certification: 'MSBSVET Govt. Recognized & ITI Equivalent',
+    batchCapacity: 25,
+    enrolled: 19
+  },
+  {
+    id: 'fitter-turner',
+    name: 'FITTER & TURNER – 1 YEAR',
+    nameMr: 'फिटर व टर्नर – १ वर्ष कालावधी (मेकॅनिकल मशीनिंग व लेथ वर्क)',
+    code: '104201',
+    category: 'Mechanical Trades',
+    categoryMr: 'मेकॅनिकल व ऑटोमोबाइल',
+    description: 'Precision bench fitting, lathe machine operation, shaping, drilling & blueprint reading.',
+    descriptionMr: 'फिटर व टर्नर – १ वर्ष कालावधी (मेकॅनिकल मशीनिंग व लेथ वर्क)',
+    fullDescription: 'MSBSVET Course Code 104201. 1-Year mechanical workshop trade on precision measuring tools, lathe turning, threading, fitting assembly, and industrial fabrication.',
+    fullDescriptionMr: 'महाराष्ट्र शासन MSBSVET मान्यताप्राप्त १ वर्षाचा फिटर व टर्नर कोर्स. लेथ मशीन, थ्रेडिंग, प्रिसिजन फिटिंग व औद्योगिक उत्पादन कंपन्यांसाठी उपयुक्त.',
+    duration: '1 Year',
+    durationMr: '१ वर्ष कालावधी',
+    timing: '10:00 AM - 2:00 PM',
+    timingMr: 'सकाळी १०:०० ते दुपारी २:००',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
+    admissionsOpen: true,
+    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80',
+    eligibility: '10th Standard Pass',
+    eligibilityMr: '१०वी उत्तीर्ण',
+    subjects: [
+      { name: 'Workshop Theory & Precision Measuring', code: '10420111' },
+      { name: 'Lathe Operation & Turning Practice', code: '10420112' },
+      { name: 'Engineering Drawing & Blueprint Reading', code: '10420113' },
+      { name: 'Machine Shop Practical', code: '10420121' }
+    ],
+    syllabus: [
+      'Workshop Theory & Precision Measuring [Code: 10420111]',
+      'Lathe Operation & Turning Practice [Code: 10420112]',
+      'Engineering Drawing & Blueprint Reading [Code: 10420113]',
+      'Machine Shop Practical [Code: 10420121]'
+    ],
+    syllabusMr: [
+      'कार्यशाळा थियरी व प्रिसिजन मोजमापे [कोड: 10420111]',
+      'लेथ मशीन ऑपरेशन व टर्निंग प्रॅक्टिस [कोड: 10420112]',
+      'इंजिनिअरिंग ड्रॉइंग व ब्लूप्रिंट वाचन [कोड: 10420113]',
+      'मशीन शॉप प्रॅक्टिकल [कोड: 10420121]'
+    ],
+    careerOpportunities: [
+      'MIDC Industrial Lathe & Machine Operator',
+      'Ordnance Factory & Defence Units Technician',
+      'Precision Mechanical Workshop Owner'
+    ],
+    careerOpportunitiesMr: [
+      'एमआयडीसी मॅन्युफॅक्चरिंग लेथ ऑपरेटर',
+      'ऑर्डनन्स फॅक्टरी व डिफेन्स युनिट्स तंत्रज्ञ',
+      'स्वतःचा फॅब्रिकेशन व मशीनिंग व्यवसाय'
+    ],
+    certification: 'MSBSVET Govt. ITI Equivalent Certified',
+    batchCapacity: 25,
+    enrolled: 20
+  },
+  {
+    id: 'solar-technician',
+    name: 'SOLAR ENERGY & EV TECHNICIAN – 1 YEAR',
+    nameMr: 'सोलर एनर्जी व ईव्ही चार्जिंग तंत्रज्ञ – १ वर्ष कालावधी',
+    code: '305201',
+    category: 'Renewable Energy',
+    categoryMr: 'सौर ऊर्जा व ईव्ही',
+    description: 'Solar PV rooftop installation, grid-tied inverters, net metering & EV charging station maintenance.',
+    descriptionMr: 'सोलर एनर्जी व ईव्ही चार्जिंग तंत्रज्ञ – १ वर्ष कालावधी',
+    fullDescription: 'MSBSVET Course Code 305201. 1-Year modern trade on Solar Rooftop System designing, PM Surya Ghar Muft Bijli Yojana installation, inverters, and EV charging station setup.',
+    fullDescriptionMr: 'महाराष्ट्र शासन MSBSVET मान्यताप्राप्त १ वर्षाचा सोलर व ईव्ही कोर्स. पीएम सूर्यघर योजना, सोलर पॅनेल इन्स्टॉलेशन, नेट मीटरिंग व ईव्ही चार्जिंग स्टेशन उभारणी.',
+    duration: '1 Year',
+    durationMr: '१ वर्ष कालावधी',
+    timing: '10:00 AM - 2:00 PM',
+    timingMr: 'सकाळी १०:०० ते दुपारी २:००',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
+    admissionsOpen: true,
+    image: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&auto=format&fit=crop&q=80',
+    eligibility: '10th / 12th / ITI Pass',
+    eligibilityMr: '१०वी किंवा १२वी किंवा आयटीआय उत्तीर्ण',
+    subjects: [
+      { name: 'Solar PV Systems & Sizing', code: '30520111' },
+      { name: 'Inverters, Battery Storage & Net Metering', code: '30520112' },
+      { name: 'EV Charging Stations & Electrical Safety', code: '30520113' },
+      { name: 'Rooftop Solar Installation Practical', code: '30520121' }
+    ],
+    syllabus: [
+      'Solar PV Systems & Sizing [Code: 30520111]',
+      'Inverters, Battery Storage & Net Metering [Code: 30520112]',
+      'EV Charging Stations & Electrical Safety [Code: 30520113]',
+      'Rooftop Solar Installation Practical [Code: 30520121]'
+    ],
+    syllabusMr: [
+      'सौर फोटोव्होल्टेईक प्रणाली व डिझायनिंग [कोड: 30520111]',
+      'इन्व्हर्टर, बॅटरी स्टोरेज व नेट मीटरिंग [कोड: 30520112]',
+      'ईव्ही चार्जिंग स्टेशन व सुरक्षा [कोड: 30520113]',
+      'रूफटॉप सोलर इन्स्टॉलेशन प्रॅक्टिकल [कोड: 30520121]'
+    ],
+    careerOpportunities: [
+      'Certified Solar Rooftop EPC Contractor',
+      'PM Surya Ghar Scheme Authorized Installer',
+      'EV Station Maintenance Specialist'
+    ],
+    careerOpportunitiesMr: [
+      'सौर ऊर्जा रूफटॉप अधिकृत कंत्राटदार',
+      'पीएम सूर्यघर योजना मान्यताप्राप्त इन्स्टॉलर',
+      'ईव्ही चार्जिंग स्टेशन मेंटेनन्स तंत्रज्ञ'
+    ],
+    certification: 'MSBSVET Govt. Recognized Certified',
+    batchCapacity: 30,
+    enrolled: 23
+  },
+  {
+    id: 'ac-refrigeration',
+    name: 'AC & REFRIGERATION MECHANIC – 1 YEAR',
+    nameMr: 'एसी व रेफ्रिजरेशन मेकॅनिक – १ वर्ष कालावधी',
+    code: '303201',
+    category: 'HVAC & Cooling',
+    categoryMr: 'एसी व रेफ्रिजरेशन',
+    description: 'Split & Inverter AC installation, gas charging, refrigerator troubleshooting & industrial HVAC.',
+    descriptionMr: 'एसी व रेफ्रिजरेशन मेकॅनिक – १ वर्ष कालावधी',
+    fullDescription: 'MSBSVET Course Code 303201. 1-Year hands-on trade training on Inverter AC PCB testing, copper pipe brazing, compressor overhauling, leak testing, and cold storage refrigeration.',
+    fullDescriptionMr: 'महाराष्ट्र शासन MSBSVET मान्यताप्राप्त १ वर्षाचा एसी व रेफ्रिजरेटर कोर्स. इन्व्हर्टर एसी, गॅस चार्जिंग, ब्रेझिंग व व्यावसायिक कुलिंग सिस्टीम्स.',
+    duration: '1 Year',
+    durationMr: '१ वर्ष कालावधी',
+    timing: '10:00 AM - 2:00 PM',
+    timingMr: 'सकाळी १०:०० ते दुपारी २:००',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
+    admissionsOpen: true,
+    image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800&auto=format&fit=crop&q=80',
+    eligibility: '10th Standard Pass',
+    eligibilityMr: '१०वी उत्तीर्ण',
+    subjects: [
+      { name: 'Refrigeration Cycle & Thermodynamics', code: '30320111' },
+      { name: 'Split & Inverter AC Systems', code: '30320112' },
+      { name: 'Gas Charging & Leak Testing', code: '30320113' },
+      { name: 'HVAC Workshop Practical & Brazing', code: '30320121' }
+    ],
+    syllabus: [
+      'Refrigeration Cycle & Thermodynamics [Code: 30320111]',
+      'Split & Inverter AC Systems [Code: 30320112]',
+      'Gas Charging, Recovery & Leak Testing [Code: 30320113]',
+      'HVAC Workshop Practical & Brazing [Code: 30320121]'
+    ],
+    syllabusMr: [
+      'रेफ्रिजरेशन सायकल व थर्माडायनामिक्स [कोड: 30320111]',
+      'स्प्लिट व इन्व्हर्टर एसी कार्यप्रणाली [कोड: 30320112]',
+      'गॅस चार्जिंग, रिकव्हरी व लिक टेस्टिंग [कोड: 30320113]',
+      'एचव्हीएसी वर्कशॉप प्रॅक्टिकल व कॉपर ब्रेझिंग [कोड: 30320121]'
+    ],
+    careerOpportunities: [
+      'Authorized HVAC & AC Service Franchise Owner',
+      'Commercial Cold Storage Maintenance Technician',
+      'Corporate AMC Cooling Specialist'
+    ],
+    careerOpportunitiesMr: [
+      'अधिकृत एसी सर्व्हिस सेंटर चालक',
+      'कमर्शियल कोल्ड स्टोरेज मेंटेनन्स तंत्रज्ञ',
+      'कॉर्पोरेट कुलिंग व एसी एएमसी तंत्रज्ञ'
+    ],
+    certification: 'MSBSVET Govt. Recognized & ITI Equivalent',
+    batchCapacity: 25,
+    enrolled: 21
   }
 ];
 

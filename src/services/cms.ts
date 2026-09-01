@@ -300,10 +300,13 @@ const API_BASE =
 
 export async function fetchSiteContent(): Promise<SiteContent> {
   try {
-    const res = await fetch(`${API_BASE}/content`, { signal: AbortSignal.timeout(2500) });
+    const res = await fetch(`${API_BASE}/content`, {
+      headers: { 'Cache-Control': 'no-cache' },
+      signal: AbortSignal.timeout(10000),
+    });
     if (res.ok) {
       const data = await res.json();
-      if (data && data.hero) {
+      if (data && (data.hero || data.courses)) {
         const merged: SiteContent = {
           ...INITIAL_SITE_CONTENT,
           ...data,
@@ -311,20 +314,26 @@ export async function fetchSiteContent(): Promise<SiteContent> {
           contact: { ...INITIAL_SITE_CONTENT.contact, ...(data.contact || {}) },
           about: { ...INITIAL_SITE_CONTENT.about, ...(data.about || {}) },
           awards: data.awards || INITIAL_AWARDS_CONTENT,
-          courses: data.courses && data.courses.length ? data.courses : INITIAL_SITE_CONTENT.courses,
-          gallery: data.gallery && data.gallery.length ? data.gallery : INITIAL_SITE_CONTENT.gallery,
+          courses: data.courses && Array.isArray(data.courses) && data.courses.length > 0
+            ? data.courses
+            : INITIAL_SITE_CONTENT.courses,
+          gallery: data.gallery && Array.isArray(data.gallery) && data.gallery.length > 0
+            ? data.gallery
+            : INITIAL_SITE_CONTENT.gallery,
         };
         localStorage.setItem('ati_site_content', JSON.stringify(merged));
         return merged;
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.warn('Remote site_content fetch failed, falling back to cached content:', e);
+  }
 
   const stored = localStorage.getItem('ati_site_content');
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
-      if (parsed && parsed.courses && parsed.courses.length >= 4) {
+      if (parsed && (parsed.hero || parsed.courses)) {
         const merged: SiteContent = {
           ...INITIAL_SITE_CONTENT,
           ...parsed,
@@ -332,8 +341,12 @@ export async function fetchSiteContent(): Promise<SiteContent> {
           contact: { ...INITIAL_SITE_CONTENT.contact, ...(parsed.contact || {}) },
           about: { ...INITIAL_SITE_CONTENT.about, ...(parsed.about || {}) },
           awards: parsed.awards || INITIAL_AWARDS_CONTENT,
-          courses: parsed.courses && parsed.courses.length ? parsed.courses : INITIAL_SITE_CONTENT.courses,
-          gallery: parsed.gallery && parsed.gallery.length ? parsed.gallery : INITIAL_SITE_CONTENT.gallery,
+          courses: parsed.courses && Array.isArray(parsed.courses) && parsed.courses.length >= 4
+            ? parsed.courses
+            : INITIAL_SITE_CONTENT.courses,
+          gallery: parsed.gallery && Array.isArray(parsed.gallery) && parsed.gallery.length > 0
+            ? parsed.gallery
+            : INITIAL_SITE_CONTENT.gallery,
         };
         return merged;
       }
@@ -345,17 +358,24 @@ export async function fetchSiteContent(): Promise<SiteContent> {
 }
 
 export async function saveSiteContent(content: SiteContent): Promise<SiteContent> {
+  // Always update local cache and broadcast immediately for responsive UI
+  localStorage.setItem('ati_site_content', JSON.stringify(content));
+  window.dispatchEvent(new CustomEvent('ati_cms_updated', { detail: content }));
+
   try {
-    await fetch(`${API_BASE}/content`, {
+    const res = await fetch(`${API_BASE}/content`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(content),
-      signal: AbortSignal.timeout(3000),
+      signal: AbortSignal.timeout(15000),
     });
-  } catch (e) {}
+    if (!res.ok) {
+      console.warn('Cloudflare D1 save returned status:', res.status);
+    }
+  } catch (e) {
+    console.warn('Cloudflare D1 save failed, cached locally:', e);
+  }
 
-  localStorage.setItem('ati_site_content', JSON.stringify(content));
-  window.dispatchEvent(new CustomEvent('ati_cms_updated', { detail: content }));
   return content;
 }
 
@@ -363,9 +383,11 @@ export async function resetSiteContent(): Promise<SiteContent> {
   try {
     await fetch(`${API_BASE}/content/reset`, {
       method: 'POST',
-      signal: AbortSignal.timeout(2000),
+      signal: AbortSignal.timeout(8000),
     });
-  } catch (e) {}
+  } catch (e) {
+    console.warn('Remote reset failed:', e);
+  }
 
   localStorage.setItem('ati_site_content', JSON.stringify(INITIAL_SITE_CONTENT));
   window.dispatchEvent(new CustomEvent('ati_cms_updated', { detail: INITIAL_SITE_CONTENT }));
