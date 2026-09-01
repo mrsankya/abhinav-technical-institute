@@ -131,4 +131,9 @@
     - Super Admin can now add, edit, change photos, reorder, delete, and toggle admissions for all vocational trades with instant global persistence.
 14. **Footer Developer Attribution & Portfolio Link (`src/components/Footer.tsx`):**
     - Added "Made by SS Projects" credit in the footer bottom bar with direct link to portfolio [`https://sanket-portfolio-211.pages.dev/`](https://sanket-portfolio-211.pages.dev/).
+15. **Interactive Course Cards & Enriched Course Details Modal (`src/components/UpcomingBatches.tsx`, `src/components/Modals.tsx`):**
+    - Entire course cards across the homepage carousel are now fully interactive with smooth hover lift (`hover:-translate-y-1 hover:shadow-2xl`) and pointer cursor.
+    - Clicking anywhere on a course card (photo, title, body, or "View Full Details") immediately opens the full-screen Course Details Modal.
+    - Modal now renders bilingual syllabus modules, subjects with MSBSVET codes, career and job opportunities, and dual actions (Direct WhatsApp Inquiry and Online Admission Application).
+
 
