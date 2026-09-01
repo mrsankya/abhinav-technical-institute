@@ -258,10 +258,24 @@ export const Footer: React.FC<FooterProps> = ({
       {/* Bottom Bar */}
       <div className="border-t border-white/10 py-6 bg-[#001c45]">
         <div className="max-w-[1200px] mx-auto px-4 md:px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-[11px] text-white/60">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[11px] text-white/70">
             <p>{t('footer.copyright')}</p>
-            <span className="hidden md:block">|</span>
-            <p>{t('footer.devBy')}</p>
+            <span className="hidden sm:block text-white/30">|</span>
+            <p className="flex items-center gap-1">
+              <span>Made by</span>
+              <a
+                href="https://sanket-portfolio-211.pages.dev/"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#FFD21F] font-extrabold hover:underline inline-flex items-center gap-1 transition-all hover:text-white group"
+                title="View SS Projects Portfolio"
+              >
+                <span>SS Projects</span>
+                <span className="material-symbols-outlined text-[13px] group-hover:translate-x-0.5 transition-transform">
+                  open_in_new
+                </span>
+              </a>
+            </p>
           </div>
           <div className="text-[#FFD21F] font-bold text-xs tracking-widest uppercase font-['Manrope']">
             Learn • Practice • Grow
