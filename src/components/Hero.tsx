@@ -70,10 +70,10 @@ export const Hero: React.FC<HeroProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
                 <div className="absolute bottom-4 left-4 right-4 text-white">
                   <span className="inline-block bg-[#FFD21F] text-[#002760] font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full mb-1">
-                    Live Workshop
+                    {language === 'mr' ? img.categoryMr || img.category || 'Live Workshop' : img.category || 'Live Workshop'}
                   </span>
                   <p className="font-['Manrope'] font-bold text-sm sm:text-base drop-shadow-md">
-                    {language === 'mr' ? img.titleMr : img.title}
+                    {language === 'mr' ? img.titleMr || img.title : img.title}
                   </p>
                 </div>
               </div>
@@ -98,7 +98,7 @@ export const Hero: React.FC<HeroProps> = ({
 
           {/* Carousel Dots */}
           <div className="flex justify-center gap-1.5 mt-4">
-            {HERO_CAROUSEL_IMAGES.map((_, idx) => (
+            {slides.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => {

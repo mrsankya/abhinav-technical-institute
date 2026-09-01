@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
 import type { Course, Announcement, StudentCertificate } from '../types';
-import { COURSES } from '../data/instituteData';
+import { COURSES, HERO_CAROUSEL_IMAGES } from '../data/instituteData';
 import { InstituteLogo } from './InstituteLogo';
 import { getTranslation, type Language } from '../translations/translations';
 import {
@@ -249,6 +249,132 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       const def = await resetSiteContent();
       setSiteContent(def);
       alert('Website content successfully reset to defaults!');
+    }
+  };
+
+  // Hero Carousel Slider handlers
+  const handleUploadHeroSlideImage = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await compressAndReadFile(file, 1600, 1000, 0.85);
+      setSiteContent((prev) => {
+        const heroSlides = [...(prev.hero.carouselImages && prev.hero.carouselImages.length > 0 ? prev.hero.carouselImages : HERO_CAROUSEL_IMAGES)];
+        heroSlides[index] = { ...heroSlides[index], src: dataUrl };
+        return {
+          ...prev,
+          hero: {
+            ...prev.hero,
+            carouselImages: heroSlides,
+          },
+        };
+      });
+    } catch (err) {
+      alert('Failed to read image file');
+    }
+  };
+
+  const handleUploadNewHeroSlide = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await compressAndReadFile(file, 1600, 1000, 0.85);
+      const newSlide = {
+        src: dataUrl,
+        alt: file.name.replace(/\.[^/.]+$/, ''),
+        title: 'ATI Practical Training Workshop',
+        titleMr: 'कार्यशाळा प्रात्यक्षिक प्रशिक्षण',
+        category: 'Live Workshop',
+        categoryMr: 'प्रात्यक्षिक कार्यशाळा',
+        desc: 'Practical workshop hands-on training with modern equipment at Abhinav Technical Institute Jalgaon.',
+        descMr: 'अभिनव टेक्निकल इन्स्टिट्यूट जळगाव — अत्याधुनिक उपकरणांवर थेट प्रॅक्टिकल प्रशिक्षण.',
+      };
+      setSiteContent((prev) => {
+        const heroSlides = [...(prev.hero.carouselImages && prev.hero.carouselImages.length > 0 ? prev.hero.carouselImages : HERO_CAROUSEL_IMAGES)];
+        return {
+          ...prev,
+          hero: {
+            ...prev.hero,
+            carouselImages: [newSlide, ...heroSlides],
+          },
+        };
+      });
+    } catch (err) {
+      alert('Failed to read image file');
+    }
+  };
+
+  const handleAddHeroSlide = () => {
+    const newSlide = {
+      src: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&auto=format&fit=crop&q=80',
+      alt: 'ATI Practical Workshop Training',
+      title: 'Workshop Practical Training Lab',
+      titleMr: 'कार्यशाळा प्रात्यक्षिक लॅब',
+      category: 'Live Workshop',
+      categoryMr: 'प्रात्यक्षिक कार्यशाळा',
+      desc: 'Hands-on practical training with modern equipment and safety tools.',
+      descMr: 'सुरक्षित उपकरणांसह आधुनिक वायरिंग आणि प्रॅक्टिकल कार्यशाळा.',
+    };
+    setSiteContent((prev) => {
+      const heroSlides = [...(prev.hero.carouselImages && prev.hero.carouselImages.length > 0 ? prev.hero.carouselImages : HERO_CAROUSEL_IMAGES)];
+      return {
+        ...prev,
+        hero: {
+          ...prev.hero,
+          carouselImages: [...heroSlides, newSlide],
+        },
+      };
+    });
+  };
+
+  const handleDeleteHeroSlide = (index: number) => {
+    const heroSlides = siteContent.hero.carouselImages && siteContent.hero.carouselImages.length > 0 ? siteContent.hero.carouselImages : HERO_CAROUSEL_IMAGES;
+    if (heroSlides.length <= 1) {
+      alert('You must keep at least 1 hero banner slide.');
+      return;
+    }
+    if (window.confirm(`Are you sure you want to delete Hero Slide #${index + 1}?`)) {
+      setSiteContent((prev) => {
+        const currentSlides = [...(prev.hero.carouselImages && prev.hero.carouselImages.length > 0 ? prev.hero.carouselImages : HERO_CAROUSEL_IMAGES)];
+        currentSlides.splice(index, 1);
+        return {
+          ...prev,
+          hero: {
+            ...prev.hero,
+            carouselImages: currentSlides,
+          },
+        };
+      });
+    }
+  };
+
+  const handleMoveHeroSlide = (index: number, direction: 'up' | 'down') => {
+    setSiteContent((prev) => {
+      const currentSlides = [...(prev.hero.carouselImages && prev.hero.carouselImages.length > 0 ? prev.hero.carouselImages : HERO_CAROUSEL_IMAGES)];
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= currentSlides.length) return prev;
+      const temp = currentSlides[index];
+      currentSlides[index] = currentSlides[targetIndex];
+      currentSlides[targetIndex] = temp;
+      return {
+        ...prev,
+        hero: {
+          ...prev.hero,
+          carouselImages: currentSlides,
+        },
+      };
+    });
+  };
+
+  const handleResetHeroSlides = () => {
+    if (window.confirm('Reset Hero Image Slider to the default 5 institute workshop slides?')) {
+      setSiteContent((prev) => ({
+        ...prev,
+        hero: {
+          ...prev.hero,
+          carouselImages: HERO_CAROUSEL_IMAGES,
+        },
+      }));
     }
   };
 
@@ -1290,7 +1416,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                   {/* CMS Sub Navigation */}
                   <div className="flex border-b border-[#E6ECF3] gap-2 pb-2 overflow-x-auto no-scrollbar">
                     {[
-                      { id: 'hero', label: 'Hero & Headlines', icon: 'campaign' },
+                      {
+                        id: 'hero',
+                        label: `Hero Banner & Slider (${(siteContent.hero.carouselImages && siteContent.hero.carouselImages.length > 0 ? siteContent.hero.carouselImages : HERO_CAROUSEL_IMAGES).length})`,
+                        icon: 'view_carousel',
+                      },
                       { id: 'about', label: 'About & Director Message', icon: 'person' },
                       { id: 'awards', label: `🏆 Awards & Media (${(siteContent.awards?.gallery || []).length})`, icon: 'workspace_premium' },
                       { id: 'courses', label: 'Courses & Fees', icon: 'school' },
@@ -1312,97 +1442,382 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     ))}
                   </div>
 
-                  {/* 1. HERO SECTION EDITOR */}
+                  {/* 1. HERO SECTION & IMAGE SLIDER EDITOR */}
                   {cmsSubTab === 'hero' && (
-                    <div className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-3xl p-5 sm:p-6 space-y-4">
-                      <h5 className="font-['Manrope'] text-base font-bold text-[#002760]">
-                        Hero Banner Headlines & Description
-                      </h5>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                        <div className="space-y-1">
-                          <label className="font-bold text-[#172033]/80 block">
-                            Top Badge / Tagline (Marathi)
-                          </label>
-                          <input
-                            type="text"
-                            value={siteContent.hero.badgeTextMr}
-                            onChange={(e) =>
-                              setSiteContent({
-                                ...siteContent,
-                                hero: { ...siteContent.hero, badgeTextMr: e.target.value },
-                              })
-                            }
-                            className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-bold"
-                          />
+                    <div className="space-y-6">
+                      {/* Section A: Headlines & Taglines */}
+                      <div className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-3xl p-5 sm:p-6 space-y-4">
+                        <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-3">
+                          <span className="material-symbols-outlined text-xl text-[#002760]">campaign</span>
+                          <h5 className="font-['Manrope'] text-base font-bold text-[#002760]">
+                            Hero Banner Headlines & Description (मुख्य मथळा व माहिती)
+                          </h5>
                         </div>
 
-                        <div className="space-y-1">
-                          <label className="font-bold text-[#172033]/80 block">
-                            Top Badge / Tagline (English)
-                          </label>
-                          <input
-                            type="text"
-                            value={siteContent.hero.badgeText}
-                            onChange={(e) =>
-                              setSiteContent({
-                                ...siteContent,
-                                hero: { ...siteContent.hero, badgeText: e.target.value },
-                              })
-                            }
-                            className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-bold"
-                          />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                          <div className="space-y-1">
+                            <label className="font-bold text-[#172033]/80 block">
+                              Top Badge / Tagline (Marathi)
+                            </label>
+                            <input
+                              type="text"
+                              value={siteContent.hero.badgeTextMr}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  hero: { ...siteContent.hero, badgeTextMr: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-bold"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="font-bold text-[#172033]/80 block">
+                              Top Badge / Tagline (English)
+                            </label>
+                            <input
+                              type="text"
+                              value={siteContent.hero.badgeText}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  hero: { ...siteContent.hero, badgeText: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-bold"
+                            />
+                          </div>
+
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="font-bold text-[#172033]/80 block">
+                              Main Heading (Marathi)
+                            </label>
+                            <input
+                              type="text"
+                              value={siteContent.hero.headingMr}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  hero: { ...siteContent.hero, headingMr: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-black text-sm"
+                            />
+                          </div>
+
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="font-bold text-[#172033]/80 block">
+                              Main Heading (English)
+                            </label>
+                            <input
+                              type="text"
+                              value={siteContent.hero.heading}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  hero: { ...siteContent.hero, heading: e.target.value },
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-black text-sm"
+                            />
+                          </div>
+
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="font-bold text-[#172033]/80 block">
+                              Sub-heading / Description (Marathi)
+                            </label>
+                            <textarea
+                              value={siteContent.hero.subheadingMr}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  hero: { ...siteContent.hero, subheadingMr: e.target.value },
+                                })
+                              }
+                              rows={2}
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl"
+                            />
+                          </div>
+
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="font-bold text-[#172033]/80 block">
+                              Sub-heading / Description (English)
+                            </label>
+                            <textarea
+                              value={siteContent.hero.subheading}
+                              onChange={(e) =>
+                                setSiteContent({
+                                  ...siteContent,
+                                  hero: { ...siteContent.hero, subheading: e.target.value },
+                                })
+                              }
+                              rows={2}
+                              className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Section B: Hero Banner Image Carousel / Slider Manager */}
+                      <div className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-3xl p-5 sm:p-6 space-y-5">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-[#E2E8F0] pb-4">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="material-symbols-outlined text-2xl text-[#1557C0]">view_carousel</span>
+                              <h5 className="font-['Manrope'] text-base sm:text-lg font-black text-[#002760]">
+                                Hero Banner Image Slider (मुख्य बॅनर स्लायडर)
+                              </h5>
+                              <span className="text-[11px] font-black bg-[#FFD21F] text-[#002760] px-2.5 py-0.5 rounded-full shadow-2xs">
+                                {(siteContent.hero.carouselImages && siteContent.hero.carouselImages.length > 0
+                                  ? siteContent.hero.carouselImages
+                                  : HERO_CAROUSEL_IMAGES
+                                ).length} Slides Active
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-600 mt-1">
+                              Upload, edit captions, re-order, or delete slides shown in the rotating banner at the top of the homepage.
+                            </p>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={handleResetHeroSlides}
+                              className="px-3 py-2 bg-white hover:bg-gray-100 text-gray-700 text-xs font-bold rounded-xl border border-gray-300 transition-all cursor-pointer shadow-2xs"
+                              title="Reset to default 5 institute workshop slides"
+                            >
+                              Reset Default Slides
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={handleAddHeroSlide}
+                              className="px-3.5 py-2 bg-[#002760] hover:bg-[#1557C0] text-white text-xs font-bold rounded-xl shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
+                            >
+                              <span className="material-symbols-outlined text-base">add</span>
+                              <span>Add Slide</span>
+                            </button>
+
+                            <label className="px-4 py-2 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] text-xs font-black rounded-xl shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5">
+                              <span className="material-symbols-outlined text-base font-bold">upload</span>
+                              <span>📁 Upload Photo (PC / Mobile)</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleUploadNewHeroSlide}
+                              />
+                            </label>
+                          </div>
                         </div>
 
-                        <div className="space-y-1 md:col-span-2">
-                          <label className="font-bold text-[#172033]/80 block">
-                            Main Heading (Marathi)
-                          </label>
-                          <input
-                            type="text"
-                            value={siteContent.hero.headingMr}
-                            onChange={(e) =>
-                              setSiteContent({
-                                ...siteContent,
-                                hero: { ...siteContent.hero, headingMr: e.target.value },
-                              })
-                            }
-                            className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-black text-sm"
-                          />
+                        {/* Slide Cards List */}
+                        <div className="space-y-4">
+                          {(siteContent.hero.carouselImages && siteContent.hero.carouselImages.length > 0
+                            ? siteContent.hero.carouselImages
+                            : HERO_CAROUSEL_IMAGES
+                          ).map((slide, idx, arr) => (
+                            <div
+                              key={idx}
+                              className="bg-white border-2 border-[#E2E8F0] hover:border-[#1557C0]/40 rounded-2xl p-4 sm:p-5 shadow-xs transition-all flex flex-col md:flex-row gap-5 items-start"
+                            >
+                              {/* Left Preview & Image Uploader */}
+                              <div className="w-full md:w-[280px] shrink-0 space-y-2.5">
+                                <div className="relative h-[155px] rounded-xl overflow-hidden shadow-md bg-gray-900 border border-gray-200 group">
+                                  <img
+                                    src={slide.src}
+                                    alt={slide.alt || slide.title}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      (e.target as any).src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
+                                    }}
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none" />
+                                  <div className="absolute top-2 left-2 flex items-center gap-1.5">
+                                    <span className="bg-[#002760] text-white font-mono font-black text-[10px] px-2 py-0.5 rounded-md shadow-xs">
+                                      Slide #{idx + 1}
+                                    </span>
+                                  </div>
+                                  <div className="absolute bottom-2 left-2 right-2 text-white pointer-events-none">
+                                    <span className="inline-block bg-[#FFD21F] text-[#002760] font-bold text-[9px] uppercase px-2 py-0.5 rounded-full mb-0.5">
+                                      {slide.category || 'Live Workshop'}
+                                    </span>
+                                    <p className="font-bold text-xs truncate drop-shadow-sm">
+                                      {slide.title || 'Slide Title'}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                  <label className="flex-1 text-center py-2 bg-[#002760] hover:bg-[#1557C0] text-white text-[11px] font-bold rounded-xl shadow-2xs cursor-pointer transition-all flex items-center justify-center gap-1">
+                                    <span className="material-symbols-outlined text-sm">photo_camera</span>
+                                    <span>Change Photo</span>
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={(e) => handleUploadHeroSlideImage(idx, e)}
+                                    />
+                                  </label>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMoveHeroSlide(idx, 'up')}
+                                    disabled={idx === 0}
+                                    className="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-[#002760] transition-colors cursor-pointer"
+                                    title="Move Up"
+                                  >
+                                    <span className="material-symbols-outlined text-sm font-bold">arrow_upward</span>
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMoveHeroSlide(idx, 'down')}
+                                    disabled={idx === arr.length - 1}
+                                    className="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-[#002760] transition-colors cursor-pointer"
+                                    title="Move Down"
+                                  >
+                                    <span className="material-symbols-outlined text-sm font-bold">arrow_downward</span>
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteHeroSlide(idx)}
+                                    className="w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-colors cursor-pointer"
+                                    title="Delete Slide"
+                                  >
+                                    <span className="material-symbols-outlined text-sm">delete</span>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Right Fields & Multilingual Inputs */}
+                              <div className="flex-1 w-full space-y-3 text-xs">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="font-bold text-[#172033]/80 block mb-1">
+                                      Slide Tag / Badge (मराठीत)
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={slide.categoryMr || ''}
+                                      onChange={(e) => {
+                                        const updated = [...(siteContent.hero.carouselImages || HERO_CAROUSEL_IMAGES)];
+                                        updated[idx] = { ...updated[idx], categoryMr: e.target.value };
+                                        setSiteContent({
+                                          ...siteContent,
+                                          hero: { ...siteContent.hero, carouselImages: updated },
+                                        });
+                                      }}
+                                      placeholder="उदा: प्रात्यक्षिक कार्यशाळा / संगणक लॅब"
+                                      className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-bold"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="font-bold text-[#172033]/80 block mb-1">
+                                      Slide Tag / Badge (English)
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={slide.category || ''}
+                                      onChange={(e) => {
+                                        const updated = [...(siteContent.hero.carouselImages || HERO_CAROUSEL_IMAGES)];
+                                        updated[idx] = { ...updated[idx], category: e.target.value };
+                                        setSiteContent({
+                                          ...siteContent,
+                                          hero: { ...siteContent.hero, carouselImages: updated },
+                                        });
+                                      }}
+                                      placeholder="e.g. Live Workshop / Electrical Lab"
+                                      className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-bold"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="font-bold text-[#172033]/80 block mb-1">
+                                      Slide Title (मराठीत शीर्षक) *
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={slide.titleMr || ''}
+                                      onChange={(e) => {
+                                        const updated = [...(siteContent.hero.carouselImages || HERO_CAROUSEL_IMAGES)];
+                                        updated[idx] = { ...updated[idx], titleMr: e.target.value };
+                                        setSiteContent({
+                                          ...siteContent,
+                                          hero: { ...siteContent.hero, carouselImages: updated },
+                                        });
+                                      }}
+                                      placeholder="उदा: संगणक प्रशिक्षण व प्रॅक्टिकल लॅब"
+                                      className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-bold text-xs"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="font-bold text-[#172033]/80 block mb-1">
+                                      Slide Title (English) *
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={slide.title || ''}
+                                      onChange={(e) => {
+                                        const updated = [...(siteContent.hero.carouselImages || HERO_CAROUSEL_IMAGES)];
+                                        updated[idx] = { ...updated[idx], title: e.target.value };
+                                        setSiteContent({
+                                          ...siteContent,
+                                          hero: { ...siteContent.hero, carouselImages: updated },
+                                        });
+                                      }}
+                                      placeholder="e.g. Computer Training & IT Practical Lab"
+                                      className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-bold text-xs"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Direct Image URL / Path
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={slide.src || ''}
+                                    onChange={(e) => {
+                                      const updated = [...(siteContent.hero.carouselImages || HERO_CAROUSEL_IMAGES)];
+                                      updated[idx] = { ...updated[idx], src: e.target.value };
+                                      setSiteContent({
+                                        ...siteContent,
+                                        hero: { ...siteContent.hero, carouselImages: updated },
+                                      });
+                                    }}
+                                    placeholder="https://... or /assets/..."
+                                    className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-mono text-[11px]"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
 
-                        <div className="space-y-1 md:col-span-2">
-                          <label className="font-bold text-[#172033]/80 block">
-                            Main Heading (English)
-                          </label>
-                          <input
-                            type="text"
-                            value={siteContent.hero.heading}
-                            onChange={(e) =>
-                              setSiteContent({
-                                ...siteContent,
-                                hero: { ...siteContent.hero, heading: e.target.value },
-                              })
-                            }
-                            className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl font-black text-sm"
-                          />
-                        </div>
-
-                        <div className="space-y-1 md:col-span-2">
-                          <label className="font-bold text-[#172033]/80 block">
-                            Sub-heading / Description (Marathi)
-                          </label>
-                          <textarea
-                            value={siteContent.hero.subheadingMr}
-                            onChange={(e) =>
-                              setSiteContent({
-                                ...siteContent,
-                                hero: { ...siteContent.hero, subheadingMr: e.target.value },
-                              })
-                            }
-                            rows={3}
-                            className="w-full px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl"
-                          />
+                        {/* Save Changes CTA Footer */}
+                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-[#1557C0] text-xl">info</span>
+                            <span className="text-xs text-[#002760] font-semibold">
+                              All slide additions, edits, and re-orders will be updated across the website when saved.
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleSaveCMS}
+                            className="px-5 py-2.5 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] font-black text-xs rounded-xl shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5 shrink-0"
+                          >
+                            <span className="material-symbols-outlined text-base">save</span>
+                            <span>Save Hero Slider Changes</span>
+                          </button>
                         </div>
                       </div>
                     </div>

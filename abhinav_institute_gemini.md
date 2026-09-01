@@ -112,3 +112,7 @@
    - Includes 5 full HD ceremony photos and full CMS editor in the Admin Panel (`🏆 Awards & Media`).
 8. **Mobile Navigation 3-Line Menu (`src/components/Header.tsx`):** High-contrast dark navy & gold 3-line hamburger button using responsive SVG for guaranteed visibility across all mobile phones and tablets.
 9. **Super Admin & Database Tables Verified:** All 7 backend tables (`certs.json`, `leads.json`, `gr.json`, `content.json`, `announcements.json`, `reviews.json`, `admissions.json`) validated, seeded, and synchronized with Super Admin Dashboard (`#super-admin`, Key: `9822725265`).
+10. **Hero Banner Image Slider CMS & Dynamic Management (`src/components/Hero.tsx`, `src/components/AdminPanelModal.tsx`, `src/services/cms.ts`):**
+    - Built comprehensive Hero Banner Image Slider CMS manager inside the Admin Panel (`#admin` -> `🎨 Site Content & Images (CMS)` -> `Hero Banner & Slider`).
+    - Added ability to upload new photos directly from computer/mobile with automatic compression (`compressAndReadFile`), enter custom image URLs, edit bilingual titles (Marathi/English), edit category tags ("Live Workshop", "संगणक व आयटी", "इलेक्ट्रिकल", etc.), re-order slides with Move Up/Down controls, delete slides, and reset to institute defaults.
+    - Fixed slider dot navigation and category badge rendering in [`Hero.tsx`](file:///C:/Users/sanke/abhinav%20institute/src/components/Hero.tsx) so live updates in the Admin Panel reflect instantly on the homepage.
