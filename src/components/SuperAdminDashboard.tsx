@@ -4,13 +4,23 @@ import {
   Settings, Megaphone, Database, CheckCircle2, XCircle,
   Download, Upload, Trash2, Phone, Search, RefreshCw,
   ExternalLink, FileText, Sparkles, AlertTriangle, KeyRound,
-  BarChart3, ArrowLeft, Plus, Eye, Edit3, MessageSquare
+  BarChart3, ArrowLeft, Plus, Eye, Edit3, MessageSquare,
+  ArrowUp, ArrowDown, Camera, School
 } from 'lucide-react';
 import CertificateManager from './CertificateManager';
 import SyllabusAdmin from './SyllabusAdmin';
-import type { Inquiry, Certificate, Syllabus } from '../types';
+import type { Inquiry, Certificate, Syllabus, Course } from '../types';
 import { INITIAL_CERTIFICATES } from '../data/initialCertificates';
 import { INITIAL_SYLLABUS_LIST } from '../data/initialSyllabus';
+import { COURSES } from '../data/instituteData';
+import {
+  fetchSiteContent,
+  saveSiteContent,
+  INITIAL_SITE_CONTENT,
+  type SiteContent,
+} from '../services/cms';
+import { saveAdmissions } from '../services/api';
+import { compressAndReadFile } from '../utils/imageUtils';
 
 interface SuperAdminDashboardProps {
   onBackToHome: () => void;
@@ -25,11 +35,62 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onBackToHome 
   const [activeTab, setActiveTab] = useState<TabType>('overview');
 
   // Stats & State
+  const [siteContent, setSiteContent] = useState<SiteContent>(INITIAL_SITE_CONTENT);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [syllabi, setSyllabi] = useState<Syllabus[]>([]);
   const [admissions, setAdmissions] = useState<Record<string, boolean>>({});
   const [notice, setNotice] = useState('');
+
+  // Course Management State
+  const [courseSearch, setCourseSearch] = useState('');
+  const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+  const [courseModalMode, setCourseModalMode] = useState<'add' | 'edit'>('add');
+  const [courseForm, setCourseForm] = useState<Course>({
+    id: '',
+    name: '',
+    nameMr: '',
+    code: '',
+    category: 'Electrical & Power Trades',
+    categoryMr: 'इलेक्ट्रिकल व पॉवर ट्रेड्स',
+    description: '',
+    descriptionMr: '',
+    fullDescription: '',
+    fullDescriptionMr: '',
+    duration: '1 Year',
+    durationMr: '१ वर्ष कालावधी',
+    timing: '10:00 AM - 2:00 PM',
+    timingMr: 'सकाळी १०:०० ते दुपारी २:००',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
+    admissionsOpen: true,
+    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80',
+    eligibility: '10th / 12th / ITI / Graduate',
+    eligibilityMr: '१० वी किंवा १२ वी किंवा पदवीधर',
+    syllabus: [
+      'Workshop Technology & Electrical Safety',
+      'Practical Circuit Connections & Measurements',
+      'Industrial Machinery & Maintenance',
+    ],
+    syllabusMr: [
+      'कार्यशाळा तंत्रज्ञान व इलेक्ट्रिकल सुरक्षा',
+      'प्रत्यक्ष सर्किट जोडणी व मोजमापे',
+      'औद्योगिक मशिनरी व मेंटेनन्स',
+    ],
+    careerOpportunities: [
+      'Govt & PWD Registered Electrical Contractor',
+      'Industrial Maintenance Wireman / Technician',
+      'Direct 2nd Year Entry to Diploma Engineering',
+    ],
+    careerOpportunitiesMr: [
+      'शासकीय व पीडब्ल्यूडी अधिकृत इलेक्ट्रिकल कंत्राटदार',
+      'औद्योगिक मेंटेनन्स वायरमन / तंत्रज्ञ',
+      'थेट द्वितीय वर्ष डिप्लोमा प्रवेश',
+    ],
+    certification: 'MSBSVET Govt. Recognized & ITI Equivalent',
+    batchCapacity: 30,
+    enrolled: 0,
+  });
 
   // Leads Filter & Search
   const [leadSearch, setLeadSearch] = useState('');
@@ -50,6 +111,10 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onBackToHome 
   // Load all system data
   const refreshAllData = () => {
     try {
+      fetchSiteContent().then((content) => {
+        if (content) setSiteContent(content);
+      });
+
       const inqStored = localStorage.getItem('ati_leads') || localStorage.getItem('abhinav_inquiries');
       const inq = inqStored ? JSON.parse(inqStored) : [];
       setInquiries(inq);
@@ -96,9 +161,201 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onBackToHome 
     if (isAuthenticated) {
       refreshAllData();
       window.addEventListener('storage', refreshAllData);
-      return () => window.removeEventListener('storage', refreshAllData);
+      const handleCms = (e: any) => {
+        if (e.detail) setSiteContent(e.detail);
+      };
+      window.addEventListener('ati_cms_updated', handleCms);
+      return () => {
+        window.removeEventListener('storage', refreshAllData);
+        window.removeEventListener('ati_cms_updated', handleCms);
+      };
     }
   }, [isAuthenticated]);
+
+  // Course Management Handlers
+  const handleToggleCourseAdmission = async (courseId: string, courseName: string) => {
+    const currentCourses = siteContent.courses && siteContent.courses.length > 0 ? [...siteContent.courses] : [...COURSES];
+    const targetIdx = currentCourses.findIndex((c) => c.id === courseId || c.name === courseName || c.nameMr === courseName);
+    if (targetIdx >= 0) {
+      const currentStatus = currentCourses[targetIdx].admissionsOpen !== false;
+      currentCourses[targetIdx] = {
+        ...currentCourses[targetIdx],
+        admissionsOpen: !currentStatus,
+      };
+      const updatedSite = { ...siteContent, courses: currentCourses };
+      setSiteContent(updatedSite);
+      await saveSiteContent(updatedSite);
+      
+      const newAdmissions = { ...admissions, [courseId]: !currentStatus, [courseName]: !currentStatus };
+      setAdmissions(newAdmissions);
+      await saveAdmissions(newAdmissions);
+      
+      setBackupMsg(`Admissions for "${currentCourses[targetIdx].nameMr || currentCourses[targetIdx].name}" set to ${!currentStatus ? 'OPEN' : 'CLOSED'} and saved in database.`);
+      setTimeout(() => setBackupMsg(''), 4000);
+    }
+  };
+
+  const handleUploadCoursePhoto = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await compressAndReadFile(file, 1200, 800, 0.85);
+      const currentCourses = siteContent.courses && siteContent.courses.length > 0 ? [...siteContent.courses] : [...COURSES];
+      currentCourses[index] = { ...currentCourses[index], image: dataUrl };
+      const updatedSite = { ...siteContent, courses: currentCourses };
+      setSiteContent(updatedSite);
+      await saveSiteContent(updatedSite);
+      setBackupMsg(`Updated course photo for ${currentCourses[index].name} and saved to database.`);
+      setTimeout(() => setBackupMsg(''), 4000);
+    } catch {
+      alert('Failed to read image');
+    }
+  };
+
+  const handleUploadModalCoursePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await compressAndReadFile(file, 1200, 800, 0.85);
+      setCourseForm((prev) => ({ ...prev, image: dataUrl }));
+    } catch {
+      alert('Failed to read image');
+    }
+  };
+
+  const handleOpenAddCourse = () => {
+    const defaultId = `course-${Date.now()}`;
+    setCourseForm({
+      id: defaultId,
+      name: '',
+      nameMr: '',
+      code: '304' + Math.floor(100 + Math.random() * 900),
+      category: 'Technical Vocational Trade',
+      categoryMr: 'तांत्रिक व्यवसाय अभ्यासक्रम',
+      description: '',
+      descriptionMr: '',
+      fullDescription: '',
+      fullDescriptionMr: '',
+      duration: '1 Year',
+      durationMr: '१ वर्ष कालावधी',
+      timing: '10:00 AM - 2:00 PM',
+      timingMr: 'सकाळी १०:०० ते दुपारी २:००',
+      startDate: 'प्रवेश सुरू (Admissions Open)',
+      startDateMr: 'प्रवेश सुरू (Admissions Open)',
+      admissionsOpen: true,
+      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80',
+      eligibility: '10th / 12th / ITI / Graduate',
+      eligibilityMr: '१० वी किंवा १२ वी किंवा पदवीधर',
+      syllabus: [
+        'Workshop Technology & Safety (TH-1)',
+        'Practical Circuit Assembly & Measurements (PR-1)',
+        'Industrial Machine Operations & Troubleshooting',
+      ],
+      syllabusMr: [
+        'कार्यशाळा तंत्रज्ञान व सुरक्षा (थियरी-१)',
+        'प्रत्यक्ष सर्किट असेंब्ली व मोजमापे (प्रॅक्टिकल-१)',
+        'औद्योगिक मशीन कार्यप्रणाली व समस्या निवारण',
+      ],
+      careerOpportunities: [
+        'Govt & PWD Registered Contractor',
+        'Industrial Maintenance Technician',
+        'Self-Employed Workshop Entrepreneur',
+      ],
+      careerOpportunitiesMr: [
+        'शासकीय व पीडब्ल्यूडी नोंदणीकृत कंत्राटदार',
+        'औद्योगिक मेंटेनन्स तंत्रज्ञ',
+        'स्वतःचा स्वतंत्र उद्योग / व्यवसाय',
+      ],
+      certification: 'MSBSVET Govt. Recognized & ITI Equivalent',
+      batchCapacity: 30,
+      enrolled: 0,
+    });
+    setCourseModalMode('add');
+    setIsCourseModalOpen(true);
+  };
+
+  const handleOpenEditCourse = (course: Course) => {
+    setCourseForm({
+      ...course,
+      syllabus: course.syllabus || [],
+      syllabusMr: course.syllabusMr || [],
+      careerOpportunities: course.careerOpportunities || [],
+      careerOpportunitiesMr: course.careerOpportunitiesMr || [],
+    });
+    setCourseModalMode('edit');
+    setIsCourseModalOpen(true);
+  };
+
+  const handleSaveCourse = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!courseForm.name || !courseForm.nameMr) {
+      alert('Please enter both the English and Marathi course names.');
+      return;
+    }
+
+    const currentCourses = siteContent.courses && siteContent.courses.length > 0 ? [...siteContent.courses] : [...COURSES];
+    let updatedCourses: Course[];
+
+    if (courseModalMode === 'add') {
+      const newEntry: Course = {
+        ...courseForm,
+        id: courseForm.id.trim() || `course-${Date.now()}`,
+      };
+      updatedCourses = [newEntry, ...currentCourses];
+    } else {
+      updatedCourses = currentCourses.map((c) => (c.id === courseForm.id ? { ...courseForm } : c));
+    }
+
+    const updatedSite = { ...siteContent, courses: updatedCourses };
+    setSiteContent(updatedSite);
+    await saveSiteContent(updatedSite);
+    setIsCourseModalOpen(false);
+    setBackupMsg(
+      courseModalMode === 'add'
+        ? `Course "${courseForm.nameMr}" added and saved in Cloudflare database!`
+        : `Course "${courseForm.nameMr}" updated in Cloudflare database!`
+    );
+    setTimeout(() => setBackupMsg(''), 4000);
+  };
+
+  const handleDeleteCourse = async (courseId: string) => {
+    const currentCourses = siteContent.courses && siteContent.courses.length > 0 ? [...siteContent.courses] : [...COURSES];
+    const target = currentCourses.find((c) => c.id === courseId);
+    if (window.confirm(`Are you sure you want to permanently delete course "${target?.nameMr || target?.name || courseId}"?`)) {
+      const updatedCourses = currentCourses.filter((c) => c.id !== courseId);
+      const updatedSite = { ...siteContent, courses: updatedCourses };
+      setSiteContent(updatedSite);
+      await saveSiteContent(updatedSite);
+      setBackupMsg(`Course "${target?.nameMr || target?.name || courseId}" removed from database.`);
+      setTimeout(() => setBackupMsg(''), 4000);
+    }
+  };
+
+  const handleMoveCourseOrder = async (index: number, direction: 'up' | 'down') => {
+    const currentCourses = siteContent.courses && siteContent.courses.length > 0 ? [...siteContent.courses] : [...COURSES];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= currentCourses.length) return;
+
+    const temp = currentCourses[index];
+    currentCourses[index] = currentCourses[targetIndex];
+    currentCourses[targetIndex] = temp;
+
+    const updatedSite = { ...siteContent, courses: currentCourses };
+    setSiteContent(updatedSite);
+    await saveSiteContent(updatedSite);
+    setBackupMsg('Course display order reordered.');
+    setTimeout(() => setBackupMsg(''), 3000);
+  };
+
+  const handleResetCourseCatalog = async () => {
+    if (window.confirm('Reset course catalog back to official 10 MSBSVET trade presets?')) {
+      const updatedSite = { ...siteContent, courses: COURSES };
+      setSiteContent(updatedSite);
+      await saveSiteContent(updatedSite);
+      setBackupMsg('Course catalog reset to official 10 trade defaults.');
+      setTimeout(() => setBackupMsg(''), 4000);
+    }
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,12 +451,16 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onBackToHome 
     reader.readAsText(file);
   };
 
-  // Filtered Leads
-  const filteredLeads = inquiries.filter(item => {
-    const matchesSearch = 
+  // Active Courses & Leads Filtering
+  const activeCoursesList = siteContent.courses && siteContent.courses.length > 0 ? siteContent.courses : COURSES;
+  const courseOptions = Array.from(new Set(activeCoursesList.map((c) => c.nameMr || c.name)));
+
+  const filteredLeads = inquiries.filter((item) => {
+    const matchesSearch =
       item.name.toLowerCase().includes(leadSearch.toLowerCase()) ||
       item.phone.toLowerCase().includes(leadSearch.toLowerCase()) ||
-      item.email.toLowerCase().includes(leadSearch.toLowerCase()) ||
+      (item.email || '').toLowerCase().includes(leadSearch.toLowerCase()) ||
+      (item.course || '').toLowerCase().includes(leadSearch.toLowerCase()) ||
       (item.message || '').toLowerCase().includes(leadSearch.toLowerCase());
 
     const matchesCourse = leadCourseFilter === 'all' || item.course === leadCourseFilter;
@@ -207,9 +468,6 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onBackToHome 
 
     return matchesSearch && matchesCourse && matchesStatus;
   });
-
-  // Unique courses for filter
-  const courseOptions = Array.from(new Set(inquiries.map(i => i.course).filter(Boolean)));
 
   // If not logged in, render Master Auth Screen
   if (!isAuthenticated) {
@@ -812,65 +1070,559 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onBackToHome 
             </div>
           )}
 
-          {/* TAB 5: ADMISSIONS & COURSES */}
+          {/* TAB 5: VOCATIONAL COURSES & ADMISSIONS MANAGEMENT */}
           {activeTab === 'courses' && (
             <div className="space-y-6">
-              <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
-                <h2 className="text-lg font-bold text-white font-serif">Course Admissions Control</h2>
-                <p className="text-xs text-slate-400 mt-1">
-                  Enable or close student intake for specific technical and vocational trades.
-                </p>
+              {/* Header Bar */}
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-md border border-orange-500/20">
+                      MSBSVET अभ्यासक्रम व्यवस्थापन (Course Catalog CMS)
+                    </span>
+                    <span className="text-xs font-bold text-slate-400">
+                      Total: {activeCoursesList.length} Trades
+                    </span>
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-bold text-white font-serif mt-1">
+                    Vocational Courses & Trade Management
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Add new trades, edit syllabus & fees, change photos, reorder, and control admissions intake live on Cloudflare database.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                  <button
+                    type="button"
+                    onClick={handleResetCourseCatalog}
+                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-all cursor-pointer border border-slate-700"
+                  >
+                    Reset 10 Trades
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleOpenAddCourse}
+                    className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-orange-600/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>+ Add New Course</span>
+                  </button>
+                </div>
               </div>
 
+              {/* Search Bar */}
+              <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-slate-900 p-3 rounded-2xl border border-slate-800">
+                <div className="relative flex-1 w-full">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 h-4 w-4" />
+                  <input
+                    type="text"
+                    value={courseSearch}
+                    onChange={(e) => setCourseSearch(e.target.value)}
+                    placeholder="Search by Course Name, Code (e.g. 304202), or Category..."
+                    className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs font-medium text-white focus:outline-none focus:border-orange-500"
+                  />
+                </div>
+              </div>
+
+              {/* Course Cards Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  'Colleges / Higher Education',
-                  'Institutes & Academy',
-                  'Online Computer Training',
-                  'Technical Institutes Trade',
-                  'Electrician Trade Training',
-                  'Vocational Training Centres',
-                  'Consultancy Services',
-                  'Technical Installation',
-                  'Doorstep Delivery',
-                  'Annual Maintenance (AMC)',
-                ].map((course) => {
-                  const isOpen = admissions[course] !== false;
-                  return (
-                    <div
-                      key={course}
-                      className="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex items-center justify-between"
-                    >
+                {activeCoursesList
+                  .filter((c) => {
+                    if (!courseSearch.trim()) return true;
+                    const q = courseSearch.toLowerCase();
+                    return (
+                      c.name.toLowerCase().includes(q) ||
+                      (c.nameMr && c.nameMr.toLowerCase().includes(q)) ||
+                      c.code.toLowerCase().includes(q) ||
+                      c.category.toLowerCase().includes(q) ||
+                      (c.categoryMr && c.categoryMr.toLowerCase().includes(q))
+                    );
+                  })
+                  .map((c, idx) => {
+                    const isOpen = c.admissionsOpen !== false;
+                    return (
+                      <div
+                        key={c.id || idx}
+                        className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg flex flex-col justify-between gap-3 relative group hover:border-slate-700 transition-all"
+                      >
+                        <div className="space-y-3">
+                          {/* Card Header */}
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="w-6 h-6 rounded-full bg-orange-600 text-white font-black text-xs flex items-center justify-center shrink-0">
+                                {idx + 1}
+                              </span>
+                              <span className="font-mono text-xs font-extrabold text-blue-400 bg-blue-950/80 px-2 py-0.5 rounded-md border border-blue-800">
+                                Code: {c.code}
+                              </span>
+                              <span className="text-[10px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
+                                {c.categoryMr || c.category}
+                              </span>
+                            </div>
+
+                            {/* Move Order Controls */}
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => handleMoveCourseOrder(idx, 'up')}
+                                className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-white disabled:opacity-30 cursor-pointer"
+                                title="Move Up"
+                              >
+                                <ArrowUp className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={idx === activeCoursesList.length - 1}
+                                onClick={() => handleMoveCourseOrder(idx, 'down')}
+                                className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-white disabled:opacity-30 cursor-pointer"
+                                title="Move Down"
+                              >
+                                <ArrowDown className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Image & Info Layout */}
+                          <div className="flex gap-3.5 items-start">
+                            <div className="relative w-24 h-20 rounded-xl overflow-hidden bg-slate-950 shrink-0 border border-slate-800 group/img">
+                              <img
+                                src={c.image}
+                                alt={c.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as any).src =
+                                    'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
+                                }}
+                              />
+                              <label className="absolute inset-0 bg-black/70 opacity-0 group-hover/img:opacity-100 flex flex-col items-center justify-center text-white cursor-pointer transition-opacity text-[10px] font-bold p-1 text-center">
+                                <Camera className="h-4 w-4 mb-0.5 text-orange-400" />
+                                <span>Change</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={(e) => handleUploadCoursePhoto(idx, e)}
+                                />
+                              </label>
+                            </div>
+
+                            <div className="flex-1 min-w-0 space-y-1">
+                              <h3 className="font-serif font-bold text-sm text-white leading-snug">
+                                {c.nameMr || c.name}
+                              </h3>
+                              {c.name && c.nameMr && (
+                                <p className="text-[11px] text-slate-400 font-medium truncate">
+                                  {c.name}
+                                </p>
+                              )}
+                              <div className="flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-orange-400 font-medium pt-0.5">
+                                <span>⏱️ {c.durationMr || c.duration}</span>
+                                <span>•</span>
+                                <span>🕒 {c.timingMr || c.timing}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Details Row */}
+                          <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-slate-400 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80">
+                            <span>🎓 पात्रता: <strong className="text-slate-200">{c.eligibilityMr || c.eligibility}</strong></span>
+                            <span>•</span>
+                            <span>📚 विषय: <strong className="text-slate-200">{(c.syllabus || []).length} Modules</strong></span>
+                            <span>•</span>
+                            <span>💼 संधी: <strong className="text-slate-200">{(c.careerOpportunities || []).length} Paths</strong></span>
+                          </div>
+                        </div>
+
+                        {/* Card Action Buttons & Admissions Toggle */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-800/80">
+                          {/* Admission Toggle */}
+                          <button
+                            type="button"
+                            onClick={() => handleToggleCourseAdmission(c.id, c.name)}
+                            className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
+                              isOpen
+                                ? 'bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-700'
+                                : 'bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700'
+                            }`}
+                          >
+                            <span className={`w-2 h-2 rounded-full ${isOpen ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
+                            <span>{isOpen ? 'प्रवेश सुरू (Open)' : 'Intake Closed'}</span>
+                          </button>
+
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteCourse(c.id)}
+                              className="px-2.5 py-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-950/50 text-xs font-bold rounded-lg cursor-pointer transition-colors flex items-center gap-1"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              <span>Delete</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditCourse(c)}
+                              className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg cursor-pointer transition-colors flex items-center gap-1 border border-slate-700"
+                            >
+                              <Edit3 className="h-3.5 w-3.5" />
+                              <span>Edit Details</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+
+              {/* ADD / EDIT COURSE MODAL */}
+              {isCourseModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-xs animate-fadeIn">
+                  <div className="bg-slate-900 rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-800 overflow-hidden text-slate-100">
+                    {/* Modal Top Header */}
+                    <div className="p-4 sm:p-5 bg-gradient-to-r from-orange-600 via-amber-600 to-amber-700 text-white flex justify-between items-center shrink-0">
                       <div>
-                        <div className="font-bold text-white text-sm">{course}</div>
-                        <div className="text-[11px] text-slate-400">
-                          Status: {isOpen ? (
-                            <span className="text-emerald-400 font-semibold">Admissions Open</span>
-                          ) : (
-                            <span className="text-rose-400 font-semibold">Intake Closed</span>
-                          )}
+                        <span className="text-[10px] font-black uppercase tracking-widest text-orange-200 bg-black/20 px-2 py-0.5 rounded-md">
+                          {courseModalMode === 'add' ? 'नवीन कोर्स तयार करा' : 'कोर्स माहिती संपादन'}
+                        </span>
+                        <h3 className="font-serif text-lg sm:text-xl font-bold mt-0.5">
+                          {courseModalMode === 'add'
+                            ? 'Add New Vocational Course'
+                            : `Edit: ${courseForm.nameMr || courseForm.name}`}
+                        </h3>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsCourseModalOpen(false)}
+                        className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white cursor-pointer transition-colors"
+                      >
+                        <XCircle className="h-5 w-5" />
+                      </button>
+                    </div>
+
+                    {/* Modal Form Scrollable Content */}
+                    <form onSubmit={handleSaveCourse} className="p-5 overflow-y-auto space-y-4 text-xs">
+                      {/* Row 1: Code & Category */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            MSBSVET Course Code (अभ्यासक्रम सांकेतांक) *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={courseForm.code}
+                            onChange={(e) => setCourseForm({ ...courseForm, code: e.target.value })}
+                            placeholder="e.g. 304202 or 101201"
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs font-bold text-white focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            Category (वर्गवारी - Marathi & English)
+                          </label>
+                          <input
+                            type="text"
+                            value={courseForm.categoryMr || courseForm.category}
+                            onChange={(e) =>
+                              setCourseForm({
+                                ...courseForm,
+                                categoryMr: e.target.value,
+                                category: e.target.value,
+                              })
+                            }
+                            placeholder="उदा: इलेक्ट्रिकल व पॉवर / Civil & Construction"
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-orange-500"
+                          />
                         </div>
                       </div>
 
-                      <button
-                        onClick={() => {
-                          const updated = { ...admissions, [course]: !isOpen };
-                          setAdmissions(updated);
-                          localStorage.setItem('abhinav_admissions', JSON.stringify(updated));
-                          window.dispatchEvent(new Event('storage'));
-                        }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
-                          isOpen
-                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                            : 'bg-rose-950 text-rose-300 border border-rose-800'
-                        }`}
-                      >
-                        {isOpen ? 'Open (Click to Close)' : 'Closed (Click to Open)'}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+                      {/* Row 2: Course Names */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            Course Name in Marathi (कोर्सचे नाव - मराठी) *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={courseForm.nameMr || ''}
+                            onChange={(e) => setCourseForm({ ...courseForm, nameMr: e.target.value })}
+                            placeholder="उदा: इलेक्ट्रिशियन (इलेक्ट्रिकल सुपरवायझर)"
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs font-bold text-orange-400 focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            Course Name in English (English Title) *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={courseForm.name}
+                            onChange={(e) => setCourseForm({ ...courseForm, name: e.target.value })}
+                            placeholder="e.g. ELECTRICIAN DIPLOMA – 1 YEAR"
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 3: Photo Upload & URL */}
+                      <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                        <label className="font-bold text-orange-400 block">
+                          Course Cover Image (कोर्सचे छायाचित्र)
+                        </label>
+                        <div className="flex flex-col sm:flex-row gap-3 items-center">
+                          <div className="w-20 h-16 rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shrink-0">
+                            <img
+                              src={courseForm.image}
+                              alt="Course Preview"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as any).src =
+                                  'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
+                              }}
+                            />
+                          </div>
+                          <div className="flex-1 w-full space-y-2">
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <input
+                                type="text"
+                                value={courseForm.image}
+                                onChange={(e) => setCourseForm({ ...courseForm, image: e.target.value })}
+                                placeholder="https://... or upload from PC/phone"
+                                className="flex-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-orange-500"
+                              />
+                              <label className="shrink-0 px-3.5 py-2 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5 transition-colors">
+                                <Upload className="h-4 w-4" />
+                                <span>Upload Photo</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={handleUploadModalCoursePhoto}
+                                />
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Row 4: Duration, Timing & Eligibility */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            Duration (कालावधी)
+                          </label>
+                          <input
+                            type="text"
+                            value={courseForm.durationMr || courseForm.duration}
+                            onChange={(e) =>
+                              setCourseForm({
+                                ...courseForm,
+                                durationMr: e.target.value,
+                                duration: e.target.value,
+                              })
+                            }
+                            placeholder="उदा: १ वर्ष / 1 Year"
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            Timing (बॅच वेळ)
+                          </label>
+                          <input
+                            type="text"
+                            value={courseForm.timingMr || courseForm.timing}
+                            onChange={(e) =>
+                              setCourseForm({
+                                ...courseForm,
+                                timingMr: e.target.value,
+                                timing: e.target.value,
+                              })
+                            }
+                            placeholder="उदा: 10:00 AM - 2:00 PM"
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            Eligibility (पात्रता)
+                          </label>
+                          <input
+                            type="text"
+                            value={courseForm.eligibilityMr || courseForm.eligibility}
+                            onChange={(e) =>
+                              setCourseForm({
+                                ...courseForm,
+                                eligibilityMr: e.target.value,
+                                eligibility: e.target.value,
+                              })
+                            }
+                            placeholder="उदा: १० वी / १२ वी / ITI"
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 5: Batch Capacity & Admissions Open Toggle */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            Batch Capacity (एकूण जागा)
+                          </label>
+                          <input
+                            type="number"
+                            value={courseForm.batchCapacity || 30}
+                            onChange={(e) =>
+                              setCourseForm({ ...courseForm, batchCapacity: Number(e.target.value) || 30 })
+                            }
+                            className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            Enrolled Students (प्रवेशित)
+                          </label>
+                          <input
+                            type="number"
+                            value={courseForm.enrolled || 0}
+                            onChange={(e) =>
+                              setCourseForm({ ...courseForm, enrolled: Number(e.target.value) || 0 })
+                            }
+                            className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                        <div className="pt-3 sm:pt-0">
+                          <label className="flex items-center gap-2 cursor-pointer font-bold text-emerald-400">
+                            <input
+                              type="checkbox"
+                              checked={courseForm.admissionsOpen !== false}
+                              onChange={(e) =>
+                                setCourseForm({ ...courseForm, admissionsOpen: e.target.checked })
+                              }
+                              className="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
+                            />
+                            <span>Admissions Open (प्रवेश सुरू)</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Row 6: Descriptions */}
+                      <div>
+                        <label className="font-bold text-slate-300 block mb-1">
+                          Short Description (मराठी संक्षिप्त माहिती)
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={courseForm.descriptionMr || courseForm.description}
+                          onChange={(e) =>
+                            setCourseForm({
+                              ...courseForm,
+                              descriptionMr: e.target.value,
+                              description: e.target.value,
+                            })
+                          }
+                          placeholder="कोर्सची प्रमुख वैशिष्ट्ये व माहिती..."
+                          className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-orange-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="font-bold text-slate-300 block mb-1">
+                          Full Detailed Description (सविस्तर तपशील - शासन मान्यता, समकक्षता व संधी)
+                        </label>
+                        <textarea
+                          rows={3}
+                          value={courseForm.fullDescriptionMr || courseForm.fullDescription || ''}
+                          onChange={(e) =>
+                            setCourseForm({
+                              ...courseForm,
+                              fullDescriptionMr: e.target.value,
+                              fullDescription: e.target.value,
+                            })
+                          }
+                          placeholder="महाराष्ट्र शासन मान्यता, ITI व १२ वी समकक्षता, विविध खात्यांमधील भरती संधी..."
+                          className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-orange-500"
+                        />
+                      </div>
+
+                      {/* Row 7: Syllabus & Career Opportunities (One per line) */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            Syllabus Modules (अभ्यासक्रम विषय - प्रति ओळ १ विषय)
+                          </label>
+                          <textarea
+                            rows={4}
+                            value={(
+                              courseForm.syllabusMr && courseForm.syllabusMr.length > 0
+                                ? courseForm.syllabusMr
+                                : courseForm.syllabus || []
+                            ).join('\n')}
+                            onChange={(e) => {
+                              const lines = e.target.value.split('\n');
+                              setCourseForm({
+                                ...courseForm,
+                                syllabusMr: lines,
+                                syllabus: lines,
+                              });
+                            }}
+                            placeholder="थियरी विषय १&#10;प्रॅक्टिकल विषय २&#10;इंडस्ट्रियल लॅब..."
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-orange-500"
+                          />
+                          <p className="text-[10px] text-slate-500 mt-0.5">Tip: Write each subject on a new line.</p>
+                        </div>
+
+                        <div>
+                          <label className="font-bold text-slate-300 block mb-1">
+                            Career Opportunities (रोजगार व करिअर संधी - प्रति ओळ १ संधी)
+                          </label>
+                          <textarea
+                            rows={4}
+                            value={(
+                              courseForm.careerOpportunitiesMr &&
+                              courseForm.careerOpportunitiesMr.length > 0
+                                ? courseForm.careerOpportunitiesMr
+                                : courseForm.careerOpportunities || []
+                            ).join('\n')}
+                            onChange={(e) => {
+                              const lines = e.target.value.split('\n');
+                              setCourseForm({
+                                ...courseForm,
+                                careerOpportunitiesMr: lines,
+                                careerOpportunities: lines,
+                              });
+                            }}
+                            placeholder="शासकीय व निमशासकीय भरती पात्र&#10;पीडब्ल्यूडी अधिकृत कंत्राटदार&#10;स्वतंत्र व्यवसाय / वर्कशॉप..."
+                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-orange-500"
+                          />
+                          <p className="text-[10px] text-slate-500 mt-0.5">Tip: Write each career role on a new line.</p>
+                        </div>
+                      </div>
+
+                      {/* Form Submit Footer */}
+                      <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+                        <button
+                          type="button"
+                          onClick={() => setIsCourseModalOpen(false)}
+                          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-6 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-orange-600/20 cursor-pointer flex items-center gap-1.5"
+                        >
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span>{courseModalMode === 'add' ? 'Save & Publish Course' : 'Update Course in Database'}</span>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

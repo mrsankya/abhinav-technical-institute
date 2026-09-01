@@ -125,3 +125,7 @@
     - Supports direct **photo upload and replacement** from computer or mobile phone with automatic image compression (`compressAndReadFile`) as well as custom image URLs.
     - Added course **reordering (Move Up / Down)**, **course deletion**, and **reset to default 10 trades**.
     - All course updates are persisted live in Cloudflare D1 SQL database (`site_content` table) and synchronize dynamically across the homepage upcoming batches carousel and course modals.
+13. **Super Admin Dashboard Course Sync & Fix (`src/components/SuperAdminDashboard.tsx`):**
+    - Fixed issue where the Super Admin Dashboard (`#super-admin`) was showing hardcoded obsolete dummy categories instead of the real Abhinav Technical Institute courses.
+    - Replaced with the complete live Course Catalog CMS + Admissions Control dashboard, synchronized directly with Cloudflare D1 SQL database (`api/content`).
+    - Super Admin can now add, edit, change photos, reorder, delete, and toggle admissions for all vocational trades with instant global persistence.
