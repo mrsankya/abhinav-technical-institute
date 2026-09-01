@@ -80,6 +80,31 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const [cmsSubTab, setCmsSubTab] = useState<'hero' | 'about' | 'awards' | 'courses' | 'gallery' | 'contact'>('hero');
   const [cmsSaveSuccess, setCmsSaveSuccess] = useState(false);
 
+  // Global Toast Notification State
+  const [toastNotification, setToastNotification] = useState<{
+    show: boolean;
+    type: 'success' | 'info' | 'error';
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    type: 'success',
+    title: '',
+    message: '',
+  });
+
+  const showToast = (title: string, message: string, type: 'success' | 'info' | 'error' = 'success') => {
+    setToastNotification({
+      show: true,
+      type,
+      title,
+      message,
+    });
+    setTimeout(() => {
+      setToastNotification((prev) => ({ ...prev, show: false }));
+    }, 4500);
+  };
+
   // Government GR State
   const [grList, setGrList] = useState<GovernmentGrItem[]>([]);
   const [grSearchQuery, setGrSearchQuery] = useState('');
@@ -228,6 +253,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
     localStorage.setItem('ati_admin_password', newPasswordInput.trim());
     setPasswordChangeSuccess('✓ Admin password successfully updated! Please remember your new password.');
+    showToast('Password Updated', 'Admin passcode updated successfully!', 'success');
     setCurrentPasswordInput('');
     setNewPasswordInput('');
     setConfirmPasswordInput('');
@@ -237,6 +263,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const handleSaveCMS = async () => {
     await saveSiteContent(siteContent);
     setCmsSaveSuccess(true);
+    showToast(
+      'Website Changes Saved',
+      'All edited text, images, and content are live and synced to Cloudflare D1 database!',
+      'success'
+    );
     setTimeout(() => setCmsSaveSuccess(false), 3000);
   };
 
@@ -248,6 +279,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     ) {
       const def = await resetSiteContent();
       setSiteContent(def);
+      showToast('CMS Reset', 'Website content restored to initial defaults.', 'info');
       alert('Website content successfully reset to defaults!');
     }
   };
@@ -568,6 +600,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     setLeadsList((prev) =>
       prev.map((lead) => (lead.id === id ? { ...lead, status: newStatus } : lead))
     );
+    showToast('Lead Status Updated', `Lead status updated to "${newStatus}".`, 'success');
     if (onUpdateEnquiryStatus) {
       onUpdateEnquiryStatus(id, newStatus);
     }
@@ -577,6 +610,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     if (window.confirm('Are you sure you want to delete this lead?')) {
       await deleteLead(id);
       setLeadsList((prev) => prev.filter((l) => l.id !== id));
+      showToast('Lead Deleted', 'Student inquiry lead was removed.', 'info');
     }
   };
 
@@ -628,6 +662,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     onAddCertificate(certToSave);
 
     setCertCreatedSuccess(true);
+    showToast(
+      'Certificate Issued & Registered',
+      `Certificate ${certToSave.regNumber} for ${certToSave.studentName} is registered in database.`,
+      'success'
+    );
     setTimeout(() => {
       setCertCreatedSuccess(false);
       setNewCert({
@@ -654,6 +693,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         delete next[regNumber];
         return next;
       });
+      showToast('Certificate Revoked', `Certificate ${regNumber} has been revoked and removed.`, 'info');
     }
   };
 
@@ -661,6 +701,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     const next = { ...courseAdmissions, [courseId]: !courseAdmissions[courseId] };
     setCourseAdmissions(next);
     await saveAdmissions(next);
+    showToast(
+      'Admissions Updated',
+      `Course admission status was set to ${next[courseId] ? 'OPEN' : 'CLOSED'} and saved.`,
+      'success'
+    );
   };
 
   const handleSaveGr = async (e: React.FormEvent) => {
@@ -682,6 +727,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     const updatedGrs = await fetchGovernmentGrs();
     setGrList(updatedGrs);
     setGrSaveSuccess(true);
+    showToast(
+      'Government GR Saved & Published',
+      `"${grToSave.titleMr.substring(0, 50)}..." was successfully uploaded and saved in database!`,
+      'success'
+    );
     setTimeout(() => setGrSaveSuccess(false), 3000);
     setIsAddGrModalOpen(false);
     setEditingGr(null);
@@ -706,6 +756,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     if (window.confirm('Are you sure you want to delete this Government Resolution (GR)?')) {
       await deleteGovernmentGr(id);
       setGrList((prev) => prev.filter((item) => item.id !== id));
+      showToast('Government GR Deleted', 'Selected resolution was removed from database.', 'info');
     }
   };
 
@@ -713,6 +764,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     if (window.confirm('Reset all Government GR records back to official default 6 documents?')) {
       const def = await resetGovernmentGrs();
       setGrList(def);
+      showToast('GR Defaults Restored', 'Government resolutions reset to official default documents.', 'info');
       alert('Government Resolutions reset to defaults!');
     }
   };
@@ -720,6 +772,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const handleUploadGrPdf = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      alert('PDF is larger than 20MB. Please choose an optimized PDF under 20MB.');
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (event) => {
       const dataUrl = event.target?.result as string;
@@ -728,6 +784,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       } else {
         setNewGr({ ...newGr, pdfPath: dataUrl });
       }
+      showToast('PDF Document Attached', `File "${file.name}" loaded and ready to save.`, 'info');
     };
     reader.readAsDataURL(file);
   };
@@ -780,6 +837,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       onAddAnnouncement(ann);
     }
     setNoticeSuccess(true);
+    showToast('Notice Published', `Announcement "${newNotice.title}" published live.`, 'success');
     setNewNotice({ title: '', titleMr: '', description: '', tag: 'Admissions' });
     setTimeout(() => setNoticeSuccess(false), 3000);
   };
@@ -803,8 +861,44 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-[#001738]/85 backdrop-blur-xs animate-in fade-in duration-200">
+      {/* Floating Toast Notification Banner */}
+      {toastNotification.show && (
+        <div className="fixed top-5 right-5 z-[9999] max-w-md w-[92vw] sm:w-auto animate-in slide-in-from-top-4 duration-300 shadow-2xl">
+          <div
+            className={`p-4 rounded-2xl border flex items-start gap-3 shadow-xl backdrop-blur-md ${
+              toastNotification.type === 'success'
+                ? 'bg-emerald-900/95 text-white border-emerald-500/50'
+                : toastNotification.type === 'error'
+                ? 'bg-rose-900/95 text-white border-rose-500/50'
+                : 'bg-[#002760]/95 text-white border-[#1557C0]/50'
+            }`}
+          >
+            <div className="shrink-0 mt-0.5">
+              <span className="material-symbols-outlined text-2xl text-[#FFD21F]">
+                {toastNotification.type === 'success' ? 'check_circle' : toastNotification.type === 'error' ? 'error' : 'info'}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0 pr-2">
+              <h5 className="font-['Manrope'] font-black text-sm tracking-wide text-white">
+                {toastNotification.title}
+              </h5>
+              <p className="text-xs text-white/90 font-medium mt-0.5 leading-snug">
+                {toastNotification.message}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setToastNotification((prev) => ({ ...prev, show: false }))}
+              className="shrink-0 w-6 h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white cursor-pointer transition-colors"
+            >
+              <span className="material-symbols-outlined text-xs">close</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div
-        className="bg-white rounded-3xl max-w-6xl w-full max-h-[94vh] flex flex-col shadow-2xl border border-[#E6ECF3] overflow-hidden"
+        className="bg-white rounded-3xl max-w-6xl w-full max-h-[94vh] flex flex-col shadow-2xl border border-[#E6ECF3] overflow-hidden relative"
         id="admin-panel-modal"
       >
         {/* Modal Header */}

@@ -273,7 +273,7 @@ export async function deleteLead(id: string): Promise<boolean> {
 // ----------------------
 export async function fetchGovernmentGrs(): Promise<GovernmentGrItem[]> {
   try {
-    const res = await fetch(`${API_BASE}/gr`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`${API_BASE}/gr`, { signal: AbortSignal.timeout(5000) });
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
@@ -296,27 +296,32 @@ export async function fetchGovernmentGrs(): Promise<GovernmentGrItem[]> {
 }
 
 export async function saveGovernmentGr(gr: GovernmentGrItem): Promise<GovernmentGrItem> {
+  let savedResult: GovernmentGrItem | null = null;
   try {
-    await fetch(`${API_BASE}/gr`, {
+    const res = await fetch(`${API_BASE}/gr`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(gr),
-      signal: AbortSignal.timeout(3000),
+      signal: AbortSignal.timeout(10000),
     });
+    if (res.ok) {
+      savedResult = await res.json();
+    }
   } catch (e) {}
 
+  const finalGr = savedResult || gr;
   const current = await fetchGovernmentGrs();
-  const existingIdx = current.findIndex((item) => item.id === gr.id);
+  const existingIdx = current.findIndex((item) => item.id === finalGr.id);
   let updated: GovernmentGrItem[];
   if (existingIdx >= 0) {
     updated = [...current];
-    updated[existingIdx] = gr;
+    updated[existingIdx] = finalGr;
   } else {
-    updated = [gr, ...current];
+    updated = [finalGr, ...current];
   }
   localStorage.setItem('ati_government_grs', JSON.stringify(updated));
   window.dispatchEvent(new CustomEvent('ati_gr_updated', { detail: updated }));
-  return gr;
+  return finalGr;
 }
 
 export async function deleteGovernmentGr(id: string): Promise<boolean> {

@@ -50,7 +50,48 @@ CREATE TABLE IF NOT EXISTS announcements (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 5. Government Resolutions & Orders (GR) Table
+CREATE TABLE IF NOT EXISTS government_gr (
+  id TEXT PRIMARY KEY,
+  title_mr TEXT NOT NULL,
+  title_en TEXT,
+  number TEXT NOT NULL,
+  date TEXT,
+  dept_mr TEXT,
+  dept_en TEXT,
+  summary_mr TEXT,
+  summary_en TEXT,
+  pdf_path TEXT,
+  status TEXT DEFAULT 'GOVT DIPLOMA GR',
+  badge_color TEXT DEFAULT 'bg-[#002760] text-white',
+  code_number TEXT,
+  raw_json TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 6. Student Reviews / Testimonials Table
+CREATE TABLE IF NOT EXISTS reviews (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  course TEXT,
+  rating INTEGER DEFAULT 5,
+  comment TEXT NOT NULL,
+  date TEXT,
+  verified INTEGER DEFAULT 1,
+  raw_json TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. Course Admissions Open/Closed Status Table
+CREATE TABLE IF NOT EXISTS course_admissions (
+  course_id TEXT PRIMARY KEY,
+  is_open INTEGER DEFAULT 1,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for lightning fast lookups
 CREATE INDEX IF NOT EXISTS idx_cert_student ON certificates(student_name);
 CREATE INDEX IF NOT EXISTS idx_inquiry_phone ON inquiries(phone);
 CREATE INDEX IF NOT EXISTS idx_inquiry_status ON inquiries(status);
+CREATE INDEX IF NOT EXISTS idx_gr_number ON government_gr(number);
+CREATE INDEX IF NOT EXISTS idx_gr_title_mr ON government_gr(title_mr);

@@ -116,3 +116,6 @@
     - Built comprehensive Hero Banner Image Slider CMS manager inside the Admin Panel (`#admin` -> `🎨 Site Content & Images (CMS)` -> `Hero Banner & Slider`).
     - Added ability to upload new photos directly from computer/mobile with automatic compression (`compressAndReadFile`), enter custom image URLs, edit bilingual titles (Marathi/English), edit category tags ("Live Workshop", "संगणक व आयटी", "इलेक्ट्रिकल", etc.), re-order slides with Move Up/Down controls, delete slides, and reset to institute defaults.
     - Fixed slider dot navigation and category badge rendering in [`Hero.tsx`](file:///C:/Users/sanke/abhinav%20institute/src/components/Hero.tsx) so live updates in the Admin Panel reflect instantly on the homepage.
+11. **Cloudflare D1 Database Government GR & Toast Notifications (`functions/api/gr/`, `functions/api/reviews/`, `functions/api/admissions/`, `schema.sql`, `AdminPanelModal.tsx`):**
+    - Created dedicated Cloudflare Pages serverless endpoints for `/api/gr`, `/api/reviews`, and `/api/admissions` with automated D1 schema table provisioning on `abhinav_db`.
+    - Added floating global Toast Notification banner system inside the Admin Panel (`showToast`) providing immediate visual confirmation and feedback on all save, upload, delete, and update operations.
