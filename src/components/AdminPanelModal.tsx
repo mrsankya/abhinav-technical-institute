@@ -127,6 +127,56 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     codeNumber: '',
   });
 
+  // Course Management CMS State
+  const [courseSearchQuery, setCourseSearchQuery] = useState('');
+  const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+  const [courseModalMode, setCourseModalMode] = useState<'add' | 'edit'>('add');
+  const [courseForm, setCourseForm] = useState<Course>({
+    id: '',
+    name: '',
+    nameMr: '',
+    code: '',
+    category: 'Electrical & Power Trades',
+    categoryMr: 'इलेक्ट्रिकल व पॉवर ट्रेड्स',
+    description: '',
+    descriptionMr: '',
+    fullDescription: '',
+    fullDescriptionMr: '',
+    duration: '1 Year',
+    durationMr: '१ वर्ष कालावधी',
+    timing: '10:00 AM - 2:00 PM',
+    timingMr: 'सकाळी १०:०० ते दुपारी २:००',
+    startDate: 'प्रवेश सुरू (Admissions Open)',
+    startDateMr: 'प्रवेश सुरू (Admissions Open)',
+    admissionsOpen: true,
+    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80',
+    eligibility: '10th / 12th / ITI / Graduate',
+    eligibilityMr: '१० वी किंवा १२ वी किंवा पदवीधर',
+    syllabus: [
+      'Workshop Technology & Electrical Safety',
+      'Practical Circuit Connections & Measurements',
+      'Industrial Machinery & Maintenance',
+    ],
+    syllabusMr: [
+      'कार्यशाळा तंत्रज्ञान व इलेक्ट्रिकल सुरक्षा',
+      'प्रत्यक्ष सर्किट जोडणी व मोजमापे',
+      'औद्योगिक मशिनरी व मेंटेनन्स',
+    ],
+    careerOpportunities: [
+      'Govt & PWD Registered Electrical Contractor',
+      'Industrial Maintenance Wireman / Technician',
+      'Direct 2nd Year Entry to Diploma Engineering',
+    ],
+    careerOpportunitiesMr: [
+      'शासकीय व पीडब्ल्यूडी अधिकृत इलेक्ट्रिकल कंत्राटदार',
+      'औद्योगिक मेंटेनन्स वायरमन / तंत्रज्ञ',
+      'थेट द्वितीय वर्ष डिप्लोमा प्रवेश',
+    ],
+    certification: 'MSBSVET Govt. Recognized & ITI Equivalent',
+    batchCapacity: 30,
+    enrolled: 0,
+  });
+
   // Leads state
   const [leadsList, setLeadsList] = useState<Lead[]>(enquiries);
   const [leadSearch, setLeadSearch] = useState('');
@@ -424,21 +474,6 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     }
   };
 
-  const handleUploadCourseImage = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      const dataUrl = await compressAndReadFile(file, 800, 500, 0.82);
-      setSiteContent((prev) => {
-        const updated = [...prev.courses];
-        updated[index] = { ...updated[index], image: dataUrl };
-        return { ...prev, courses: updated };
-      });
-    } catch (err) {
-      alert('Failed to read image');
-    }
-  };
-
   const handleUploadGalleryImage = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -498,6 +533,177 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       ...siteContent,
       gallery: siteContent.gallery.filter((g) => g.id !== id),
     });
+  };
+
+  // Course Management Handlers
+  const handleUploadCourseImage = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await compressAndReadFile(file, 1200, 800, 0.85);
+      const currentCourses = siteContent.courses && siteContent.courses.length > 0 ? [...siteContent.courses] : [...COURSES];
+      currentCourses[index] = { ...currentCourses[index], image: dataUrl };
+      const updated = { ...siteContent, courses: currentCourses };
+      setSiteContent(updated);
+      await saveSiteContent(updated);
+      showToast('Course Image Updated', `Updated photo for ${currentCourses[index].name}.`, 'success');
+    } catch (err) {
+      alert('Failed to read image file');
+    }
+  };
+
+  const handleUploadModalCourseImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await compressAndReadFile(file, 1200, 800, 0.85);
+      setCourseForm((prev) => ({ ...prev, image: dataUrl }));
+      showToast('Course Image Attached', `Loaded photo "${file.name}".`, 'info');
+    } catch (err) {
+      alert('Failed to read image file');
+    }
+  };
+
+  const handleOpenAddCourse = () => {
+    const defaultId = `course-${Date.now()}`;
+    setCourseForm({
+      id: defaultId,
+      name: '',
+      nameMr: '',
+      code: '304' + Math.floor(100 + Math.random() * 900),
+      category: 'Technical Vocational Trade',
+      categoryMr: 'तांत्रिक व्यवसाय अभ्यासक्रम',
+      description: '',
+      descriptionMr: '',
+      fullDescription: '',
+      fullDescriptionMr: '',
+      duration: '1 Year',
+      durationMr: '१ वर्ष कालावधी',
+      timing: '10:00 AM - 2:00 PM',
+      timingMr: 'सकाळी १०:०० ते दुपारी २:००',
+      startDate: 'प्रवेश सुरू (Admissions Open)',
+      startDateMr: 'प्रवेश सुरू (Admissions Open)',
+      admissionsOpen: true,
+      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80',
+      eligibility: '10th / 12th / ITI / Graduate',
+      eligibilityMr: '१० वी किंवा १२ वी किंवा पदवीधर',
+      syllabus: [
+        'Workshop Technology & Safety (TH-1)',
+        'Practical Circuit Assembly & Measurements (PR-1)',
+        'Industrial Machine Operations & Troubleshooting',
+      ],
+      syllabusMr: [
+        'कार्यशाळा तंत्रज्ञान व सुरक्षा (थियरी-१)',
+        'प्रत्यक्ष सर्किट असेंब्ली व मोजमापे (प्रॅक्टिकल-१)',
+        'औद्योगिक मशीन कार्यप्रणाली व समस्या निवारण',
+      ],
+      careerOpportunities: [
+        'Govt & PWD Registered Contractor',
+        'Industrial Maintenance Technician',
+        'Self-Employed Workshop Entrepreneur',
+      ],
+      careerOpportunitiesMr: [
+        'शासकीय व पीडब्ल्यूडी नोंदणीकृत कंत्राटदार',
+        'औद्योगिक मेंटेनन्स तंत्रज्ञ',
+        'स्वतःचा स्वतंत्र उद्योग / व्यवसाय',
+      ],
+      certification: 'MSBSVET Govt. Recognized & ITI Equivalent',
+      batchCapacity: 30,
+      enrolled: 0,
+    });
+    setCourseModalMode('add');
+    setIsCourseModalOpen(true);
+  };
+
+  const handleOpenEditCourse = (course: Course) => {
+    setCourseForm({
+      ...course,
+      syllabus: course.syllabus || [],
+      syllabusMr: course.syllabusMr || [],
+      careerOpportunities: course.careerOpportunities || [],
+      careerOpportunitiesMr: course.careerOpportunitiesMr || [],
+    });
+    setCourseModalMode('edit');
+    setIsCourseModalOpen(true);
+  };
+
+  const handleSaveCourseForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!courseForm.name || !courseForm.nameMr) {
+      alert('Please enter both English and Marathi course names.');
+      return;
+    }
+
+    const currentCourses = siteContent.courses && siteContent.courses.length > 0 ? [...siteContent.courses] : [...COURSES];
+    let updatedCourses: Course[];
+
+    if (courseModalMode === 'add') {
+      const newEntry: Course = {
+        ...courseForm,
+        id: courseForm.id.trim() || `course-${Date.now()}`,
+      };
+      updatedCourses = [newEntry, ...currentCourses];
+    } else {
+      updatedCourses = currentCourses.map((c) => (c.id === courseForm.id ? { ...courseForm } : c));
+    }
+
+    const updatedSite = {
+      ...siteContent,
+      courses: updatedCourses,
+    };
+    setSiteContent(updatedSite);
+    await saveSiteContent(updatedSite);
+    setIsCourseModalOpen(false);
+    showToast(
+      courseModalMode === 'add' ? 'Course Added & Published' : 'Course Details Updated',
+      `"${courseForm.nameMr}" successfully saved and synchronized to Cloudflare D1 database!`,
+      'success'
+    );
+  };
+
+  const handleDeleteCourse = async (courseId: string) => {
+    const currentCourses = siteContent.courses && siteContent.courses.length > 0 ? [...siteContent.courses] : [...COURSES];
+    const target = currentCourses.find((c) => c.id === courseId);
+    if (window.confirm(`Are you sure you want to delete course "${target?.nameMr || target?.name || courseId}"?`)) {
+      const updatedCourses = currentCourses.filter((c) => c.id !== courseId);
+      const updatedSite = {
+        ...siteContent,
+        courses: updatedCourses,
+      };
+      setSiteContent(updatedSite);
+      await saveSiteContent(updatedSite);
+      showToast('Course Deleted', `Course was removed from website and database.`, 'info');
+    }
+  };
+
+  const handleMoveCourse = async (index: number, direction: 'up' | 'down') => {
+    const currentCourses = siteContent.courses && siteContent.courses.length > 0 ? [...siteContent.courses] : [...COURSES];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= currentCourses.length) return;
+
+    const temp = currentCourses[index];
+    currentCourses[index] = currentCourses[targetIndex];
+    currentCourses[targetIndex] = temp;
+
+    const updatedSite = {
+      ...siteContent,
+      courses: currentCourses,
+    };
+    setSiteContent(updatedSite);
+    await saveSiteContent(updatedSite);
+    showToast('Course Re-ordered', 'Course display order updated.', 'success');
+  };
+
+  const handleResetCourses = async () => {
+    if (window.confirm('Reset all courses back to official 10 MSBSVET trade defaults?')) {
+      const updatedSite = {
+        ...siteContent,
+        courses: COURSES,
+      };
+      setSiteContent(updatedSite);
+      await saveSiteContent(updatedSite);
+      showToast('Courses Reset', 'Courses restored to official 10 trade defaults.', 'info');
+    }
   };
 
   const handleUploadAwardImage = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2444,89 +2650,497 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     </div>
                   )}
 
-                  {/* 4. COURSES & FEES EDITOR */}
+                  {/* 4. COURSES & TRADES CMS MANAGER */}
                   {cmsSubTab === 'courses' && (
-                    <div className="space-y-4">
-                      <h5 className="font-['Manrope'] text-base font-bold text-[#002760]">
-                        Manage 10 Vocational Trades, Fees & Cover Images
-                      </h5>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {siteContent.courses.map((c, idx) => (
-                          <div
-                            key={c.id}
-                            className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-2xl p-4 space-y-3 text-xs"
-                          >
-                            <div className="flex justify-between items-center">
-                              <span className="font-mono font-bold text-[#1557C0]">{c.code}</span>
-                              <span className="font-bold text-[#002760]">{c.name}</span>
-                            </div>
-
-                            <div className="flex gap-3 items-center">
-                              <img
-                                src={c.image}
-                                alt={c.name}
-                                className="w-16 h-14 rounded-xl object-cover border border-[#CBD5E1] shrink-0"
-                                onError={(e) => {
-                                  (e.target as any).src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
-                                }}
-                              />
-                              <div className="flex-1 space-y-1">
-                                <label className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#002760] hover:bg-[#1557C0] text-white text-[10px] font-bold rounded-lg cursor-pointer transition-all">
-                                  <span className="material-symbols-outlined text-[14px]">upload</span>
-                                  <span>📁 Upload Course Photo</span>
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={(e) => handleUploadCourseImage(idx, e)}
-                                  />
-                                </label>
-                                <input
-                                  type="text"
-                                  value={c.image}
-                                  onChange={(e) => {
-                                    const updated = [...siteContent.courses];
-                                    updated[idx] = { ...updated[idx], image: e.target.value };
-                                    setSiteContent({ ...siteContent, courses: updated });
-                                  }}
-                                  placeholder="Or Image URL"
-                                  className="w-full px-2 py-1 bg-white border border-[#CBD5E1] rounded-lg text-[10px]"
-                                />
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-2">
-                              <div>
-                                <label className="text-[10px] text-[#172033]/70 font-bold block">Duration</label>
-                                <input
-                                  type="text"
-                                  value={c.duration}
-                                  onChange={(e) => {
-                                    const updated = [...siteContent.courses];
-                                    updated[idx] = { ...updated[idx], duration: e.target.value };
-                                    setSiteContent({ ...siteContent, courses: updated });
-                                  }}
-                                  className="w-full px-2.5 py-1.5 bg-white border border-[#CBD5E1] rounded-lg text-xs font-bold"
-                                />
-                              </div>
-                              <div>
-                                <label className="text-[10px] text-[#172033]/70 font-bold block">Timing</label>
-                                <input
-                                  type="text"
-                                  value={c.timing}
-                                  onChange={(e) => {
-                                    const updated = [...siteContent.courses];
-                                    updated[idx] = { ...updated[idx], timing: e.target.value };
-                                    setSiteContent({ ...siteContent, courses: updated });
-                                  }}
-                                  className="w-full px-2.5 py-1.5 bg-white border border-[#CBD5E1] rounded-lg text-xs font-bold"
-                                />
-                              </div>
-                            </div>
+                    <div className="space-y-6">
+                      {/* Subtab Header */}
+                      <div className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-3xl p-5 sm:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#1557C0] bg-[#1557C0]/10 px-2 py-0.5 rounded-md">
+                              अभ्यासक्रम व्यवस्थापन (Course Catalog CMS)
+                            </span>
+                            <span className="text-xs font-bold text-gray-500">
+                              Total: {(siteContent.courses && siteContent.courses.length > 0 ? siteContent.courses : COURSES).length} Courses
+                            </span>
                           </div>
-                        ))}
+                          <h5 className="font-['Manrope'] text-lg font-black text-[#002760] mt-1">
+                            Vocational Courses & Trade Management
+                          </h5>
+                          <p className="text-xs text-gray-600 font-medium">
+                            Add, edit syllabus, update photos, change durations & manage all vocational trades live on website.
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                          <button
+                            type="button"
+                            onClick={handleResetCourses}
+                            className="px-3.5 py-2 bg-white border border-[#CBD5E1] hover:bg-gray-100 text-gray-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                          >
+                            Reset 10 Trades
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleOpenAddCourse}
+                            className="px-5 py-2 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] font-black text-xs rounded-xl shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5"
+                          >
+                            <span className="material-symbols-outlined text-base">add_circle</span>
+                            <span>+ Add New Course</span>
+                          </button>
+                        </div>
                       </div>
+
+                      {/* Search Bar */}
+                      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-[#F8FAFC] p-3 rounded-2xl border border-[#E6ECF3]">
+                        <div className="relative flex-1 w-full">
+                          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
+                            search
+                          </span>
+                          <input
+                            type="text"
+                            value={courseSearchQuery}
+                            onChange={(e) => setCourseSearchQuery(e.target.value)}
+                            placeholder="Search by Course Name, Code (e.g. 304202), or Category..."
+                            className="w-full pl-9 pr-4 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-medium focus:outline-none focus:border-[#1557C0]"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Course Cards Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {(siteContent.courses && siteContent.courses.length > 0 ? siteContent.courses : COURSES)
+                          .filter((c) => {
+                            if (!courseSearchQuery.trim()) return true;
+                            const q = courseSearchQuery.toLowerCase();
+                            return (
+                              c.name.toLowerCase().includes(q) ||
+                              (c.nameMr && c.nameMr.toLowerCase().includes(q)) ||
+                              c.code.toLowerCase().includes(q) ||
+                              c.category.toLowerCase().includes(q) ||
+                              (c.categoryMr && c.categoryMr.toLowerCase().includes(q))
+                            );
+                          })
+                          .map((c, idx) => (
+                            <div
+                              key={c.id || idx}
+                              className="bg-white border border-[#E6ECF3] rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between gap-3 relative group"
+                            >
+                              <div className="space-y-3">
+                                {/* Card Header */}
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="w-6 h-6 rounded-full bg-[#002760] text-[#FFD21F] font-black text-xs flex items-center justify-center shrink-0">
+                                      {idx + 1}
+                                    </span>
+                                    <span className="font-mono text-xs font-extrabold text-[#1557C0] bg-[#EFF6FF] px-2 py-0.5 rounded-md border border-[#BFDBFE]">
+                                      Code: {c.code}
+                                    </span>
+                                    <span className="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-md">
+                                      {c.categoryMr || c.category}
+                                    </span>
+                                    {c.admissionsOpen ? (
+                                      <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        प्रवेश सुरू
+                                      </span>
+                                    ) : (
+                                      <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
+                                        Closed
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Move Order Controls */}
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    <button
+                                      type="button"
+                                      disabled={idx === 0}
+                                      onClick={() => handleMoveCourse(idx, 'up')}
+                                      className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-[#002760] disabled:opacity-30 cursor-pointer"
+                                      title="Move Up"
+                                    >
+                                      <span className="material-symbols-outlined text-base">arrow_upward</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={idx === (siteContent.courses?.length || COURSES.length) - 1}
+                                      onClick={() => handleMoveCourse(idx, 'down')}
+                                      className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-[#002760] disabled:opacity-30 cursor-pointer"
+                                      title="Move Down"
+                                    >
+                                      <span className="material-symbols-outlined text-base">arrow_downward</span>
+                                    </button>
+                                  </div>
+                                </div>
+
+                                {/* Image & Info Layout */}
+                                <div className="flex gap-3.5 items-start">
+                                  <div className="relative w-24 h-20 rounded-xl overflow-hidden bg-slate-900 shrink-0 border border-[#E2E8F0] group/img">
+                                    <img
+                                      src={c.image}
+                                      alt={c.name}
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => {
+                                        (e.target as any).src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
+                                      }}
+                                    />
+                                    <label className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 flex flex-col items-center justify-center text-white cursor-pointer transition-opacity text-[10px] font-bold p-1 text-center">
+                                      <span className="material-symbols-outlined text-sm">photo_camera</span>
+                                      <span>Change</span>
+                                      <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => handleUploadCourseImage(idx, e)}
+                                      />
+                                    </label>
+                                  </div>
+
+                                  <div className="flex-1 min-w-0 space-y-1">
+                                    <h6 className="font-['Manrope'] font-black text-sm text-[#002760] leading-snug">
+                                      {c.nameMr || c.name}
+                                    </h6>
+                                    {c.name && c.nameMr && (
+                                      <p className="text-[11px] text-gray-500 font-medium truncate">
+                                        {c.name}
+                                      </p>
+                                    )}
+                                    <div className="flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-[#1557C0] font-semibold pt-0.5">
+                                      <span>⏱️ {c.durationMr || c.duration}</span>
+                                      <span>•</span>
+                                      <span>🕒 {c.timingMr || c.timing}</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Additional Details Pill Row */}
+                                <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-gray-600 bg-[#F8FAFC] p-2 rounded-xl border border-[#E6ECF3]">
+                                  <span>🎓 पात्रता: <strong className="text-[#002760]">{c.eligibilityMr || c.eligibility}</strong></span>
+                                  <span>•</span>
+                                  <span>📚 विषय: <strong className="text-[#002760]">{(c.syllabus || []).length} Modules</strong></span>
+                                  <span>•</span>
+                                  <span>💼 संधी: <strong className="text-[#002760]">{(c.careerOpportunities || []).length} Paths</strong></span>
+                                </div>
+                              </div>
+
+                              {/* Card Action Buttons */}
+                              <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteCourse(c.id)}
+                                  className="px-3 py-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 text-xs font-bold rounded-lg cursor-pointer transition-colors flex items-center gap-1"
+                                >
+                                  <span className="material-symbols-outlined text-sm">delete</span>
+                                  <span>Delete</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenEditCourse(c)}
+                                  className="px-4 py-1.5 bg-[#002760] hover:bg-[#1557C0] text-white text-xs font-bold rounded-lg cursor-pointer transition-colors flex items-center gap-1 shadow-xs"
+                                >
+                                  <span className="material-symbols-outlined text-sm">edit</span>
+                                  <span>Edit Course</span>
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+
+                      {/* ADD / EDIT COURSE MODAL */}
+                      {isCourseModalOpen && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
+                          <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-[#CBD5E1] overflow-hidden">
+                            {/* Modal Top Header */}
+                            <div className="p-4 sm:p-5 bg-gradient-to-r from-[#002760] via-[#0A3D80] to-[#1557C0] text-white flex justify-between items-center shrink-0">
+                              <div>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-[#FFD21F] bg-[#FFD21F]/20 px-2 py-0.5 rounded-md">
+                                  {courseModalMode === 'add' ? 'नवीन कोर्स तयार करा' : 'कोर्स माहिती संपादन'}
+                                </span>
+                                <h4 className="font-['Manrope'] text-lg sm:text-xl font-black mt-0.5">
+                                  {courseModalMode === 'add' ? 'Add New Vocational Course' : `Edit: ${courseForm.nameMr || courseForm.name}`}
+                                </h4>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setIsCourseModalOpen(false)}
+                                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white cursor-pointer transition-colors"
+                              >
+                                <span className="material-symbols-outlined text-base">close</span>
+                              </button>
+                            </div>
+
+                            {/* Modal Form Scrollable Content */}
+                            <form onSubmit={handleSaveCourseForm} className="p-5 overflow-y-auto space-y-4 text-xs">
+                              {/* Row 1: Code & Category */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    MSBSVET Course Code (अभ्यासक्रम सांकेतांक) *
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    value={courseForm.code}
+                                    onChange={(e) => setCourseForm({ ...courseForm, code: e.target.value })}
+                                    placeholder="e.g. 304202 or 101201"
+                                    className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-mono text-xs font-bold"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Category (वर्गवारी - Marathi & English)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={courseForm.categoryMr || courseForm.category}
+                                    onChange={(e) => setCourseForm({ ...courseForm, categoryMr: e.target.value, category: e.target.value })}
+                                    placeholder="उदा: इलेक्ट्रिकल व पॉवर / Civil & Construction"
+                                    className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Row 2: Course Names */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Course Name in Marathi (कोर्सचे नाव - मराठी) *
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    value={courseForm.nameMr || ''}
+                                    onChange={(e) => setCourseForm({ ...courseForm, nameMr: e.target.value })}
+                                    placeholder="उदा: इलेक्ट्रिशियन (इलेक्ट्रिकल सुपरवायझर)"
+                                    className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs font-bold text-[#002760]"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Course Name in English (English Title) *
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    value={courseForm.name}
+                                    onChange={(e) => setCourseForm({ ...courseForm, name: e.target.value })}
+                                    placeholder="e.g. ELECTRICIAN DIPLOMA – 1 YEAR"
+                                    className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs font-bold"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Row 3: Photo Upload & URL */}
+                              <div className="bg-[#F1F5F9] p-4 rounded-2xl border border-[#CBD5E1] space-y-3">
+                                <label className="font-bold text-[#002760] block">
+                                  Course Cover Image (कोर्सचे छायाचित्र)
+                                </label>
+                                <div className="flex flex-col sm:flex-row gap-3 items-center">
+                                  <div className="w-20 h-16 rounded-xl overflow-hidden bg-slate-900 border border-[#CBD5E1] shrink-0">
+                                    <img
+                                      src={courseForm.image}
+                                      alt="Course Preview"
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => {
+                                        (e.target as any).src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="flex-1 w-full space-y-2">
+                                    <div className="flex flex-col sm:flex-row gap-2">
+                                      <input
+                                        type="text"
+                                        value={courseForm.image}
+                                        onChange={(e) => setCourseForm({ ...courseForm, image: e.target.value })}
+                                        placeholder="https://... or upload from PC/phone"
+                                        className="flex-1 px-3 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-mono"
+                                      />
+                                      <label className="shrink-0 px-3.5 py-2 bg-[#002760] hover:bg-[#1557C0] text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5 transition-colors">
+                                        <span className="material-symbols-outlined text-base">upload_file</span>
+                                        <span>Upload Photo</span>
+                                        <input
+                                          type="file"
+                                          accept="image/*"
+                                          className="hidden"
+                                          onChange={handleUploadModalCourseImage}
+                                        />
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Row 4: Duration, Timing & Eligibility */}
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Duration (कालावधी)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={courseForm.durationMr || courseForm.duration}
+                                    onChange={(e) => setCourseForm({ ...courseForm, durationMr: e.target.value, duration: e.target.value })}
+                                    placeholder="उदा: १ वर्ष / 1 Year"
+                                    className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Timing (बॅच वेळ)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={courseForm.timingMr || courseForm.timing}
+                                    onChange={(e) => setCourseForm({ ...courseForm, timingMr: e.target.value, timing: e.target.value })}
+                                    placeholder="उदा: 10:00 AM - 2:00 PM"
+                                    className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Eligibility (पात्रता)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={courseForm.eligibilityMr || courseForm.eligibility}
+                                    onChange={(e) => setCourseForm({ ...courseForm, eligibilityMr: e.target.value, eligibility: e.target.value })}
+                                    placeholder="उदा: १० वी / १२ वी / ITI"
+                                    className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Row 5: Batch Capacity & Admissions Open Toggle */}
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center bg-[#F8FAFC] p-3 rounded-2xl border border-[#E6ECF3]">
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Batch Capacity (एकूण जागा)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={courseForm.batchCapacity || 30}
+                                    onChange={(e) => setCourseForm({ ...courseForm, batchCapacity: Number(e.target.value) || 30 })}
+                                    className="w-full px-3 py-1.5 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Enrolled Students (प्रवेशित)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={courseForm.enrolled || 0}
+                                    onChange={(e) => setCourseForm({ ...courseForm, enrolled: Number(e.target.value) || 0 })}
+                                    className="w-full px-3 py-1.5 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold"
+                                  />
+                                </div>
+                                <div className="pt-3 sm:pt-0">
+                                  <label className="flex items-center gap-2 cursor-pointer font-bold text-[#002760]">
+                                    <input
+                                      type="checkbox"
+                                      checked={courseForm.admissionsOpen !== false}
+                                      onChange={(e) => setCourseForm({ ...courseForm, admissionsOpen: e.target.checked })}
+                                      className="w-4 h-4 accent-[#002760] rounded cursor-pointer"
+                                    />
+                                    <span>Admissions Open (प्रवेश सुरू)</span>
+                                  </label>
+                                </div>
+                              </div>
+
+                              {/* Row 6: Descriptions */}
+                              <div>
+                                <label className="font-bold text-[#172033]/80 block mb-1">
+                                  Short Description (मराठी संक्षिप्त माहिती)
+                                </label>
+                                <textarea
+                                  rows={2}
+                                  value={courseForm.descriptionMr || courseForm.description}
+                                  onChange={(e) => setCourseForm({ ...courseForm, descriptionMr: e.target.value, description: e.target.value })}
+                                  placeholder="कोर्सची प्रमुख वैशिष्ट्ये व माहिती..."
+                                  className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="font-bold text-[#172033]/80 block mb-1">
+                                  Full Detailed Description (सविस्तर तपशील - शासन मान्यता, समकक्षता व संधी)
+                                </label>
+                                <textarea
+                                  rows={3}
+                                  value={courseForm.fullDescriptionMr || courseForm.fullDescription || ''}
+                                  onChange={(e) => setCourseForm({ ...courseForm, fullDescriptionMr: e.target.value, fullDescription: e.target.value })}
+                                  placeholder="महाराष्ट्र शासन मान्यता, ITI व १२ वी समकक्षता, विविध खात्यांमधील भरती संधी..."
+                                  className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs"
+                                />
+                              </div>
+
+                              {/* Row 7: Syllabus & Career Opportunities (One per line) */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Syllabus Modules (अभ्यासक्रम विषय - प्रति ओळ १ विषय)
+                                  </label>
+                                  <textarea
+                                    rows={4}
+                                    value={(courseForm.syllabusMr && courseForm.syllabusMr.length > 0 ? courseForm.syllabusMr : courseForm.syllabus || []).join('\n')}
+                                    onChange={(e) => {
+                                      const lines = e.target.value.split('\n');
+                                      setCourseForm({
+                                        ...courseForm,
+                                        syllabusMr: lines,
+                                        syllabus: lines,
+                                      });
+                                    }}
+                                    placeholder="थियरी विषय १&#10;प्रॅक्टिकल विषय २&#10;इंडस्ट्रियल लॅब..."
+                                    className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs font-mono"
+                                  />
+                                  <p className="text-[10px] text-gray-500 mt-0.5">Tip: Write each subject on a new line.</p>
+                                </div>
+
+                                <div>
+                                  <label className="font-bold text-[#172033]/80 block mb-1">
+                                    Career Opportunities (रोजगार व करिअर संधी - प्रति ओळ १ संधी)
+                                  </label>
+                                  <textarea
+                                    rows={4}
+                                    value={(courseForm.careerOpportunitiesMr && courseForm.careerOpportunitiesMr.length > 0 ? courseForm.careerOpportunitiesMr : courseForm.careerOpportunities || []).join('\n')}
+                                    onChange={(e) => {
+                                      const lines = e.target.value.split('\n');
+                                      setCourseForm({
+                                        ...courseForm,
+                                        careerOpportunitiesMr: lines,
+                                        careerOpportunities: lines,
+                                      });
+                                    }}
+                                    placeholder="शासकीय व निमशासकीय भरती पात्र&#10;पीडब्ल्यूडी अधिकृत कंत्राटदार&#10;स्वतंत्र व्यवसाय / वर्कशॉप..."
+                                    className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs font-mono"
+                                  />
+                                  <p className="text-[10px] text-gray-500 mt-0.5">Tip: Write each career role on a new line.</p>
+                                </div>
+                              </div>
+
+                              {/* Form Submit Footer */}
+                              <div className="flex justify-end gap-2 pt-3 border-t border-[#E6ECF3]">
+                                <button
+                                  type="button"
+                                  onClick={() => setIsCourseModalOpen(false)}
+                                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl cursor-pointer"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="px-6 py-2 bg-[#002760] hover:bg-[#1557C0] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center gap-1.5"
+                                >
+                                  <span className="material-symbols-outlined text-base">save</span>
+                                  <span>{courseModalMode === 'add' ? 'Save & Publish Course' : 'Update Course in Database'}</span>
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 

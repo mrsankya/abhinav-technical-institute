@@ -119,3 +119,9 @@
 11. **Cloudflare D1 Database Government GR & Toast Notifications (`functions/api/gr/`, `functions/api/reviews/`, `functions/api/admissions/`, `schema.sql`, `AdminPanelModal.tsx`):**
     - Created dedicated Cloudflare Pages serverless endpoints for `/api/gr`, `/api/reviews`, and `/api/admissions` with automated D1 schema table provisioning on `abhinav_db`.
     - Added floating global Toast Notification banner system inside the Admin Panel (`showToast`) providing immediate visual confirmation and feedback on all save, upload, delete, and update operations.
+12. **Complete Course & Vocational Trade CMS Manager (`src/components/AdminPanelModal.tsx`, `src/App.tsx`, `src/services/cms.ts`):**
+    - Built comprehensive Course Manager under `Admin Panel` -> `🎨 Site Content & Images (CMS)` -> `Courses & Fees`.
+    - Allows admins to **+ Add New Course**, **Edit Course Details** (bilingual Marathi & English titles, MSBSVET course codes, category tags, batch capacity, enrolled count, duration, timing, eligibility, short and detailed descriptions, syllabus modules, career opportunities, and admissions open/closed status).
+    - Supports direct **photo upload and replacement** from computer or mobile phone with automatic image compression (`compressAndReadFile`) as well as custom image URLs.
+    - Added course **reordering (Move Up / Down)**, **course deletion**, and **reset to default 10 trades**.
+    - All course updates are persisted live in Cloudflare D1 SQL database (`site_content` table) and synchronize dynamically across the homepage upcoming batches carousel and course modals.

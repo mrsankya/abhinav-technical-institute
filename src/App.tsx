@@ -303,7 +303,7 @@ export default function App() {
 
           {/* 2. Upcoming Batches (10 Trades) */}
           <UpcomingBatches
-            courses={COURSES}
+            courses={siteContent.courses && siteContent.courses.length > 0 ? siteContent.courses : COURSES}
             language={language}
             onSelectCourse={(course) => setSelectedCourse(course)}
             onOpenEnquiryWithCourse={(name) => handleOpenEnquiry(name)}
