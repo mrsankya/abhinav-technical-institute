@@ -129,3 +129,6 @@
     - Fixed issue where the Super Admin Dashboard (`#super-admin`) was showing hardcoded obsolete dummy categories instead of the real Abhinav Technical Institute courses.
     - Replaced with the complete live Course Catalog CMS + Admissions Control dashboard, synchronized directly with Cloudflare D1 SQL database (`api/content`).
     - Super Admin can now add, edit, change photos, reorder, delete, and toggle admissions for all vocational trades with instant global persistence.
+14. **Footer Developer Attribution & Portfolio Link (`src/components/Footer.tsx`):**
+    - Added "Made by SS Projects" credit in the footer bottom bar with direct link to portfolio [`https://sanket-portfolio-211.pages.dev/`](https://sanket-portfolio-211.pages.dev/).
+
