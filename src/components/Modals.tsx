@@ -393,23 +393,77 @@ export const Modals: React.FC<ModalsProps> = ({
               </div>
             </div>
 
-            {/* Syllabus */}
-            {selectedCourse.syllabus && (
+            {/* Subjects & Subject Codes (if available) */}
+            {selectedCourse.subjects && selectedCourse.subjects.length > 0 && (
+              <div className="mb-6">
+                <h4 className="font-['Manrope'] font-bold text-base text-[#002760] mb-3 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#1557C0]">format_list_numbered</span>
+                  <span>{language === 'mr' ? 'अभ्यासक्रम विषय व कोड (Subjects & Codes)' : 'Subjects & Examination Codes'}</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {selectedCourse.subjects.map((subj, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs"
+                    >
+                      <span className="font-semibold text-[#172033]">{subj.name}</span>
+                      <span className="font-mono font-bold text-[11px] bg-[#002760] text-white px-2 py-0.5 rounded-md">
+                        {subj.code}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Syllabus Modules */}
+            {(((language === 'mr' && selectedCourse.syllabusMr && selectedCourse.syllabusMr.length > 0)
+              ? selectedCourse.syllabusMr
+              : selectedCourse.syllabus) || []).length > 0 && (
               <div className="mb-6">
                 <h4 className="font-['Manrope'] font-bold text-base text-[#002760] mb-3 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[#1557C0]">menu_book</span>
-                  {t('batches.syllabusTitle')}
+                  <span>{language === 'mr' ? 'अभ्यासक्रमाचे प्रमुख घटक (Syllabus Modules)' : t('batches.syllabusTitle')}</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {selectedCourse.syllabus.map((item, idx) => (
+                  {(((language === 'mr' && selectedCourse.syllabusMr && selectedCourse.syllabusMr.length > 0)
+                    ? selectedCourse.syllabusMr
+                    : selectedCourse.syllabus) || []).map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex items-start gap-2 text-xs text-[#172033]/85 p-2 rounded-lg bg-gray-50 border border-gray-100"
+                      className="flex items-start gap-2 text-xs text-[#172033]/85 p-2.5 rounded-xl bg-blue-50/60 border border-blue-100"
                     >
-                      <span className="material-symbols-outlined text-[#1557C0] text-sm mt-0.5">
+                      <span className="material-symbols-outlined text-[#1557C0] text-sm mt-0.5 shrink-0">
                         check_circle
                       </span>
-                      <span>{item}</span>
+                      <span className="leading-snug">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Career Opportunities & Jobs */}
+            {(((language === 'mr' && selectedCourse.careerOpportunitiesMr && selectedCourse.careerOpportunitiesMr.length > 0)
+              ? selectedCourse.careerOpportunitiesMr
+              : selectedCourse.careerOpportunities) || []).length > 0 && (
+              <div className="mb-6">
+                <h4 className="font-['Manrope'] font-bold text-base text-[#002760] mb-3 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-amber-600">work</span>
+                  <span>{language === 'mr' ? 'रोजगार व करिअर संधी (Career & Job Scope)' : 'Career Opportunities & Jobs'}</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {(((language === 'mr' && selectedCourse.careerOpportunitiesMr && selectedCourse.careerOpportunitiesMr.length > 0)
+                    ? selectedCourse.careerOpportunitiesMr
+                    : selectedCourse.careerOpportunities) || []).map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-start gap-2 text-xs text-[#172033]/90 p-2.5 rounded-xl bg-amber-50/60 border border-amber-200"
+                    >
+                      <span className="material-symbols-outlined text-amber-600 text-sm mt-0.5 shrink-0">
+                        verified
+                      </span>
+                      <span className="leading-snug font-medium">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -418,14 +472,23 @@ export const Modals: React.FC<ModalsProps> = ({
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-[#E6ECF3]">
+              <a
+                href={`https://wa.me/919423488174?text=${encodeURIComponent(`नमस्कार! मला ${selectedCourse.name} (${selectedCourse.code}) कोर्सच्या प्रवेशाबद्दल आणि बॅच वेळेबद्दल माहिती हवी आहे.`)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-['Manrope'] font-bold py-3.5 rounded-xl shadow-md transition-all text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-base">chat</span>
+                <span>WhatsApp वर विचारा</span>
+              </a>
               <button
                 onClick={() => {
                   onCloseCourseModal();
                   onApplyForCourse(selectedCourse.name);
                 }}
-                className="flex-1 bg-[#002760] hover:bg-[#1557C0] text-white font-[#Manrope] font-bold py-3.5 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 bg-[#002760] hover:bg-[#1557C0] text-white font-['Manrope'] font-bold py-3.5 rounded-xl shadow-md transition-all text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>{t('batches.enrollBtn')}</span>
+                <span>{language === 'mr' ? 'प्रवेश अर्ज करा (Apply Now)' : t('batches.enrollBtn')}</span>
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </button>
             </div>

@@ -124,7 +124,8 @@ export const UpcomingBatches: React.FC<UpcomingBatchesProps> = ({
             return (
               <div
                 key={course.id || idx}
-                className={`w-[90%] sm:w-[380px] md:w-[420px] lg:w-[460px] bg-white border ${theme.cardBorder} rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col snap-center shrink-0 group/card`}
+                onClick={() => onSelectCourse(course)}
+                className={`w-[90%] sm:w-[380px] md:w-[420px] lg:w-[460px] bg-white border ${theme.cardBorder} rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col snap-center shrink-0 group/card cursor-pointer`}
               >
                 {/* Course Top Image & Badge */}
                 <div className="aspect-[16/9] w-full overflow-hidden relative bg-gray-100">
@@ -146,7 +147,7 @@ export const UpcomingBatches: React.FC<UpcomingBatchesProps> = ({
                   </div>
 
                   <div className="absolute bottom-3 left-3 right-3 z-10 text-white">
-                    <h3 className="font-['Manrope'] text-lg sm:text-xl font-extrabold leading-tight text-white drop-shadow-sm">
+                    <h3 className="font-['Manrope'] text-lg sm:text-xl font-extrabold leading-tight text-white drop-shadow-sm group-hover/card:text-[#FFD21F] transition-colors">
                       {course.name}
                     </h3>
                   </div>
@@ -155,7 +156,7 @@ export const UpcomingBatches: React.FC<UpcomingBatchesProps> = ({
                 {/* Course Content Details */}
                 <div className="p-5 flex flex-col flex-grow gap-4">
                   {/* Marathi Subtitle & Duration */}
-                  <div className="bg-gray-50 rounded-2xl p-3.5 border border-gray-100">
+                  <div className="bg-gray-50 rounded-2xl p-3.5 border border-gray-100 group-hover/card:bg-gray-100/70 transition-colors">
                     <p className="text-xs sm:text-sm font-semibold text-[#002760] mb-2 leading-relaxed">
                       {course.nameMr}
                     </p>
@@ -199,14 +200,20 @@ export const UpcomingBatches: React.FC<UpcomingBatchesProps> = ({
                   {/* Footer Action Buttons */}
                   <div className="mt-auto flex items-center justify-between gap-3 pt-3 border-t border-gray-100">
                     <button
-                      onClick={() => onSelectCourse(course)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectCourse(course);
+                      }}
                       className={`flex-1 border px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer ${theme.btnOutline}`}
                     >
                       <span>{language === 'mr' ? 'तपशील पहा' : 'View Full Details'}</span>
                       <span className="material-symbols-outlined text-sm">arrow_forward</span>
                     </button>
                     <button
-                      onClick={() => onOpenEnquiryWithCourse(course.name)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onOpenEnquiryWithCourse(course.name);
+                      }}
                       className={`flex-1 px-3 py-2.5 rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer ${theme.btnBg}`}
                     >
                       <span>{language === 'mr' ? 'प्रवेश अर्ज करा' : 'Apply for Admission'}</span>
