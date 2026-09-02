@@ -171,7 +171,7 @@ export const Hero: React.FC<HeroProps> = ({
                 </div>
                 <div className="text-right shrink-0">
                   <span className="text-xs sm:text-sm font-bold text-[#FFD21F] tracking-wide">
-                    {language === 'en' ? 'ESTABLISHED : 2010' : language === 'hi' ? 'स्थापना : २०१०' : 'स्थापना : २०१०'}
+                    {language === 'en' ? 'ESTABLISHED : 1997' : language === 'hi' ? 'स्थापना : १९९७' : 'स्थापना : १९९७'}
                   </span>
                 </div>
               </div>
@@ -201,11 +201,12 @@ export const Hero: React.FC<HeroProps> = ({
 
                 {/* Right Govt/ISO Vocational Examination Emblem Badge */}
                 <div className="shrink-0 flex items-center justify-center">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#002760] to-[#1557C0] p-1.5 border-2 border-[#FFD21F] shadow-lg flex flex-col items-center justify-center text-center">
-                    <span className="material-symbols-outlined text-white text-2xl sm:text-3xl">verified</span>
-                    <span className="text-[8px] sm:text-[9px] font-extrabold text-[#FFD21F] leading-tight uppercase">
-                      ISO 9001:2015
-                    </span>
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white p-1 border-2 border-[#FFD21F] shadow-lg flex items-center justify-center shrink-0 overflow-hidden">
+                    <img
+                      src="/assets/banner_badge.jpg"
+                      alt="Accreditation Seal"
+                      className="w-full h-full object-contain rounded-full"
+                    />
                   </div>
                 </div>
               </div>
@@ -215,10 +216,10 @@ export const Hero: React.FC<HeroProps> = ({
             <div className="bg-[#FFB800] text-[#2D1610] font-bold text-xs sm:text-sm md:text-base py-3 px-4 sm:px-8 text-center border-t border-[#FFD21F]">
               <p className="leading-snug tracking-wide">
                 {language === 'en'
-                  ? 'Shop No. 12-16, 1st Floor, Manasingh Market, Station Road, Jalgaon 425001 • Mob : +91 94234 88174 / 98220 54321'
+                  ? 'Shop No. 12-16, 1st Floor, Manasingh Market, Station Road, Jalgaon 425001 • Mob : +91 94234 88174 / 70404 16582'
                   : language === 'hi'
-                  ? 'दुकान नं. १२-१६, पहली मंजिल, मानसिंह मार्केट, स्टेशन रोड, जलगांव ४२५००१ • मोबा : ९४२३४ ८८१७४ / ९८२२० ५४३२१'
-                  : 'दुकान क्र. १२-१६, पहिला मजला, मानसिंग मार्केट, स्टेशन रोड, जळगाव ४२५००१ • मोबा : ९४२३४ ८८१७४ / ९८२२० ५४३२१'}
+                  ? 'दुकान नं. १२-१६, पहली मंजिल, मानसिंह मार्केट, स्टेशन रोड, जलगांव ४२५००१ • मोबा : ९४२३४ ८८१७४ / ७०४०४ १६५८२'
+                  : 'दुकान क्र. १२-१६, पहिला मजला, मानसिंग मार्केट, स्टेशन रोड, जळगाव ४२५००१ • मोबा : ९४२३४ ८८१७४ / ७०४०४ १६५८२'}
               </p>
             </div>
           </div>

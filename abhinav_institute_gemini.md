@@ -135,5 +135,9 @@
     - Entire course cards across the homepage carousel are now fully interactive with smooth hover lift (`hover:-translate-y-1 hover:shadow-2xl`) and pointer cursor.
     - Clicking anywhere on a course card (photo, title, body, or "View Full Details") immediately opens the full-screen Course Details Modal.
     - Modal now renders bilingual syllabus modules, subjects with MSBSVET codes, career and job opportunities, and dual actions (Direct WhatsApp Inquiry and Online Admission Application).
+16. **Hero Official Banner Updates (`src/components/Hero.tsx`, `public/assets/banner_badge.jpg`):**
+    - Updated established year to 1997 (`ESTABLISHED : 1997` / `स्थापना : १९९७`).
+    - Updated helpline phone numbers to `+91 94234 88174 / 70404 16582` across English, Marathi, and Hindi locales.
+    - Updated right-side banner badge/emblem to the official image (`/assets/banner_badge.jpg`).
 
 
