@@ -204,8 +204,8 @@ export const printOfficialFeeReceipt = (data: FeeReceiptData) => {
   const html = `
     <div class="header">
       <h1>ABHINAV TECHNICAL INSTITUTE</h1>
-      <p>Navi Peth, Mansing Market, Jalgaon, Maharashtra - 425001 • Helpline: +91 94234 88174</p>
-      <div class="reg-info">Govt Recognized • ISO 9001:2015 Certified Vocational Training Center (Est. 1999)</div>
+      <p>First Floor, Mansing Market, near railway station, Jalgaon, Maharashtra 425001, India • Helpline: +91 94234 88174</p>
+      <div class="reg-info">Govt Recognized • ISO 9001:2015 Certified Vocational Training Center (Est. 1997)</div>
       <div class="badge">OFFICIAL ADMISSION FEE RECEIPT</div>
     </div>
 
@@ -287,8 +287,8 @@ export const printCertificateVerificationSlip = (cert: StudentCertificate, qrDat
   const html = `
     <div class="header">
       <h1>ABHINAV TECHNICAL INSTITUTE</h1>
-      <p>Navi Peth, Mansing Market, Jalgaon, Maharashtra - 425001 • Helpline: +91 94234 88174</p>
-      <div class="reg-info">Govt Recognized • ISO 9001:2015 Certified Vocational Training Center (Est. 1999)</div>
+      <p>First Floor, Mansing Market, near railway station, Jalgaon, Maharashtra 425001, India • Helpline: +91 94234 88174</p>
+      <div class="reg-info">Govt Recognized • ISO 9001:2015 Certified Vocational Training Center (Est. 1997)</div>
       <div class="badge" style="background: #047857;">OFFICIAL CERTIFICATE VERIFICATION RECORD</div>
     </div>
 

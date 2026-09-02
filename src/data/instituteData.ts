@@ -751,18 +751,18 @@ export const FAQS: FaqItem[] = [
     question: 'Where is Abhinav Technical Institute located in Jalgaon?',
     questionMr: 'अभिनव टेक्निकल इन्स्टिट्यूट जळगावमध्ये कुठे स्थित आहे?',
     questionHi: 'अभिनव टेक्निकल इंस्टीट्यूट जलगांव में कहां स्थित है?',
-    answer: 'Abhinav Technical Institute is located at Shop No. 12-16, 1st Floor, Manasingh Market, Z P Road, Near Ramnivas Hotel / Railway Station, Navi Peth, Jalgaon - 425001, Maharashtra.',
-    answerMr: 'अभिनव टेक्निकल इन्स्टिट्यूट दु. क्र. १२-१६, पहिला मजला, मानसिंग मार्केट, झेडपी रोड, रामनिवास हॉटेलजवळ, रेल्वे स्थानकाजवळ, नवी पेठ, जळगाव - ४२५००१ येथे स्थित आहे.',
-    answerHi: 'अभिनव टेक्निकल इंस्टीट्यूट दु. नं. १२-१६, पहली मंजिल, मानसिंह मार्केट, जेडपी रोड, रामनिवास होटल व रेलवे स्टेशन के पास, नवी पेठ, जलगांव - ४२५००१ में स्थित है।'
+    answer: 'Abhinav Technical Institute is located at First Floor, Mansing Market, near railway station, Jalgaon, Maharashtra 425001, India.',
+    answerMr: 'अभिनव टेक्निकल इन्स्टिट्यूट पहिला मजला, मानसिंग मार्केट, रेल्वे स्टेशनजवळ, जळगाव, महाराष्ट्र ४२५००१, भारत येथे स्थित आहे.',
+    answerHi: 'अभिनव टेक्निकल इंस्टीट्यूट पहली मंजिल, मानसिंह मार्केट, रेलवे स्टेशन के पास, जलगांव, महाराष्ट्र ४२५००१, भारत में स्थित है।'
   },
   {
     id: 'faq-2',
     question: 'When was Abhinav Technical Institute established?',
     questionMr: 'अभिनव टेक्निकल इन्स्टिट्यूटची स्थापना कधी झाली?',
     questionHi: 'अभिनव टेक्निकल इंस्टीट्यूट की स्थापना कब हुई थी?',
-    answer: 'Abhinav Technical Institute was established in the year 1993, offering over 30+ years of excellence in vocational skill development, computer IT, and ITI technical trade education.',
-    answerMr: 'अभिनव टेक्निकल इन्स्टिट्यूटची स्थापना १९९३ मध्ये झाली असून, ही संस्था मागील ३०+ वर्षांपासून तांत्रिक, संगणक व आयटीआय ट्रेड्स शिक्षणात कार्यरत आहे.',
-    answerHi: 'अभिनव टेक्निकल इंस्टीट्यूट की स्थापना वर्ष १९९३ में हुई थी और यह पिछले ३०+ वर्षों से तकनीकी, कंप्यूटर और आईटीआई ट्रेड्स शिक्षा प्रदान कर रहा है।'
+    answer: 'Abhinav Technical Institute was established in the year 1997, offering over 27+ years of excellence in vocational skill development, computer IT, and ITI technical trade education.',
+    answerMr: 'अभिनव टेक्निकल इन्स्टिट्यूटची स्थापना १९९७ मध्ये झाली असून, ही संस्था मागील २७+ वर्षांपासून तांत्रिक, संगणक व आयटीआय ट्रेड्स शिक्षणात कार्यरत आहे.',
+    answerHi: 'अभिनव टेक्निकल इंस्टीट्यूट की स्थापना वर्ष १९९७ में हुई थी और यह पिछले २७+ वर्षों से तकनीकी, कंप्यूटर और आईटीआई ट्रेड्स शिक्षा प्रदान कर रहा है।'
   },
   {
     id: 'faq-3',

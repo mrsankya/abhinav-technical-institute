@@ -626,7 +626,7 @@ export const StudentSectionModal: React.FC<StudentSectionModalProps> = ({
                 <div className="bg-white p-4 rounded-2xl border border-[#E6ECF3] space-y-1">
                   <span className="font-bold text-[#002760] block">Campus Address</span>
                   <p className="text-[#172033]/80 text-[11px]">
-                    Abhinav Technical Institute, Near Mansing Market, Navi Peth, Jalgaon – 425001.
+                    First Floor, Mansing Market, near railway station, Jalgaon, Maharashtra 425001, India
                   </p>
                 </div>
               </div>

@@ -229,7 +229,7 @@ const CertificateManager: React.FC = () => {
     <img class="institute-logo" src="https://image1.jdomni.in/defaultogimages/v2/A/T/AT.png" alt="logo" />
     <div class="header-title">Abhinav Technical Institute of Industrial Training</div>
     <div style="font-size:7.5pt; color:#92400e; letter-spacing:1px; margin-top:0.5mm;">
-      Navi Peth Jalgaon, Maharashtra 425001 &nbsp;|&nbsp; Ph: +91 94234 88174
+      First Floor, Mansing Market, near railway station, Jalgaon, Maharashtra 425001, India &nbsp;|&nbsp; Ph: +91 94234 88174 / 70404 16582
     </div>
   </div>
 

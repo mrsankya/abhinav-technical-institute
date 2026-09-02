@@ -11,8 +11,8 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
   onOpenContactModal,
 }) => {
   const t = (key: string) => getTranslation(key, language);
-  const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=21.0173839,75.5641877';
-  const iframeSrc = 'https://maps.google.com/maps?q=21.0173839,75.5641877&hl=en&z=17&output=embed';
+  const mapsUrl = 'https://www.google.com/maps/place/Abhinav+Technical+Institute/@21.0173324,75.5636206,19z/data=!4m6!3m5!1s0x3bd90fa2e88aa277:0x7afc00903a74ff53!8m2!3d21.0173324!4d75.5642643!16s%2Fg%2F11b8vf3q30';
+  const iframeSrc = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d885.0260476088392!2d75.56362056956677!3d21.017332398789332!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd90fa2e88aa277%3A0x7afc00903a74ff53!2sAbhinav%20Technical%20Institute!5e1!3m2!1sen!2sus!4v1788375445306!5m2!1sen!2sus';
 
   return (
     <section id="location" className="px-4 md:px-6 max-w-[1200px] mx-auto mb-16 py-8 bg-white">
@@ -36,9 +36,9 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             width="100%"
             height="100%"
             style={{ border: 0 }}
-            allowFullScreen={false}
+            allowFullScreen={true}
             loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
+            referrerPolicy="strict-origin-when-cross-origin"
             className="w-full h-full"
           />
 
