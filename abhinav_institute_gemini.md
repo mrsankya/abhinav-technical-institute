@@ -139,5 +139,8 @@
     - Updated established year to 1997 (`ESTABLISHED : 1997` / `स्थापना : १९९७`).
     - Updated helpline phone numbers to `+91 94234 88174 / 70404 16582` across English, Marathi, and Hindi locales.
     - Updated right-side banner badge/emblem to the official image (`/assets/banner_badge.jpg`).
+17. **Google Maps Embed & Official Address Update (`src/components/LocationSection.tsx`, `src/translations/translations.ts`, `src/services/cms.ts`, `src/data/instituteData.ts`, `src/utils/printUtils.ts`, `src/components/StudentSectionModal.tsx`):**
+    - Updated Google Maps embed iframe and directions link to the official Abhinav Technical Institute place ID on Google Maps (`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d885.0260476088392!2d75.56362056956677!3d21.017332398789332!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd90fa2e88aa277%3A0x7afc00903a74ff53!2sAbhinav%20Technical%20Institute!5e1!3m2!1sen!2sus!4v1788375445306!5m2!1sen!2sus`).
+    - Updated institute address across all pages, footer, hero, student portal, and print templates to: `First Floor, Mansing Market, near railway station, Jalgaon, Maharashtra 425001, India`.
 
 
