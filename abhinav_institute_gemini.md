@@ -179,3 +179,9 @@
     - **Courses Management:** Clean dual option for `Direct Image Link / URL` input alongside file upload button on both Admin Panel and Super Admin Dashboard.
     - **Syllabus & Curriculum Documents:** Added `Option A: Direct PDF / Document Link (URL or Path)` in addition to file upload in SyllabusAdmin.
     - All image links and media entries automatically persist to backend JSON database (`server/content.json`), local storage cache, and Cloudflare D1 SQL database (`site_content` table).
+28. **Header Navigation Links & Hash Routing Synchronization (`src/App.tsx`, `src/components/Header.tsx`):**
+    - Fixed navigation links inside `#main-header > div > nav` (Home, About Us, Courses, Placements, Govt. Orders & GR, Verify Certificate) failing to switch views.
+    - Resolved race condition where `useEffect` in `App.tsx` had `currentPage` in its dependency array, resetting `currentPage` back to `home` on click because stale `window.location.hash` was re-read.
+    - Centralized route management into unified `handleRoute` and `navigateTo` functions, synchronized `window.location.hash` (e.g., `#home`, `#about`, `#batches`, `#placements`, `#gr`, `#verify`), and removed `currentPage` dependency to prevent feedback loops.
+    - Verified smooth scrolling to sections (`#batches`) and smooth scrolling to top for subpages.
+    - Successfully built and redeployed to Cloudflare Pages (`https://master.abhinav-institute.pages.dev`).

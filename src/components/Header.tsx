@@ -258,7 +258,11 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 3. Courses */}
             <button
               onClick={() => handleNavClick('batches')}
-              className="hover:text-[#1557C0] transition-colors cursor-pointer py-1 px-1.5 rounded-md whitespace-nowrap"
+              className={`transition-colors cursor-pointer py-1 px-1.5 rounded-md whitespace-nowrap ${
+                activeTab === 'batches' || activeTab === 'courses'
+                  ? 'text-[#1557C0] font-black'
+                  : 'hover:text-[#1557C0]'
+              }`}
             >
               {t('nav.courses')}
             </button>
@@ -488,7 +492,11 @@ export const Header: React.FC<HeaderProps> = ({
           {/* 3. Courses */}
           <button
             onClick={() => handleNavClick('batches')}
-            className="w-full flex items-center gap-3.5 text-[#172033]/80 hover:bg-[#F4F8FD] hover:text-[#1557C0] rounded-xl px-4 py-3 font-semibold text-sm text-left transition-colors cursor-pointer"
+            className={`w-full flex items-center gap-3.5 rounded-xl px-4 py-3 font-semibold text-sm text-left transition-colors cursor-pointer ${
+              activeTab === 'batches' || activeTab === 'courses'
+                ? 'bg-[#F4F8FD] text-[#1557C0]'
+                : 'text-[#172033]/80 hover:bg-[#F4F8FD] hover:text-[#1557C0]'
+            }`}
           >
             <span className="material-symbols-outlined text-xl text-[#1557C0]">auto_stories</span>
             {t('nav.courses')}

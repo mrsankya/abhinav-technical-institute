@@ -104,73 +104,89 @@ export default function App() {
     return () => window.removeEventListener('ati_cms_updated', handleCmsUpdate);
   }, []);
 
+  // Unified Route Handler
+  const handleRoute = (rawHash?: string) => {
+    const hash = typeof rawHash === 'string' ? rawHash : window.location.hash || '';
+    setCurrentHash(hash);
+    const normalized = hash.toLowerCase();
+
+    if (!normalized || normalized === '#' || normalized === '#home' || normalized === '#hero') {
+      setCurrentPage('home');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (normalized === '#about' || normalized === '#about-us') {
+      setCurrentPage('about');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (normalized === '#placements' || normalized === '#placement' || normalized === '#alumni') {
+      setCurrentPage('placements');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (normalized === '#gr' || normalized === '#govt-gr' || normalized === '#government-gr') {
+      setCurrentPage('gr');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (normalized.startsWith('#verify')) {
+      let certId = '';
+      if (hash.includes('id=')) {
+        certId = hash.split('id=')[1]?.split('&')[0] || '';
+      } else if (hash.startsWith('#verify/')) {
+        certId = hash.replace('#verify/', '');
+      }
+      setVerifyInitialId(certId);
+      setCurrentPage('verify');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (normalized === '#admin') {
+      setIsAdminPanelOpen(true);
+    } else if (normalized.startsWith('#super-admin') || normalized.startsWith('#superadmin')) {
+      // Handled in render
+    } else if (
+      normalized === '#batches' ||
+      normalized === '#courses' ||
+      normalized === '#why-us' ||
+      normalized === '#awards' ||
+      normalized === '#reviews' ||
+      normalized === '#gallery' ||
+      normalized === '#location' ||
+      normalized === '#contact' ||
+      normalized === '#faq'
+    ) {
+      setCurrentPage('home');
+      setTimeout(() => {
+        const targetId = normalized.replace('#', '');
+        const el = document.getElementById(targetId === 'courses' ? 'batches' : targetId === 'contact' ? 'location' : targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 150);
+    } else {
+      // Unknown route -> render 404 Page
+      setCurrentPage('404');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Central navigation helper that updates hash and triggers routing reliably
+  const navigateTo = (route: string) => {
+    const targetHash = route.startsWith('#') ? route : `#${route}`;
+    if (window.location.hash === targetHash) {
+      handleRoute(targetHash);
+    } else {
+      window.location.hash = targetHash;
+    }
+  };
+
   // Hash route listener with 404 fallback
   useEffect(() => {
-    const handleHash = () => {
-      const hash = window.location.hash;
-      setCurrentHash(hash);
-      const normalized = hash.toLowerCase();
-
-      if (!normalized || normalized === '#' || normalized === '#home') {
-        setCurrentPage('home');
-      } else if (normalized === '#about' || normalized === '#about-us') {
-        setCurrentPage('about');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (normalized === '#placements' || normalized === '#placement' || normalized === '#alumni') {
-        setCurrentPage('placements');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (normalized === '#gr' || normalized === '#govt-gr' || normalized === '#government-gr') {
-        setCurrentPage('gr');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (normalized.startsWith('#verify')) {
-        let certId = '';
-        if (hash.includes('id=')) {
-          certId = hash.split('id=')[1]?.split('&')[0] || '';
-        } else if (hash.startsWith('#verify/')) {
-          certId = hash.replace('#verify/', '');
-        }
-        setVerifyInitialId(certId);
-        setCurrentPage('verify');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (normalized === '#admin') {
-        setIsAdminPanelOpen(true);
-      } else if (normalized.startsWith('#super-admin') || normalized.startsWith('#superadmin')) {
-        // Handled in render
-      } else if (
-        normalized === '#batches' ||
-        normalized === '#courses' ||
-        normalized === '#why-us' ||
-        normalized === '#awards' ||
-        normalized === '#reviews' ||
-        normalized === '#gallery' ||
-        normalized === '#location' ||
-        normalized === '#contact' ||
-        normalized === '#faq'
-      ) {
-        if (currentPage !== 'home') {
-          setCurrentPage('home');
-        }
-        setTimeout(() => {
-          const targetId = normalized.replace('#', '');
-          const el = document.getElementById(targetId === 'courses' ? 'batches' : targetId === 'contact' ? 'location' : targetId);
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      } else {
-        // Unknown route -> render 404 Page
-        setCurrentPage('404');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+    const onHashChange = () => {
+      handleRoute();
     };
 
-    handleHash();
-    window.addEventListener('hashchange', handleHash);
-    window.addEventListener('popstate', handleHash);
+    handleRoute();
+    window.addEventListener('hashchange', onHashChange);
+    window.addEventListener('popstate', onHashChange);
 
     return () => {
-      window.removeEventListener('hashchange', handleHash);
-      window.removeEventListener('popstate', handleHash);
+      window.removeEventListener('hashchange', onHashChange);
+      window.removeEventListener('popstate', onHashChange);
     };
-  }, [currentPage]);
+  }, []);
 
   // Dynamic SEO Page Titles & Meta Descriptions Updater
   useEffect(() => {
@@ -229,20 +245,7 @@ export default function App() {
   };
 
   const handleNavigateSection = (sectionId: string) => {
-    if (currentPage !== 'home') {
-      setCurrentPage('home');
-      setTimeout(() => {
-        const el = document.getElementById(sectionId);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    } else {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    navigateTo(sectionId);
   };
 
   const handleAddReview = async (newReview: Partial<Review>) => {
@@ -287,9 +290,7 @@ export default function App() {
     return (
       <SuperAdminDashboard
         onBackToHome={() => {
-          window.location.hash = '';
-          setCurrentHash('');
-          setCurrentPage('home');
+          navigateTo('home');
         }}
       />
     );
@@ -304,30 +305,21 @@ export default function App() {
         onToggleLanguage={handleLanguageChange}
         onOpenEnquiry={() => handleOpenEnquiry()}
         onNavigateSection={(sec) => {
-          if (sec === 'hero' && currentPage !== 'home') {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else {
-            handleNavigateSection(sec);
-          }
+          navigateTo(sec === 'hero' ? 'home' : sec);
         }}
         onOpenAdminPanel={() => setIsAdminPanelOpen(true)}
         onOpenAboutUs={() => {
-          setCurrentPage('about');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo('about');
         }}
         onOpenPlacements={() => {
-          setCurrentPage('placements');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo('placements');
         }}
         onOpenGovernmentGr={() => {
-          setCurrentPage('gr');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo('gr');
         }}
         onOpenCertificateVerify={() => {
           setVerifyInitialId('');
-          setCurrentPage('verify');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo('verify');
         }}
       />
 
@@ -336,14 +328,10 @@ export default function App() {
         <AboutUsPage
           language={language}
           onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('home');
           }}
           onExploreCourses={() => {
-            setCurrentPage('home');
-            setTimeout(() => {
-              handleNavigateSection('batches');
-            }, 100);
+            navigateTo('batches');
           }}
           onOpenEnquiry={() => handleOpenEnquiry()}
           onOpenStudentSection={() => setIsStudentSectionOpen(true)}
@@ -352,8 +340,7 @@ export default function App() {
         <PlacementsPage
           language={language}
           onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('home');
           }}
           onOpenEnquiry={() => handleOpenEnquiry()}
         />
@@ -361,8 +348,7 @@ export default function App() {
         <GovernmentGrPage
           language={language}
           onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('home');
           }}
           onOpenEnquiry={() => handleOpenEnquiry()}
         />
@@ -371,10 +357,7 @@ export default function App() {
           language={language}
           initialId={verifyInitialId}
           onNavigateHome={() => {
-            setCurrentPage('home');
-            window.location.hash = '';
-            setCurrentHash('');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('home');
           }}
           onOpenEnquiry={() => handleOpenEnquiry()}
         />
@@ -382,28 +365,17 @@ export default function App() {
         <NotFoundPage
           language={language}
           onNavigateHome={() => {
-            setCurrentPage('home');
-            window.location.hash = '';
-            setCurrentHash('');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('home');
           }}
           onExploreCourses={() => {
-            setCurrentPage('home');
-            window.location.hash = '#batches';
-            setTimeout(() => {
-              handleNavigateSection('batches');
-            }, 100);
+            navigateTo('batches');
           }}
           onOpenCertificateVerify={() => {
             setVerifyInitialId('');
-            setCurrentPage('verify');
-            window.location.hash = '#verify';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('verify');
           }}
           onOpenGovernmentGr={() => {
-            setCurrentPage('gr');
-            window.location.hash = '#gr';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('gr');
           }}
           onOpenEnquiry={() => handleOpenEnquiry()}
         />
@@ -414,7 +386,7 @@ export default function App() {
           <Hero
             language={language}
             carouselImages={siteContent.hero.carouselImages}
-            onExploreCourses={() => handleNavigateSection('batches')}
+            onExploreCourses={() => navigateTo('batches')}
             onOpenEnquiry={() => handleOpenEnquiry()}
           />
 
@@ -498,31 +470,22 @@ export default function App() {
       <Footer
         language={language}
         onNavigateSection={(sec) => {
-          if (sec === 'hero' && currentPage !== 'home') {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else {
-            handleNavigateSection(sec);
-          }
+          navigateTo(sec === 'hero' ? 'home' : sec);
         }}
         onOpenEnquiryWithCourse={(name) => handleOpenEnquiry(name)}
         onOpenEnquiry={() => handleOpenEnquiry()}
         onOpenAboutUs={() => {
-          setCurrentPage('about');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo('about');
         }}
         onOpenPlacements={() => {
-          setCurrentPage('placements');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo('placements');
         }}
         onOpenGovernmentGr={() => {
-          setCurrentPage('gr');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo('gr');
         }}
         onOpenCertificateVerify={() => {
           setVerifyInitialId('');
-          setCurrentPage('verify');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo('verify');
         }}
       />
 
