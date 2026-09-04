@@ -165,11 +165,10 @@ export default function App() {
   // Central navigation helper that updates hash and triggers routing reliably
   const navigateTo = (route: string) => {
     const targetHash = route.startsWith('#') ? route : `#${route}`;
-    if (window.location.hash === targetHash) {
-      handleRoute(targetHash);
-    } else {
+    if (window.location.hash !== targetHash) {
       window.location.hash = targetHash;
     }
+    handleRoute(targetHash);
   };
 
   // Hash route listener with 404 fallback
