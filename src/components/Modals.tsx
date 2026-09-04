@@ -608,7 +608,7 @@ export const Modals: React.FC<ModalsProps> = ({
             <button
               onClick={() => {
                 onCloseAnnouncementModal();
-                onCloseEnquiry();
+                onApplyForCourse(selectedAnnouncement.title || '');
               }}
               className="w-full bg-[#002760] hover:bg-[#1557C0] text-white font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer"
             >
