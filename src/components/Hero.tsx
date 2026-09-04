@@ -215,11 +215,20 @@ export const Hero: React.FC<HeroProps> = ({
             {/* Bottom Yellow Strip with Full Address & Phone Helplines */}
             <div className="bg-[#FFB800] text-[#2D1610] font-bold text-xs sm:text-sm md:text-base py-3 px-4 sm:px-8 text-center border-t border-[#FFD21F]">
               <p className="leading-snug tracking-wide">
-                {language === 'en'
-                  ? 'First Floor, Mansing Market, near railway station, Jalgaon, Maharashtra 425001, India • Mob : +91 94234 88174 / 70404 16582'
-                  : language === 'hi'
-                  ? 'पहली मंजिल, मानसिंह मार्केट, रेलवे स्टेशन के पास, जलगांव, महाराष्ट्र ४२५००१, भारत • मोबा : ९४२३४ ८८१७४ / ७०४०४ १६५८२'
-                  : 'पहिला मजला, मानसिंग मार्केट, रेल्वे स्टेशनजवळ, जळगाव, महाराष्ट्र ४२५००१, भारत • मोबा : ९४२३४ ८८१७४ / ७०४०४ १६५८२'}
+                <span>
+                  {language === 'en'
+                    ? 'First Floor, Mansing Market, near railway station, Jalgaon, Maharashtra 425001, India • Mob : '
+                    : language === 'hi'
+                    ? 'पहली मंजिल, मानसिंह मार्केट, रेलवे स्टेशन के पास, जलगांव, महाराष्ट्र ४२५००१, भारत • मोबा : '
+                    : 'पहिला मजला, मानसिंग मार्केट, रेल्वे स्टेशनजवळ, जळगाव, महाराष्ट्र ४२५००१, भारत • मोबा : '}
+                </span>
+                <a href="tel:+919423488174" className="hover:underline text-[#002760] font-black inline-block">
+                  +91 94234 88174
+                </a>
+                <span> / </span>
+                <a href="tel:+917040416582" className="hover:underline text-[#002760] font-black inline-block">
+                  70404 16582
+                </a>
               </p>
             </div>
           </div>

@@ -141,6 +141,28 @@
     - Updated right-side banner badge/emblem to the official image (`/assets/banner_badge.jpg`).
 17. **Google Maps Embed & Official Address Update (`src/components/LocationSection.tsx`, `src/translations/translations.ts`, `src/services/cms.ts`, `src/data/instituteData.ts`, `src/utils/printUtils.ts`, `src/components/StudentSectionModal.tsx`):**
     - Updated Google Maps embed iframe and directions link to the official Abhinav Technical Institute place ID on Google Maps (`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d885.0260476088392!2d75.56362056956677!3d21.017332398789332!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd90fa2e88aa277%3A0x7afc00903a74ff53!2sAbhinav%20Technical%20Institute!5e1!3m2!1sen!2sus!4v1788375445306!5m2!1sen!2sus`).
-    - Updated institute address across all pages, footer, hero, student portal, and print templates to: `First Floor, Mansing Market, near railway station, Jalgaon, Maharashtra 425001, India`.
-
-
+18. **SEO Meta Descriptions & Social Sharing Tags (`index.html`, `src/App.tsx`):**
+    - Added comprehensive Open Graph (`og:title`, `og:description`, `og:type`, `og:url`, `og:image`, `og:site_name`, `og:locale`), Twitter Cards (`twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`), meta keywords, canonical tags, theme-color (`#002760`), and mobile web app tags to `index.html`.
+    - Integrated dynamic meta description updater inside `App.tsx` matching the active subpage and language.
+19. **Dynamic Page Titles (`src/App.tsx`):**
+    - Dynamically updates `document.title` on page navigation across Home, About Us, Placements, Govt. GRs, Certificate Verification, 404, Admin Panel, and Super Admin in Marathi and English.
+20. **Clickable Phone Numbers & Clickable Email (`Header.tsx`, `Hero.tsx`, `Footer.tsx`, `LocationSection.tsx`, `Modals.tsx`, `NotFoundPage.tsx`, `CertificateVerificationWidget.tsx`):**
+    - Configured all telephone numbers (`+91 94234 88174` and `+91 70404 16582`) as clickable `tel:+91...` links with phone icons and hover styling.
+    - Configured all institute email references (`info@abhinav-institute.in`) as clickable `mailto:info@abhinav-institute.in` links across header drawer, footer, location card, and 404 page.
+21. **Mobile Menu & Mobile Responsiveness (`src/components/Header.tsx`, `src/index.css`):**
+    - Added high-contrast mobile navigation drawer containing full navigation items (Home, About Us, Courses, Placements, Govt. GRs, Verify Certificate, Quick Enquiry, Telephone, WhatsApp, Email, Language Selector).
+    - Added body scroll lock (`document.body.style.overflow = 'hidden'`) when drawer is open, and close on Escape key press.
+    - Verified mobile overflow (`overflow-x-hidden`) and responsive touch targets >= 44px across all viewport sizes (320px–1440px).
+22. **Empty State Component (`src/components/EmptyState.tsx`):**
+    - Created reusable `EmptyState` component with custom icons, bilingual titles/descriptions, and action buttons.
+    - Integrated in Government GR search (when 0 records match), Certificate Verification (when ID is not found), and 404 page.
+23. **Form Error & Success Messages (`src/components/Modals.tsx`):**
+    - Added real-time inline validation error messages (Name >= 3 chars, 10-digit mobile number, valid email) and red error outlines on Admission Enquiry form.
+    - Added inline error messages on Write Review form (Name >= 2 chars, comment >= 8 chars).
+    - Added animated celebration success screens with direct WhatsApp connection actions.
+24. **Dedicated 404 Page (`src/components/NotFoundPage.tsx`, `src/App.tsx`):**
+    - Created dedicated, beautifully styled 404 Not Found Page with bilingual error explanation, quick navigation buttons (Home, Courses, Certificate Verify, Govt. GRs), and contact helpline.
+    - Linked unknown hash routes directly to 404.
+25. **Fixed Broken Links (`src/components/Footer.tsx`, `src/components/Header.tsx`, `src/App.tsx`):**
+    - Fixed Footer certificate verification link to invoke `onOpenCertificateVerify` instead of scrolling to missing anchor.
+    - Connected Placements, Govt. GRs, and Courses buttons in Footer and Header with dedicated handlers.

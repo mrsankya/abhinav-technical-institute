@@ -86,11 +86,33 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
               <div className="w-10 h-10 rounded-full bg-[#F4F8FD] flex items-center justify-center shrink-0 text-[#1557C0]">
                 <span className="material-symbols-outlined">call</span>
               </div>
+              <div className="flex flex-wrap gap-x-2 text-sm md:text-base font-bold text-[#002760]">
+                <a
+                  href="tel:+919423488174"
+                  className="hover:text-[#1557C0] transition-colors"
+                >
+                  +91 94234 88174
+                </a>
+                <span>/</span>
+                <a
+                  href="tel:+917040416582"
+                  className="hover:text-[#1557C0] transition-colors"
+                >
+                  70404 16582
+                </a>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-full bg-[#F4F8FD] flex items-center justify-center shrink-0 text-[#1557C0]">
+                <span className="material-symbols-outlined">mail</span>
+              </div>
               <a
-                href="tel:+919423488174"
-                className="text-sm md:text-base font-bold text-[#002760] hover:text-[#1557C0] transition-colors"
+                href="mailto:info@abhinav-institute.in"
+                className="text-sm md:text-base font-bold text-[#1557C0] hover:underline transition-colors"
+                title="Email Abhinav Technical Institute"
               >
-                {t('location.helplineVal')}
+                info@abhinav-institute.in
               </a>
             </div>
 

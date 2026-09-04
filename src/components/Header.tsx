@@ -8,7 +8,7 @@ interface HeaderProps {
   onToggleLanguage: (lang: Language) => void;
   onOpenEnquiry: () => void;
   onNavigateSection: (sectionId: string) => void;
-  onOpenStudentSection: () => void;
+  onOpenStudentSection?: () => void;
   onOpenAdminPanel: () => void;
   onOpenAboutUs: () => void;
   onOpenPlacements: () => void;
@@ -71,6 +71,30 @@ export const Header: React.FC<HeaderProps> = ({
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Prevent background scrolling when mobile menu drawer is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
+  // Close on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMenuOpen(false);
+        setIsLangDropdownOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Close dropdown on outside click
@@ -523,14 +547,53 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </nav>
 
-        <div className="p-4 border-t border-[#E6ECF3] bg-[#F4F8FD] text-xs text-[#172033]/70">
-          <p className="font-bold text-[#002760] font-['Manrope','Yantramanav',sans-serif]">
-            {language === 'en' ? 'Abhinav Technical Institute' : language === 'hi' ? 'अभिनव टेक्निकल इंस्टीट्यूट' : 'अभिनव टेक्निकल इन्स्टिट्यूट'}
-          </p>
-          <p>{t('location.addressVal')}</p>
-          <a href="tel:+919423488174" className="text-[#1557C0] font-bold block mt-1">
-            +91 94234 88174
-          </a>
+        <div className="p-4 border-t border-[#E6ECF3] bg-[#F4F8FD] text-xs text-[#172033]/70 space-y-2.5">
+          <div>
+            <p className="font-bold text-[#002760] font-['Manrope','Yantramanav',sans-serif]">
+              {language === 'en' ? 'Abhinav Technical Institute' : language === 'hi' ? 'अभिनव टेक्निकल इंस्टीट्यूट' : 'अभिनव टेक्निकल इन्स्टिट्यूट'}
+            </p>
+            <p className="text-[11px] text-[#172033]/80 mt-0.5">{t('location.addressVal')}</p>
+          </div>
+
+          <div className="space-y-1 pt-1 border-t border-[#E2E8F0]">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm text-[#1557C0]">call</span>
+              <div className="flex flex-wrap gap-x-2 text-xs font-bold text-[#1557C0]">
+                <a href="tel:+919423488174" className="hover:underline">
+                  +91 94234 88174
+                </a>
+                <span>/</span>
+                <a href="tel:+917040416582" className="hover:underline">
+                  70404 16582
+                </a>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm text-[#1557C0]">mail</span>
+              <a
+                href="mailto:info@abhinav-institute.in"
+                className="text-xs font-semibold text-[#1557C0] hover:underline"
+                title="Send Email to Abhinav Technical Institute"
+              >
+                info@abhinav-institute.in
+              </a>
+            </div>
+
+            <div className="pt-1">
+              <a
+                href={`https://wa.me/919423488174?text=${encodeURIComponent('नमस्कार! मला अभिनव टेक्निकल इन्स्टिट्यूट जळगाव मधील प्रवेश, बॅचेस व अभ्यासक्रमाबद्दल माहिती हवी आहे.')}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold rounded-lg transition-colors shadow-xs"
+              >
+                <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.472 14.382c-.301-.15-1.781-.878-2.057-.978-.276-.101-.477-.15-.678.15-.2.3-.778.978-.954 1.179-.176.2-.351.226-.652.075-.301-.15-1.272-.469-2.424-1.496-.897-.799-1.503-1.787-1.68-2.088-.176-.301-.019-.464.132-.614.136-.135.301-.351.452-.527.15-.176.2-.301.301-.502.1-.2.05-.376-.025-.527-.075-.15-.678-1.632-.929-2.235-.245-.588-.493-.508-.678-.518l-.578-.01c-.2 0-.527.075-.803.376s-1.054 1.03-1.054 2.511c0 1.481 1.079 2.911 1.23 3.112.15.201 2.123 3.242 5.143 4.545.718.31 1.279.495 1.716.634.721.23 1.378.197 1.897.12.578-.087 1.781-.728 2.032-1.431.251-.703.251-1.305.176-1.431-.075-.126-.276-.201-.577-.351zM12.04 2C6.495 2 2 6.495 2 12.04c0 1.77.462 3.5 1.341 5.024L2 22l5.098-1.338a10.005 10.005 0 0 0 4.942 1.304c5.545 0 10.04-4.495 10.04-10.04C22.08 6.495 17.585 2 12.04 2zm0 18.258a8.214 8.214 0 0 1-4.19-1.144l-.3-.178-3.114.817.831-3.036-.195-.311a8.204 8.204 0 0 1-1.258-4.366c0-4.542 3.698-8.24 8.24-8.24 4.542 0 8.24 3.698 8.24 8.24 0 4.542-3.698 8.24-8.24 8.24z"/>
+                </svg>
+                <span>WhatsApp Chat</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 

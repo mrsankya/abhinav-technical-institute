@@ -71,6 +71,7 @@ export const Modals: React.FC<ModalsProps> = ({
     qualification: '10th Passed',
     message: '',
   });
+  const [enquiryErrors, setEnquiryErrors] = useState<{ name?: string; phone?: string; email?: string }>({});
   const [enquirySubmitted, setEnquirySubmitted] = useState(false);
   const [whatsappRedirectUrl, setWhatsappRedirectUrl] = useState('');
 
@@ -82,12 +83,42 @@ export const Modals: React.FC<ModalsProps> = ({
     comment: '',
     category: 'Practical Training' as const,
   });
+  const [reviewErrors, setReviewErrors] = useState<{ name?: string; comment?: string }>({});
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
+  const validateEnquiry = () => {
+    const errors: { name?: string; phone?: string; email?: string } = {};
+    const trimmedName = enquiryForm.name.trim();
+    const cleanPhone = enquiryForm.phone.replace(/\D/g, '');
+
+    if (!trimmedName) {
+      errors.name = language === 'mr' ? 'कृपया आपले पूर्ण नाव प्रविष्ट करा.' : 'Please enter your full name.';
+    } else if (trimmedName.length < 3) {
+      errors.name = language === 'mr' ? 'नाव किमान ३ अक्षरांचे असणे आवश्यक आहे.' : 'Name must be at least 3 characters.';
+    }
+
+    if (!cleanPhone) {
+      errors.phone = language === 'mr' ? 'कृपया १० अंकी मोबाईल नंबर प्रविष्ट करा.' : 'Please enter 10-digit mobile number.';
+    } else if (cleanPhone.length < 10) {
+      errors.phone = language === 'mr' ? 'मोबाईल नंबर किमान १० अंकांचा असावा.' : 'Phone number must be at least 10 digits.';
+    }
+
+    if (enquiryForm.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(enquiryForm.email.trim())) {
+      errors.email = language === 'mr' ? 'कृपया वैध ईमेल पत्ता प्रविष्ट करा.' : 'Please enter a valid email address.';
+    }
+
+    setEnquiryErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleEnquirySubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const studentName = (enquiryForm.name || 'Interested Candidate').trim();
-    const studentPhone = (enquiryForm.phone || '').trim();
+    if (!validateEnquiry()) {
+      return;
+    }
+
+    const studentName = enquiryForm.name.trim();
+    const studentPhone = enquiryForm.phone.trim();
     const targetCourse = enquiryForm.course || 'Electrician';
     const qual = enquiryForm.qualification || '10th Passed';
     const userMsg = enquiryForm.message ? `\n💬 *संदेश / प्रश्न:* ${enquiryForm.message.trim()}` : '';
@@ -142,8 +173,22 @@ export const Modals: React.FC<ModalsProps> = ({
     } catch {}
   };
 
+  const validateReview = () => {
+    const errors: { name?: string; comment?: string } = {};
+    if (!reviewForm.name.trim()) {
+      errors.name = language === 'mr' ? 'कृपया आपले नाव प्रविष्ट करा.' : 'Please enter your name.';
+    }
+    if (!reviewForm.comment.trim() || reviewForm.comment.trim().length < 8) {
+      errors.comment = language === 'mr' ? 'कृपया किमान ८ अक्षरांचा अभिप्राय लिहा.' : 'Please write at least 8 characters feedback.';
+    }
+    setReviewErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleReviewSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateReview()) return;
+
     onSubmitReview({
       name: reviewForm.name || 'Verified Student',
       course: reviewForm.course,
@@ -163,6 +208,7 @@ export const Modals: React.FC<ModalsProps> = ({
         comment: '',
         category: 'Practical Training',
       });
+      setReviewErrors({});
     }, 1800);
   };
 
@@ -252,10 +298,21 @@ export const Modals: React.FC<ModalsProps> = ({
                       type="text"
                       required
                       value={enquiryForm.name}
-                      onChange={(e) => setEnquiryForm({ ...enquiryForm, name: e.target.value })}
+                      onChange={(e) => {
+                        setEnquiryForm({ ...enquiryForm, name: e.target.value });
+                        if (enquiryErrors.name) setEnquiryErrors({ ...enquiryErrors, name: undefined });
+                      }}
                       placeholder={t('enquiry.fullNamePlh')}
-                      className="w-full bg-[#F4F8FD] border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:border-[#1557C0] font-medium"
+                      className={`w-full bg-[#F4F8FD] border rounded-xl px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none font-medium transition-all ${
+                        enquiryErrors.name ? 'border-red-400 focus:border-red-500 bg-red-50/20' : 'border-[#CBD5E1] focus:border-[#1557C0]'
+                      }`}
                     />
+                    {enquiryErrors.name && (
+                      <p className="text-[11px] font-bold text-red-600 mt-1 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[13px]">error</span>
+                        <span>{enquiryErrors.name}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -267,10 +324,21 @@ export const Modals: React.FC<ModalsProps> = ({
                         type="tel"
                         required
                         value={enquiryForm.phone}
-                        onChange={(e) => setEnquiryForm({ ...enquiryForm, phone: e.target.value })}
+                        onChange={(e) => {
+                          setEnquiryForm({ ...enquiryForm, phone: e.target.value });
+                          if (enquiryErrors.phone) setEnquiryErrors({ ...enquiryErrors, phone: undefined });
+                        }}
                         placeholder={t('enquiry.phonePlh')}
-                        className="w-full bg-[#F4F8FD] border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:border-[#1557C0] font-medium"
+                        className={`w-full bg-[#F4F8FD] border rounded-xl px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none font-medium transition-all ${
+                          enquiryErrors.phone ? 'border-red-400 focus:border-red-500 bg-red-50/20' : 'border-[#CBD5E1] focus:border-[#1557C0]'
+                        }`}
                       />
+                      {enquiryErrors.phone && (
+                        <p className="text-[11px] font-bold text-red-600 mt-1 flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[13px]">error</span>
+                          <span>{enquiryErrors.phone}</span>
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-[#002760] mb-1">
@@ -614,9 +682,20 @@ export const Modals: React.FC<ModalsProps> = ({
                       type="text"
                       required
                       value={reviewForm.name}
-                      onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
-                      className="w-full bg-[#F4F8FD] border border-[#E6ECF3] rounded-xl px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:border-[#1557C0]"
+                      onChange={(e) => {
+                        setReviewForm({ ...reviewForm, name: e.target.value });
+                        if (reviewErrors.name) setReviewErrors({ ...reviewErrors, name: undefined });
+                      }}
+                      className={`w-full bg-[#F4F8FD] border rounded-xl px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none transition-all ${
+                        reviewErrors.name ? 'border-red-400 focus:border-red-500 bg-red-50/20' : 'border-[#E6ECF3] focus:border-[#1557C0]'
+                      }`}
                     />
+                    {reviewErrors.name && (
+                      <p className="text-[11px] font-bold text-red-600 mt-1 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[13px]">error</span>
+                        <span>{reviewErrors.name}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -627,9 +706,20 @@ export const Modals: React.FC<ModalsProps> = ({
                       required
                       rows={3}
                       value={reviewForm.comment}
-                      onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                      className="w-full bg-[#F4F8FD] border border-[#E6ECF3] rounded-xl px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:border-[#1557C0]"
+                      onChange={(e) => {
+                        setReviewForm({ ...reviewForm, comment: e.target.value });
+                        if (reviewErrors.comment) setReviewErrors({ ...reviewErrors, comment: undefined });
+                      }}
+                      className={`w-full bg-[#F4F8FD] border rounded-xl px-3.5 py-2 text-sm focus:bg-white focus:outline-none transition-all ${
+                        reviewErrors.comment ? 'border-red-400 focus:border-red-500 bg-red-50/20' : 'border-[#E6ECF3] focus:border-[#1557C0]'
+                      }`}
                     />
+                    {reviewErrors.comment && (
+                      <p className="text-[11px] font-bold text-red-600 mt-1 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[13px]">error</span>
+                        <span>{reviewErrors.comment}</span>
+                      </p>
+                    )}
                   </div>
 
                   <button

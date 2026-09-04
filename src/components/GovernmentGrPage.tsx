@@ -3,6 +3,8 @@ import { Language, getTranslation } from '../translations/translations';
 import { GOVERNMENT_GR_LIST, GovernmentGrItem } from '../data/grData';
 import { fetchGovernmentGrs } from '../services/api';
 
+import { EmptyState } from './EmptyState';
+
 interface GovernmentGrPageProps {
   language: Language;
   onNavigateHome: () => void;
@@ -135,12 +137,20 @@ export const GovernmentGrPage: React.FC<GovernmentGrPageProps> = ({
         {/* GR Cards List */}
         <section className="space-y-5">
           {filteredGrs.length === 0 ? (
-            <div className="bg-white rounded-2xl p-12 text-center border border-[#E2E8F0] space-y-3">
-              <span className="material-symbols-outlined text-5xl text-gray-300">find_in_page</span>
-              <p className="text-sm font-bold text-gray-500">
-                {language === 'en' ? 'No matching Government Resolutions found.' : 'कोणताही शासन निर्णय जुळत नाही.'}
-              </p>
-            </div>
+            <EmptyState
+              icon="find_in_page"
+              title="No matching Government Resolutions found"
+              titleMr="कोणताही शासन निर्णय जुळत नाही"
+              description={`No official GR found matching "${searchQuery}". Please try another keyword, GR number or department.`}
+              descriptionMr={`"${searchQuery}" शी जुळणारा कोणताही शासन निर्णय आढळला नाही. कृपया दुसरा कीवर्ड किंवा GR क्रमांक टाकून शोधा.`}
+              language={language}
+              primaryActionLabel="Clear Search"
+              primaryActionLabelMr="शोध रद्द करा"
+              onPrimaryAction={() => setSearchQuery('')}
+              secondaryActionLabel="Contact Support"
+              secondaryActionLabelMr="मदत कक्ष संपर्क"
+              onSecondaryAction={onOpenEnquiry}
+            />
           ) : (
             <div className="grid grid-cols-1 gap-5">
               {filteredGrs.map((gr) => (

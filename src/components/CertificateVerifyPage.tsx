@@ -5,6 +5,7 @@ import { InstituteLogo } from './InstituteLogo';
 import type { StudentCertificate } from '../types';
 import { getCertificateById, fetchCertificates } from '../services/api';
 import { printCertificateVerificationSlip } from '../utils/printUtils';
+import { EmptyState } from './EmptyState';
 
 interface CertificateVerifyPageProps {
   language: Language;
@@ -327,33 +328,22 @@ export const CertificateVerifyPage: React.FC<CertificateVerifyPageProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-3xl border border-rose-200 p-8 text-center space-y-4 shadow-lg">
-                <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto">
-                  <span className="material-symbols-outlined text-3xl">error</span>
-                </div>
-                <div>
-                  <h3 className="font-['Manrope'] text-xl font-bold text-rose-600">
-                    No Matching Record Found
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto mt-1">
-                    No certificate matching ID "<strong>{query}</strong>" was found in our registry. Please check the spelling or contact the institute office.
-                  </p>
-                </div>
-                <div className="flex justify-center gap-3">
-                  <button
-                    onClick={() => handleSampleClick('ATI-2024-884920')}
-                    className="px-4 py-2 bg-[#002760] text-white text-xs font-bold rounded-xl"
-                  >
-                    Try Sample ID (ATI-2024-884920)
-                  </button>
-                  <button
-                    onClick={onOpenEnquiry}
-                    className="px-4 py-2 bg-[#F4F8FD] text-[#002760] text-xs font-bold rounded-xl border border-[#CBD5E1]"
-                  >
-                    Contact Helpline
-                  </button>
-                </div>
-              </div>
+              <EmptyState
+                icon="badge"
+                title="No Matching Certificate Found"
+                titleMr="कोणतीही प्रमाणपत्र नोंद आढळली नाही"
+                description={`No certificate matching ID "${query}" was found in our registry. Please check the roll number or contact the administration desk at +91 94234 88174.`}
+                descriptionMr={`"${query}" या क्रमांकाचे कोणतेही प्रमाणपत्र रेकॉर्ड सापडले नाही. कृपया क्रमांक तपासून पुन्हा प्रयत्न करा किंवा मदत कक्षाशी संपर्क साधा.`}
+                language={language}
+                primaryActionLabel="Try Sample ID (ATI-2024-884920)"
+                primaryActionLabelMr="नमुना आयडी तपासा (ATI-2024-884920)"
+                onPrimaryAction={() => handleSampleClick('ATI-2024-884920')}
+                secondaryActionLabel="Call Helpline (+91 94234 88174)"
+                secondaryActionLabelMr="मदत कक्ष कॉल (+91 94234 88174)"
+                onSecondaryAction={() => {
+                  window.location.href = 'tel:+919423488174';
+                }}
+              />
             )}
           </div>
         )}

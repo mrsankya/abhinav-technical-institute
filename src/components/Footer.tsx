@@ -8,6 +8,9 @@ interface FooterProps {
   onOpenEnquiryWithCourse?: (courseName: string) => void;
   onOpenEnquiry?: () => void;
   onOpenAboutUs?: () => void;
+  onOpenPlacements?: () => void;
+  onOpenGovernmentGr?: () => void;
+  onOpenCertificateVerify?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -16,6 +19,9 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenEnquiryWithCourse,
   onOpenEnquiry,
   onOpenAboutUs,
+  onOpenPlacements,
+  onOpenGovernmentGr,
+  onOpenCertificateVerify,
 }) => {
   const t = (key: string) => getTranslation(key, language);
 
@@ -103,7 +109,7 @@ export const Footer: React.FC<FooterProps> = ({
             <nav className="flex flex-col gap-2.5 text-sm">
               <button
                 onClick={() => onNavigateSection('hero')}
-                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors"
+                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors cursor-pointer"
               >
                 {t('nav.home')}
               </button>
@@ -121,31 +127,41 @@ export const Footer: React.FC<FooterProps> = ({
               </button>
               <button
                 onClick={() => onNavigateSection('batches')}
-                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors"
+                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors cursor-pointer"
               >
                 {t('nav.courses')}
               </button>
               <button
-                onClick={() => onNavigateSection('batches')}
-                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors"
+                onClick={() => {
+                  if (onOpenPlacements) onOpenPlacements();
+                }}
+                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors cursor-pointer"
               >
-                {t('batches.title')}
+                {t('nav.placements')}
+              </button>
+              <button
+                onClick={() => {
+                  if (onOpenGovernmentGr) onOpenGovernmentGr();
+                }}
+                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors cursor-pointer"
+              >
+                {t('nav.gr')}
               </button>
               <button
                 onClick={() => onNavigateSection('reviews')}
-                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors"
+                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors cursor-pointer"
               >
                 {t('reviews.title')}
               </button>
               <button
                 onClick={() => onNavigateSection('gallery')}
-                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors"
+                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors cursor-pointer"
               >
                 {t('nav.gallery')}
               </button>
               <button
                 onClick={() => onNavigateSection('location')}
-                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors"
+                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors cursor-pointer"
               >
                 {t('nav.contact')}
               </button>
@@ -160,15 +176,30 @@ export const Footer: React.FC<FooterProps> = ({
             <nav className="flex flex-col gap-2.5 text-sm">
               <button
                 onClick={onOpenEnquiry}
-                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors"
+                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors cursor-pointer"
               >
                 {t('nav.quickEnquiry')}
               </button>
               <button
-                onClick={() => onNavigateSection('verify')}
-                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors font-bold text-[#FFD21F]"
+                onClick={() => {
+                  if (onOpenCertificateVerify) {
+                    onOpenCertificateVerify();
+                  } else {
+                    onNavigateSection('verify');
+                  }
+                }}
+                className="text-left text-[#FFD21F] hover:underline transition-colors font-bold cursor-pointer inline-flex items-center gap-1.5"
               >
-                {t('nav.certVerification')}
+                <span className="material-symbols-outlined text-[16px]">verified_user</span>
+                <span>{t('nav.certVerification')}</span>
+              </button>
+              <button
+                onClick={() => {
+                  if (onOpenGovernmentGr) onOpenGovernmentGr();
+                }}
+                className="text-left text-white/70 hover:text-[#FFD21F] transition-colors cursor-pointer"
+              >
+                {language === 'mr' ? 'शासन निर्णय व मान्यता' : 'Government GRs & Affiliations'}
               </button>
             </nav>
           </div>
@@ -183,7 +214,7 @@ export const Footer: React.FC<FooterProps> = ({
                 <button
                   key={c}
                   onClick={() => onOpenEnquiryWithCourse && onOpenEnquiryWithCourse(c)}
-                  className="text-left text-white/70 hover:text-[#FFD21F] transition-colors py-0.5 truncate"
+                  className="text-left text-white/70 hover:text-[#FFD21F] transition-colors py-0.5 truncate cursor-pointer"
                 >
                   {c}
                 </button>
@@ -219,9 +250,14 @@ export const Footer: React.FC<FooterProps> = ({
               </span>
               <div>
                 <strong className="block text-white font-['Manrope'] mb-1">{t('location.helplineLabel')}</strong>
-                <a href="tel:+919423488174" className="hover:text-[#FFD21F] transition-colors block text-xs font-bold">
-                  {t('location.helplineVal')}
-                </a>
+                <div className="flex flex-col gap-0.5 text-xs font-bold">
+                  <a href="tel:+919423488174" className="hover:text-[#FFD21F] transition-colors">
+                    +91 94234 88174
+                  </a>
+                  <a href="tel:+917040416582" className="hover:text-[#FFD21F] transition-colors">
+                    +91 70404 16582
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -234,7 +270,7 @@ export const Footer: React.FC<FooterProps> = ({
                 <a href="https://wa.me/919423488174" target="_blank" rel="noreferrer" className="hover:text-[#FFD21F] transition-colors block text-xs font-bold">
                   +91 94234 88174
                 </a>
-                <a href="mailto:info@abhinav-institute.in" className="hover:text-[#FFD21F] transition-colors block text-xs mt-0.5 text-white/70">
+                <a href="mailto:info@abhinav-institute.in" className="hover:text-[#FFD21F] transition-colors block text-xs mt-0.5 text-white/90 underline font-medium">
                   info@abhinav-institute.in
                 </a>
               </div>

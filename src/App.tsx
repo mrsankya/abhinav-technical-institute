@@ -20,6 +20,7 @@ import { PlacementsPage } from './components/PlacementsPage';
 import { GovernmentGrPage } from './components/GovernmentGrPage';
 import { CertificateVerifyPage } from './components/CertificateVerifyPage';
 import { CertificateVerificationWidget } from './components/CertificateVerificationWidget';
+import { NotFoundPage } from './components/NotFoundPage';
 import SuperAdminDashboard from './components/SuperAdminDashboard';
 
 import {
@@ -58,7 +59,7 @@ export default function App() {
     localStorage.setItem('ati_language', lang);
   };
 
-  const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'placements' | 'gr' | 'verify'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'placements' | 'gr' | 'verify' | '404'>('home');
   const [verifyInitialId, setVerifyInitialId] = useState('');
 
   // Interactive modal states
@@ -103,15 +104,24 @@ export default function App() {
     return () => window.removeEventListener('ati_cms_updated', handleCmsUpdate);
   }, []);
 
-  // Hash route listener
+  // Hash route listener with 404 fallback
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash;
       setCurrentHash(hash);
       const normalized = hash.toLowerCase();
 
-      if (normalized === '#admin') {
-        setIsAdminPanelOpen(true);
+      if (!normalized || normalized === '#' || normalized === '#home') {
+        setCurrentPage('home');
+      } else if (normalized === '#about' || normalized === '#about-us') {
+        setCurrentPage('about');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (normalized === '#placements' || normalized === '#placement' || normalized === '#alumni') {
+        setCurrentPage('placements');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (normalized === '#gr' || normalized === '#govt-gr' || normalized === '#government-gr') {
+        setCurrentPage('gr');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (normalized.startsWith('#verify')) {
         let certId = '';
         if (hash.includes('id=')) {
@@ -121,6 +131,33 @@ export default function App() {
         }
         setVerifyInitialId(certId);
         setCurrentPage('verify');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (normalized === '#admin') {
+        setIsAdminPanelOpen(true);
+      } else if (normalized.startsWith('#super-admin') || normalized.startsWith('#superadmin')) {
+        // Handled in render
+      } else if (
+        normalized === '#batches' ||
+        normalized === '#courses' ||
+        normalized === '#why-us' ||
+        normalized === '#awards' ||
+        normalized === '#reviews' ||
+        normalized === '#gallery' ||
+        normalized === '#location' ||
+        normalized === '#contact' ||
+        normalized === '#faq'
+      ) {
+        if (currentPage !== 'home') {
+          setCurrentPage('home');
+        }
+        setTimeout(() => {
+          const targetId = normalized.replace('#', '');
+          const el = document.getElementById(targetId === 'courses' ? 'batches' : targetId === 'contact' ? 'location' : targetId);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } else {
+        // Unknown route -> render 404 Page
+        setCurrentPage('404');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     };
@@ -133,7 +170,58 @@ export default function App() {
       window.removeEventListener('hashchange', handleHash);
       window.removeEventListener('popstate', handleHash);
     };
-  }, []);
+  }, [currentPage]);
+
+  // Dynamic SEO Page Titles & Meta Descriptions Updater
+  useEffect(() => {
+    const normalized = (currentHash || '').toLowerCase();
+    let title = 'Abhinav Technical Institute | Industrial Training & Skill Development, Jalgaon';
+    let desc = 'Abhinav Technical Institute (ATI Jalgaon) - Govt. Recognized & ISO 9001:2015 Certified Vocational Training Centre. 100% Practical Industrial Training.';
+
+    if (normalized.startsWith('#super-admin') || normalized.startsWith('#superadmin')) {
+      title = 'Super Admin Console | Abhinav Technical Institute';
+      desc = 'Administrative management and database control console for Abhinav Technical Institute.';
+    } else if (isAdminPanelOpen || normalized === '#admin') {
+      title = 'Admin Panel & Leads CRM | Abhinav Technical Institute';
+      desc = 'Institute administration portal for certificates, admissions, student leads, and notifications.';
+    } else if (currentPage === 'about') {
+      title = language === 'mr'
+        ? 'आमच्याबद्दल (About Us) | अभिनव टेक्निकल इन्स्टिट्यूट जळगाव'
+        : 'About Us & Leadership | Abhinav Technical Institute Jalgaon';
+      desc = 'Learn about Abhinav Technical Institute Jalgaon, established in 1999 by Principal Er. P.R. Patil. 100% practical lab training and government accreditations.';
+    } else if (currentPage === 'placements') {
+      title = language === 'mr'
+        ? 'प्लेसमेंट व यशोगाथा (Placements) | अभिनव टेक्निकल इन्स्टिट्यूट'
+        : 'Placements & Successful Alumni Stories | Abhinav Technical Institute';
+      desc = 'Explore placement records, PWD contractor registration licensing, and self-employment successes of ATI alumni.';
+    } else if (currentPage === 'gr') {
+      title = language === 'mr'
+        ? 'शासन निर्णय व मान्यता (Govt. GRs) | अभिनव टेक्निकल इन्स्टिट्यूट'
+        : 'Government Resolutions & Affiliations (GRs) | Abhinav Technical Institute';
+      desc = 'Verified Maharashtra Government Resolutions for 12th standard equivalency, DVET affiliations, and job eligibility.';
+    } else if (currentPage === 'verify') {
+      title = language === 'mr'
+        ? 'प्रमाणपत्र पडताळणी (Verify Certificate) | अभिनव टेक्निकल इन्स्टिट्यूट'
+        : 'Online Certificate Verification Portal | Abhinav Technical Institute';
+      desc = 'Verify official student vocational course completion certificates in real-time from institutional registry.';
+    } else if (currentPage === '404') {
+      title = language === 'mr'
+        ? '४०४ - पृष्ठ सापडले नाही (Page Not Found) | अभिनव टेक्निकल इन्स्टिट्यूट'
+        : '404 - Page Not Found | Abhinav Technical Institute';
+      desc = 'The page you are looking for does not exist or has been moved.';
+    } else {
+      title = language === 'mr'
+        ? 'अभिनव टेक्निकल इन्स्टिट्यूट जळगाव | व्यावसायिक तांत्रिक प्रशिक्षण केंद्र'
+        : 'Abhinav Technical Institute | Practical Technical Education & Skill Development, Jalgaon';
+      desc = 'Abhinav Technical Institute Jalgaon - Practical technical training in Electrician, Diesel Mechanic, Construction Supervisor, DMLT, and IT trades.';
+    }
+
+    document.title = title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', desc);
+    }
+  }, [currentPage, currentHash, isAdminPanelOpen, language]);
 
   const handleOpenEnquiry = (courseName?: string) => {
     setSelectedCourseForEnquiry(courseName || '');
@@ -290,6 +378,35 @@ export default function App() {
           }}
           onOpenEnquiry={() => handleOpenEnquiry()}
         />
+      ) : currentPage === '404' ? (
+        <NotFoundPage
+          language={language}
+          onNavigateHome={() => {
+            setCurrentPage('home');
+            window.location.hash = '';
+            setCurrentHash('');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onExploreCourses={() => {
+            setCurrentPage('home');
+            window.location.hash = '#batches';
+            setTimeout(() => {
+              handleNavigateSection('batches');
+            }, 100);
+          }}
+          onOpenCertificateVerify={() => {
+            setVerifyInitialId('');
+            setCurrentPage('verify');
+            window.location.hash = '#verify';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onOpenGovernmentGr={() => {
+            setCurrentPage('gr');
+            window.location.hash = '#gr';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onOpenEnquiry={() => handleOpenEnquiry()}
+        />
       ) : (
         /* Main Home Content Sections */
         <main className="relative bg-gradient-to-b from-[#F4F8FD] to-white overflow-x-hidden pb-12">
@@ -381,7 +498,7 @@ export default function App() {
       <Footer
         language={language}
         onNavigateSection={(sec) => {
-          if (sec === 'hero' && currentPage === 'about') {
+          if (sec === 'hero' && currentPage !== 'home') {
             setCurrentPage('home');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           } else {
@@ -392,6 +509,19 @@ export default function App() {
         onOpenEnquiry={() => handleOpenEnquiry()}
         onOpenAboutUs={() => {
           setCurrentPage('about');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenPlacements={() => {
+          setCurrentPage('placements');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenGovernmentGr={() => {
+          setCurrentPage('gr');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenCertificateVerify={() => {
+          setVerifyInitialId('');
+          setCurrentPage('verify');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />

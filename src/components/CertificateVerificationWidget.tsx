@@ -202,9 +202,16 @@ export const CertificateVerificationWidget: React.FC<CertificateVerificationWidg
             ) : (
               <div className="bg-red-500/20 border border-red-500/40 rounded-2xl p-4 text-center">
                 <span className="material-symbols-outlined text-red-300 text-3xl mb-1">warning</span>
-                <p className="text-sm font-bold text-red-200">No matching certificate record found</p>
-                <p className="text-xs text-white/70 mt-1">
-                  Please verify the roll number or contact the administration desk at +91 94234 88174.
+                <p className="text-sm font-bold text-red-200">
+                  {language === 'mr' ? 'कोणतीही प्रमाणपत्र नोंद आढळली नाही' : 'No matching certificate record found'}
+                </p>
+                <p className="text-xs text-white/80 mt-1">
+                  {language === 'mr'
+                    ? 'कृपया रोल नंबर तपासा किंवा मदत कक्ष क्रमांकावर संपर्क साधा: '
+                    : 'Please verify the roll number or contact the administration desk at: '}
+                  <a href="tel:+919423488174" className="text-[#FFD21F] hover:underline font-bold inline-block">
+                    +91 94234 88174
+                  </a>
                 </p>
               </div>
             )}
