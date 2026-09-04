@@ -1522,44 +1522,6 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onBackToHome 
                         </div>
                       </div>
 
-                      {/* Row 5.5: Course Image & Photo Uploader */}
-                      <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-2">
-                        <label className="font-bold text-slate-300 block text-xs">
-                          Course Cover Photo (कोर्सचे छायाचित्र)
-                        </label>
-                        <div className="flex flex-col sm:flex-row items-center gap-3">
-                          {courseForm.image && (
-                            <img
-                              src={courseForm.image}
-                              alt="Course preview"
-                              className="w-24 h-16 object-cover rounded-xl border border-slate-700 shrink-0"
-                            />
-                          )}
-                          <div className="flex-1 w-full space-y-2">
-                            <input
-                              type="text"
-                              value={courseForm.image || ''}
-                              onChange={(e) => setCourseForm({ ...courseForm, image: e.target.value })}
-                              placeholder="https://... or upload photo from device"
-                              className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-orange-500"
-                            />
-                            <div className="flex items-center gap-2">
-                              <label className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg cursor-pointer transition-colors">
-                                <Camera className="w-3.5 h-3.5 text-orange-400" />
-                                <span>Upload Photo from Device</span>
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleUploadModalCourseImage}
-                                  className="hidden"
-                                />
-                              </label>
-                              <span className="text-[10px] text-slate-500">Auto-compressed WebP</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
                       {/* Row 6: Descriptions */}
                       <div>
                         <label className="font-bold text-slate-300 block mb-1">

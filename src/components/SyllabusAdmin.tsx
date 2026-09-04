@@ -207,6 +207,10 @@ const SyllabusAdmin: React.FC<SyllabusAdminProps> = ({ isSuperAdmin = false }) =
 
   const downloadSyllabusFile = (syllabus: Syllabus) => {
     if (syllabus.fileData) {
+      if (syllabus.fileData.startsWith('http://') || syllabus.fileData.startsWith('https://')) {
+        window.open(syllabus.fileData, '_blank');
+        return;
+      }
       const a = document.createElement('a');
       a.href = syllabus.fileData;
       a.download = syllabus.fileName || `${syllabus.courseCode}_Syllabus.pdf`;
@@ -497,26 +501,55 @@ const SyllabusAdmin: React.FC<SyllabusAdminProps> = ({ isSuperAdmin = false }) =
               </div>
 
               {/* PDF Document Upload Area */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Upload Official PDF / Document (Optional)
+              <div className="space-y-3">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Official PDF / Curriculum Document (Upload File or Paste Link)
                 </label>
-                <div className="border-2 border-dashed border-slate-300 rounded-2xl p-4 bg-slate-50 hover:bg-slate-100/80 transition-colors text-center cursor-pointer relative">
+
+                {/* Direct Link Input */}
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    🔗 Option A: Direct PDF / Document Link (URL or Path)
+                  </label>
                   <input
-                    type="file"
-                    accept=".pdf,.doc,.docx,.txt"
-                    onChange={handleFileUpload}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    type="text"
+                    placeholder="https://... or /gr/my-syllabus.pdf or Google Drive link"
+                    value={form.fileData && !form.fileData.startsWith('data:') ? form.fileData : ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setForm(prev => ({
+                        ...prev,
+                        fileData: val,
+                        fileName: val ? (prev.fileName || `${form.courseCode || 'Course'}_Curriculum.pdf`) : prev.fileName,
+                        fileSize: val ? 'Web Document' : '',
+                      }));
+                    }}
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 font-mono"
                   />
-                  <Upload className="h-6 w-6 text-orange-500 mx-auto mb-1" />
-                  <p className="text-xs font-semibold text-slate-700">
-                    {form.fileName ? (
-                      <span className="text-emerald-700 font-bold">Selected: {form.fileName} ({form.fileSize})</span>
-                    ) : (
-                      'Click to upload syllabus PDF (Max 5MB)'
-                    )}
-                  </p>
-                  <p className="text-[11px] text-slate-400">PDF, DOC, or TXT files supported</p>
+                </div>
+
+                {/* File Upload Dropzone */}
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    📁 Option B: Upload PDF / Document from Device
+                  </label>
+                  <div className="border-2 border-dashed border-slate-300 rounded-2xl p-4 bg-slate-50 hover:bg-slate-100/80 transition-colors text-center cursor-pointer relative">
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.txt"
+                      onChange={handleFileUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                    <Upload className="h-6 w-6 text-orange-500 mx-auto mb-1" />
+                    <p className="text-xs font-semibold text-slate-700">
+                      {form.fileName ? (
+                        <span className="text-emerald-700 font-bold">Selected: {form.fileName} ({form.fileSize || 'Attached'})</span>
+                      ) : (
+                        'Click or drag to upload syllabus PDF (Max 5MB)'
+                      )}
+                    </p>
+                    <p className="text-[11px] text-slate-400">PDF, DOC, or TXT files supported</p>
+                  </div>
                 </div>
               </div>
 

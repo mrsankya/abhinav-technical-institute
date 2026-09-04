@@ -172,3 +172,10 @@
     - Created `public/sitemap.xml` listing canonical URL and subpages with lastmod and changefreq tags.
     - Configured `public/robots.txt` allowing all search engines and referencing `https://abhinav-institute.pages.dev/sitemap.xml`.
     - Committed and pushed to GitHub `origin main`.
+27. **Universal Direct Image/Media Link Option & Database Storage (`src/components/AdminPanelModal.tsx`, `src/components/SuperAdminDashboard.tsx`, `src/components/SyllabusAdmin.tsx`):**
+    - **Hero Slider CMS:** Added `+ Add Slide via Link/URL` option and direct URL input on each slide.
+    - **Awards & Ceremony Media Gallery:** Added `+ Add Photo via Link/URL` button at the top and direct `Photo Link / Direct Image URL` text input on each photo card with live preview.
+    - **Campus & Workshop Gallery Photos:** Added `+ Add Photo via Link/URL` button in header, and direct `Photo Link / Direct Image URL`, category, and bilingual captions on each gallery photo card.
+    - **Courses Management:** Clean dual option for `Direct Image Link / URL` input alongside file upload button on both Admin Panel and Super Admin Dashboard.
+    - **Syllabus & Curriculum Documents:** Added `Option A: Direct PDF / Document Link (URL or Path)` in addition to file upload in SyllabusAdmin.
+    - All image links and media entries automatically persist to backend JSON database (`server/content.json`), local storage cache, and Cloudflare D1 SQL database (`site_content` table).

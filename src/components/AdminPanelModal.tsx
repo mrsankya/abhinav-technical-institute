@@ -410,6 +410,35 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     });
   };
 
+  const handleAddHeroSlideByUrl = () => {
+    const url = window.prompt(
+      'Enter direct image link or web URL for new Hero Slide:\n(e.g. https://... or /assets/...)',
+      'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&auto=format&fit=crop&q=80'
+    );
+    if (!url || !url.trim()) return;
+    const newSlide = {
+      src: url.trim(),
+      alt: 'ATI Practical Training Workshop',
+      title: 'Workshop Practical Training Lab',
+      titleMr: 'कार्यशाळा प्रात्यक्षिक लॅब',
+      category: 'Live Workshop',
+      categoryMr: 'प्रात्यक्षिक कार्यशाळा',
+      desc: 'Hands-on practical training with modern equipment and safety tools.',
+      descMr: 'सुरक्षित उपकरणांसह आधुनिक वायरिंग आणि प्रॅक्टिकल कार्यशाळा.',
+    };
+    setSiteContent((prev) => {
+      const heroSlides = [...(prev.hero.carouselImages && prev.hero.carouselImages.length > 0 ? prev.hero.carouselImages : HERO_CAROUSEL_IMAGES)];
+      return {
+        ...prev,
+        hero: {
+          ...prev.hero,
+          carouselImages: [newSlide, ...heroSlides],
+        },
+      };
+    });
+    showToast('Hero Slide Added', 'New slide added with image URL. Remember to click "Save All Website Changes" to sync to database.', 'info');
+  };
+
   const handleDeleteHeroSlide = (index: number) => {
     const heroSlides = siteContent.hero.carouselImages && siteContent.hero.carouselImages.length > 0 ? siteContent.hero.carouselImages : HERO_CAROUSEL_IMAGES;
     if (heroSlides.length <= 1) {
@@ -508,6 +537,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         ...prev,
         gallery: [newItem, ...prev.gallery],
       }));
+      showToast('Gallery Photo Added', `Uploaded "${file.name}" to gallery.`, 'info');
     } catch (err) {
       alert('Failed to read image');
     }
@@ -527,6 +557,28 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       ...siteContent,
       gallery: [newItem, ...siteContent.gallery],
     });
+  };
+
+  const handleAddGalleryImageByUrl = () => {
+    const url = window.prompt(
+      'Enter direct image link or web URL for Campus / Workshop Gallery:\n(e.g. https://... or /assets/...)',
+      'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80'
+    );
+    if (!url || !url.trim()) return;
+    const newItem: GalleryItem = {
+      id: `gal-${Date.now()}`,
+      src: url.trim(),
+      alt: 'Campus & Workshop Practical Photo',
+      title: 'Workshop Practical Training Lab',
+      titleMr: 'कार्यशाळा प्रॅक्टिकल लॅब',
+      category: 'Workshop',
+      categoryMr: 'कार्यशाळा',
+    };
+    setSiteContent((prev) => ({
+      ...prev,
+      gallery: [newItem, ...prev.gallery],
+    }));
+    showToast('Gallery Photo Added', 'Photo added via URL. Click "Save All Website Changes" to sync to database.', 'info');
   };
 
   const handleDeleteGalleryImage = (id: string) => {
@@ -754,9 +806,39 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           },
         };
       });
+      showToast('Award Photo Added', `Uploaded ceremony photograph "${file.name}".`, 'info');
     } catch (err) {
       alert('Failed to read image');
     }
+  };
+
+  const handleAddAwardImageByUrl = () => {
+    const url = window.prompt(
+      'Enter direct image link or web URL for new Award Ceremony Photograph:\n(e.g. https://... or /assets/awards/...)',
+      'https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?w=1200&auto=format&fit=crop&q=80'
+    );
+    if (!url || !url.trim()) return;
+    const newMedia: AwardMediaItem = {
+      id: `award-img-${Date.now()}`,
+      type: 'image',
+      src: url.trim(),
+      title: 'Award Ceremony Photograph',
+      titleMr: 'सन्मान सोहळा छायाचित्र',
+      description: 'Prestigious award ceremony moment',
+      descriptionMr: 'सन्मान सोहळ्यातील अविस्मरणीय क्षण',
+      badge: 'Ceremony Photo',
+    };
+    setSiteContent((prev) => {
+      const awards = prev.awards || INITIAL_SITE_CONTENT.awards;
+      return {
+        ...prev,
+        awards: {
+          ...awards,
+          gallery: [newMedia, ...awards.gallery],
+        },
+      };
+    });
+    showToast('Award Photo Added', 'Photo added via URL. Click "Save All Website Changes" to sync to database.', 'info');
   };
 
   const handleDeleteAwardImage = (id: string) => {
@@ -1893,11 +1975,21 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
                             <button
                               type="button"
-                              onClick={handleAddHeroSlide}
+                              onClick={handleAddHeroSlideByUrl}
                               className="px-3.5 py-2 bg-[#002760] hover:bg-[#1557C0] text-white text-xs font-bold rounded-xl shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
+                              title="Add new slide by pasting direct image link or web URL"
+                            >
+                              <span className="material-symbols-outlined text-base">link</span>
+                              <span>+ Add Slide via Link/URL</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={handleAddHeroSlide}
+                              className="px-3.5 py-2 bg-white hover:bg-gray-50 text-[#002760] text-xs font-bold rounded-xl border border-gray-300 shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
                             >
                               <span className="material-symbols-outlined text-base">add</span>
-                              <span>Add Slide</span>
+                              <span>Add Default Slide</span>
                             </button>
 
                             <label className="px-4 py-2 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] text-xs font-black rounded-xl shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5">
@@ -2541,16 +2633,28 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                             </p>
                           </div>
 
-                          <label className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] text-xs font-black rounded-xl shadow-xs cursor-pointer transition-all hover:scale-105 active:scale-95 self-start sm:self-auto">
-                            <span className="material-symbols-outlined text-base">add_photo_alternate</span>
-                            <span>Add New Ceremony Photo</span>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={handleUploadNewAwardImage}
-                            />
-                          </label>
+                          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                            <button
+                              type="button"
+                              onClick={handleAddAwardImageByUrl}
+                              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#002760] hover:bg-[#1557C0] text-white text-xs font-bold rounded-xl shadow-xs cursor-pointer transition-all"
+                              title="Add ceremony photo by pasting direct image link or web URL"
+                            >
+                              <span className="material-symbols-outlined text-base">link</span>
+                              <span>+ Add Photo via Link/URL</span>
+                            </button>
+
+                            <label className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] text-xs font-black rounded-xl shadow-xs cursor-pointer transition-all hover:scale-105 active:scale-95">
+                              <span className="material-symbols-outlined text-base">add_photo_alternate</span>
+                              <span>📁 Upload Photo from PC</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleUploadNewAwardImage}
+                              />
+                            </label>
+                          </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -2564,6 +2668,9 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                                   src={photo.src}
                                   alt={photo.title}
                                   className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as any).src = 'https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?w=800';
+                                  }}
                                 />
                                 {photo.badge && (
                                   <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 text-[#FFD21F] text-[10px] font-black uppercase tracking-wider border border-white/20">
@@ -2593,6 +2700,26 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                               </div>
 
                               <div className="space-y-1.5">
+                                <div>
+                                  <label className="text-[10px] text-[#172033]/70 font-bold block">
+                                    Photo Link / Direct Image URL
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={photo.src || ''}
+                                    onChange={(e) => {
+                                      const updated = [...siteContent.awards.gallery];
+                                      updated[idx] = { ...updated[idx], src: e.target.value };
+                                      setSiteContent({
+                                        ...siteContent,
+                                        awards: { ...siteContent.awards, gallery: updated },
+                                      });
+                                    }}
+                                    placeholder="https://... or /assets/awards/..."
+                                    className="w-full px-2 py-1 bg-white border border-[#CBD5E1] rounded-lg text-[11px] font-mono"
+                                  />
+                                </div>
+
                                 <div>
                                   <label className="text-[10px] text-[#172033]/70 font-bold block">Badge / Tag</label>
                                   <input
@@ -3154,13 +3281,23 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                             Manage Workshop & Campus Gallery Photos
                           </h5>
                           <p className="text-xs text-[#172033]/70">
-                            Upload photos directly from PC or phone to update the campus gallery.
+                            Upload photos directly from PC or phone, or paste direct image links to update the campus gallery.
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <label className="px-3.5 py-1.5 bg-[#002760] hover:bg-[#1557C0] text-white text-xs font-bold rounded-xl shadow-xs cursor-pointer inline-flex items-center gap-1.5 transition-all">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={handleAddGalleryImageByUrl}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#002760] hover:bg-[#1557C0] text-white text-xs font-bold rounded-xl shadow-xs cursor-pointer transition-all"
+                            title="Add gallery photo by pasting direct image link or web URL"
+                          >
+                            <span className="material-symbols-outlined text-base">link</span>
+                            <span>+ Add Photo via Link/URL</span>
+                          </button>
+
+                          <label className="px-3.5 py-2 bg-[#FFD21F] hover:bg-[#f0c20f] text-[#002760] text-xs font-black rounded-xl shadow-xs cursor-pointer inline-flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95">
                             <span className="material-symbols-outlined text-[16px]">add_photo_alternate</span>
-                            <span>📁 Upload New Photo from PC</span>
+                            <span>📁 Upload Photo from PC</span>
                             <input
                               type="file"
                               accept="image/*"
@@ -3175,47 +3312,104 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                         {siteContent.gallery.map((g, idx) => (
                           <div
                             key={g.id}
-                            className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-2xl p-3 space-y-2 text-xs shadow-2xs"
+                            className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-2xl p-3.5 space-y-2.5 text-xs shadow-2xs hover:shadow-xs transition-shadow"
                           >
-                            <img
-                              src={g.src}
-                              alt={g.alt}
-                              className="w-full h-32 object-cover rounded-xl border border-[#E6ECF3]"
-                              onError={(e) => {
-                                (e.target as any).src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
-                              }}
-                            />
-                            <div className="space-y-1.5">
-                              <div className="flex items-center justify-between gap-2">
-                                <label className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-[#CBD5E1] hover:bg-gray-100 rounded-lg text-[10px] font-bold cursor-pointer transition-all">
-                                  <span className="material-symbols-outlined text-[14px]">refresh</span>
-                                  <span>Replace Photo</span>
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={(e) => handleUploadGalleryImage(idx, e)}
-                                  />
+                            <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-900 border border-[#E2E8F0]">
+                              <img
+                                src={g.src}
+                                alt={g.alt || g.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as any).src = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
+                                }}
+                              />
+                              {(g.categoryMr || g.category) && (
+                                <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 text-[#FFD21F] text-[10px] font-black uppercase tracking-wider border border-white/20">
+                                  {g.categoryMr || g.category}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center justify-between gap-2 pt-1">
+                              <label className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-[#CBD5E1] hover:bg-gray-100 rounded-lg text-[10px] font-bold cursor-pointer transition-all">
+                                <span className="material-symbols-outlined text-[13px]">refresh</span>
+                                <span>Replace Photo</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={(e) => handleUploadGalleryImage(idx, e)}
+                                />
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteGalleryImage(g.id)}
+                                className="text-rose-600 hover:text-rose-700 text-[10px] font-bold underline cursor-pointer"
+                              >
+                                Delete
+                              </button>
+                            </div>
+
+                            <div className="space-y-2">
+                              <div>
+                                <label className="text-[10px] text-[#172033]/70 font-bold block">
+                                  Photo Link / Direct Image URL
                                 </label>
-                                <button
-                                  onClick={() => handleDeleteGalleryImage(g.id)}
-                                  className="text-rose-600 hover:text-rose-700 text-[10px] font-bold underline cursor-pointer"
-                                >
-                                  Delete
-                                </button>
+                                <input
+                                  type="text"
+                                  value={g.src || ''}
+                                  onChange={(e) => {
+                                    const updated = [...siteContent.gallery];
+                                    updated[idx] = { ...updated[idx], src: e.target.value };
+                                    setSiteContent({ ...siteContent, gallery: updated });
+                                  }}
+                                  placeholder="https://... or /assets/..."
+                                  className="w-full px-2 py-1 bg-white border border-[#CBD5E1] rounded-lg text-[11px] font-mono"
+                                />
                               </div>
 
                               <div>
-                                <label className="text-[10px] text-[#172033]/60 font-bold block">Caption / Title</label>
+                                <label className="text-[10px] text-[#172033]/70 font-bold block">Category / Trade Tag</label>
                                 <input
                                   type="text"
-                                  value={g.title}
+                                  value={g.categoryMr || g.category || ''}
+                                  onChange={(e) => {
+                                    const updated = [...siteContent.gallery];
+                                    updated[idx] = { ...updated[idx], categoryMr: e.target.value, category: e.target.value };
+                                    setSiteContent({ ...siteContent, gallery: updated });
+                                  }}
+                                  placeholder="उदा: संगणक लॅब / कार्यशाळा"
+                                  className="w-full px-2 py-1 bg-white border border-[#CBD5E1] rounded-lg text-xs"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="text-[10px] text-[#172033]/70 font-bold block">Caption / Title (मराठी)</label>
+                                <input
+                                  type="text"
+                                  value={g.titleMr || ''}
+                                  onChange={(e) => {
+                                    const updated = [...siteContent.gallery];
+                                    updated[idx] = { ...updated[idx], titleMr: e.target.value };
+                                    setSiteContent({ ...siteContent, gallery: updated });
+                                  }}
+                                  placeholder="उदा: प्रॅक्टिकल कार्यशाळा लॅब"
+                                  className="w-full px-2 py-1 bg-white border border-[#CBD5E1] rounded-lg text-xs font-bold"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="text-[10px] text-[#172033]/70 font-bold block">Caption / Title (English)</label>
+                                <input
+                                  type="text"
+                                  value={g.title || ''}
                                   onChange={(e) => {
                                     const updated = [...siteContent.gallery];
                                     updated[idx] = { ...updated[idx], title: e.target.value };
                                     setSiteContent({ ...siteContent, gallery: updated });
                                   }}
-                                  className="w-full px-2 py-1 bg-white border border-[#CBD5E1] rounded-lg text-xs font-bold"
+                                  placeholder="e.g. Electrical Machine & Motor Lab"
+                                  className="w-full px-2 py-1 bg-white border border-[#CBD5E1] rounded-lg text-xs"
                                 />
                               </div>
                             </div>
