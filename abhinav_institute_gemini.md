@@ -184,4 +184,7 @@
     - Resolved race condition where `useEffect` in `App.tsx` had `currentPage` in its dependency array, resetting `currentPage` back to `home` on click because stale `window.location.hash` was re-read.
     - Centralized route management into unified `handleRoute` and `navigateTo` functions, synchronized `window.location.hash` (e.g., `#home`, `#about`, `#batches`, `#placements`, `#gr`, `#verify`), and removed `currentPage` dependency to prevent feedback loops.
     - Verified smooth scrolling to sections (`#batches`) and smooth scrolling to top for subpages.
-    - Successfully built and redeployed to Cloudflare Pages (`https://master.abhinav-institute.pages.dev`).
+    - Successfully built and redeployed to Cloudflare Pages (`https://abhinav-institute.pages.dev`).
+29. **Announcement Details Modal Quick Enquiry Action Fix (`src/components/Modals.tsx`):**
+    - Fixed the Quick Enquiry button inside the Announcement details modal which was incorrectly calling `onCloseEnquiry()` instead of opening the admission enquiry form with `onApplyForCourse(...)`.
+    - Built and deployed live to production.
