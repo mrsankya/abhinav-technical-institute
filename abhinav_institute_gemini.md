@@ -166,3 +166,9 @@
 25. **Fixed Broken Links (`src/components/Footer.tsx`, `src/components/Header.tsx`, `src/App.tsx`):**
     - Fixed Footer certificate verification link to invoke `onOpenCertificateVerify` instead of scrolling to missing anchor.
     - Connected Placements, Govt. GRs, and Courses buttons in Footer and Header with dedicated handlers.
+26. **Google Search Console Verification & XML Sitemap (`public/google7c887052e4cacd33.html`, `public/sitemap.xml`, `public/robots.txt`, `index.html`):**
+    - Embedded verification file `public/google7c887052e4cacd33.html` matching Google Search Console token `google7c887052e4cacd33`.
+    - Added `<meta name="google-site-verification" content="google7c887052e4cacd33" />` in `<head>` for HTML tag verification fallback.
+    - Created `public/sitemap.xml` listing canonical URL and subpages with lastmod and changefreq tags.
+    - Configured `public/robots.txt` allowing all search engines and referencing `https://abhinav-institute.pages.dev/sitemap.xml`.
+    - Committed and pushed to GitHub `origin main`.
