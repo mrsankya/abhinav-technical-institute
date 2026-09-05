@@ -3,4 +3,4 @@ Allow: /
 Disallow: /#super-admin
 Disallow: /#admin
 
-Sitemap: https://abhinav-institute.pages.dev/sitemap.xml
+Sitemap: https://abhinavtech.in/sitemap.xml
