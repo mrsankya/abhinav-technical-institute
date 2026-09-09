@@ -257,6 +257,33 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         if (data && Object.keys(data).length > 0) setCourseAdmissions(data);
       });
     }
+
+    const handleCertUpdated = (e: any) => {
+      if (e.detail && (e.detail.regNumber || e.detail.id)) {
+        const updated = e.detail;
+        const key = String(updated.regNumber || updated.id).toUpperCase().trim();
+        setCertsList((prev) => ({ ...prev, [key]: updated }));
+      }
+    };
+
+    const handleCertDeleted = (e: any) => {
+      if (e.detail) {
+        const key = String(e.detail).toUpperCase().trim();
+        setCertsList((prev) => {
+          const next = { ...prev };
+          delete next[key];
+          return next;
+        });
+      }
+    };
+
+    window.addEventListener('ati_certificates_updated', handleCertUpdated);
+    window.addEventListener('ati_certificates_deleted', handleCertDeleted);
+
+    return () => {
+      window.removeEventListener('ati_certificates_updated', handleCertUpdated);
+      window.removeEventListener('ati_certificates_deleted', handleCertDeleted);
+    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -929,10 +956,14 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   const handleCreateCertificate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCert.studentName || !newCert.regNumber) return;
+    if (!newCert.studentName || !newCert.regNumber) {
+      alert('Please provide student name and registration number.');
+      return;
+    }
 
-    const certToSave: StudentCertificate = {
-      regNumber: newCert.regNumber.trim().toUpperCase(),
+    const regNum = newCert.regNumber.trim().toUpperCase();
+    const certToSave: StudentCertificate & { fatherName?: string; remarks?: string } = {
+      regNumber: regNum,
       studentName: newCert.studentName.trim(),
       courseName: newCert.courseName || 'Electrician Trade',
       grade: newCert.grade || 'A Grade',
@@ -941,37 +972,43 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       validUntil: newCert.validUntil || 'Lifetime Valid',
       status: 'Valid',
       instituteCenter: newCert.instituteCenter || 'Abhinav Technical Institute, Main Campus Jalgaon',
+      fatherName: newCert.fatherName?.trim() || '',
+      remarks: newCert.remarks?.trim() || '',
     };
 
-    await saveCertificate(certToSave);
-    setCertsList((prev) => ({
-      ...prev,
-      [certToSave.regNumber]: certToSave,
-    }));
-    onAddCertificate(certToSave);
+    try {
+      const saved = await saveCertificate(certToSave);
+      setCertsList((prev) => ({
+        ...prev,
+        [saved.regNumber]: saved,
+      }));
+      onAddCertificate(saved);
 
-    setCertCreatedSuccess(true);
-    showToast(
-      'Certificate Issued & Registered',
-      `Certificate ${certToSave.regNumber} for ${certToSave.studentName} is registered in database.`,
-      'success'
-    );
-    setTimeout(() => {
-      setCertCreatedSuccess(false);
-      setNewCert({
-        regNumber: `ATI-2025-${Math.floor(100000 + Math.random() * 900000)}`,
-        studentName: '',
-        fatherName: '',
-        courseName: 'Electrician',
-        grade: 'A+ (Distinction)',
-        percentage: '88.5%',
-        issueDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        validUntil: 'Lifetime Valid',
-        status: 'Valid',
-        instituteCenter: 'Abhinav Technical Institute, Main Campus Jalgaon',
-        remarks: 'Distinction in Practical Training & Electrical Machine Lab',
-      });
-    }, 2500);
+      setCertCreatedSuccess(true);
+      showToast(
+        'Certificate Issued & Registered',
+        `Certificate ${saved.regNumber} for ${saved.studentName} is registered in database.`,
+        'success'
+      );
+      setTimeout(() => {
+        setCertCreatedSuccess(false);
+        setNewCert({
+          regNumber: `ATI-2025-${Math.floor(100000 + Math.random() * 900000)}`,
+          studentName: '',
+          fatherName: '',
+          courseName: 'Electrician',
+          grade: 'A+ (Distinction)',
+          percentage: '88.5%',
+          issueDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+          validUntil: 'Lifetime Valid',
+          status: 'Valid',
+          instituteCenter: 'Abhinav Technical Institute, Main Campus Jalgaon',
+          remarks: 'Distinction in Practical Training & Electrical Machine Lab',
+        });
+      }, 2500);
+    } catch (err) {
+      showToast('Error', 'Failed to save certificate: ' + String(err), 'error');
+    }
   };
 
   const handleDeleteCertificate = async (regNumber: string) => {

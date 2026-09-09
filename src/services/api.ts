@@ -80,24 +80,29 @@ function getInitialCertificatesMap(): Record<string, StudentCertificate> {
 // ----------------------
 export async function fetchCertificates(): Promise<Record<string, StudentCertificate>> {
   try {
-    const res = await fetch(`${API_BASE}/certificates`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`${API_BASE}/certificates`, {
+      signal: AbortSignal.timeout(4000),
+      cache: 'no-cache',
+    });
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
         const map: Record<string, StudentCertificate> = {};
         data.forEach((c: any) => {
-          const key = c.regNumber || c.id;
-          map[key] = {
-            regNumber: key,
-            studentName: c.studentName,
-            courseName: c.courseName || c.course,
-            grade: c.grade || 'A Grade',
-            percentage: c.percentage || '85%',
-            issueDate: c.issueDate || 'Recent',
-            validUntil: c.validUntil || 'Lifetime Valid',
-            status: c.status || (c.isValid !== false ? 'Valid' : 'Expired'),
-            instituteCenter: c.instituteCenter || 'Abhinav Technical Institute, Main Campus Jalgaon',
-          };
+          const key = String(c.regNumber || c.id || '').toUpperCase().trim();
+          if (key) {
+            map[key] = {
+              regNumber: key,
+              studentName: c.studentName || c.student_name || '',
+              courseName: c.courseName || c.course || c.course_name || 'Vocational Trade',
+              grade: c.grade || 'A Grade',
+              percentage: c.percentage || '85%',
+              issueDate: c.issueDate || c.issue_date || 'Recent',
+              validUntil: c.validUntil || c.valid_until || 'Lifetime Valid',
+              status: c.status || (c.isValid !== false ? 'Valid' : 'Expired'),
+              instituteCenter: c.instituteCenter || c.institute_center || 'Abhinav Technical Institute, Main Campus Jalgaon',
+            };
+          }
         });
         localStorage.setItem('ati_certificates', JSON.stringify(map));
         return map;
@@ -122,20 +127,22 @@ export async function getCertificateById(id: string): Promise<StudentCertificate
   const cleaned = id.trim().toUpperCase();
   try {
     const res = await fetch(`${API_BASE}/certificates/${encodeURIComponent(cleaned)}`, {
-      signal: AbortSignal.timeout(3000),
+      signal: AbortSignal.timeout(4000),
+      cache: 'no-cache',
     });
     if (res.ok) {
       const c = await res.json();
+      const key = String(c.regNumber || c.id || cleaned).toUpperCase().trim();
       return {
-        regNumber: c.regNumber || c.id,
-        studentName: c.studentName,
-        courseName: c.courseName || c.course,
+        regNumber: key,
+        studentName: c.studentName || c.student_name || '',
+        courseName: c.courseName || c.course || c.course_name || 'Vocational Trade',
         grade: c.grade || 'A Grade',
         percentage: c.percentage || '85%',
-        issueDate: c.issueDate || 'Recent',
-        validUntil: c.validUntil || 'Lifetime Valid',
+        issueDate: c.issueDate || c.issue_date || 'Recent',
+        validUntil: c.validUntil || c.valid_until || 'Lifetime Valid',
         status: c.status || (c.isValid !== false ? 'Valid' : 'Expired'),
-        instituteCenter: c.instituteCenter || 'Abhinav Technical Institute, Main Campus Jalgaon',
+        instituteCenter: c.instituteCenter || c.institute_center || 'Abhinav Technical Institute, Main Campus Jalgaon',
       };
     }
   } catch (e) {}
@@ -150,33 +157,113 @@ export async function getCertificateById(id: string): Promise<StudentCertificate
   return null;
 }
 
-export async function saveCertificate(cert: StudentCertificate): Promise<StudentCertificate> {
+export async function saveCertificate(cert: StudentCertificate & { fatherName?: string; remarks?: string }): Promise<StudentCertificate> {
+  let savedCert = cert;
   try {
-    await fetch(`${API_BASE}/certificates`, {
+    const res = await fetch(`${API_BASE}/certificates`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(cert),
-      signal: AbortSignal.timeout(3000),
+      signal: AbortSignal.timeout(8000),
     });
+    if (res.ok) {
+      const respData = await res.json();
+      if (respData && (respData.regNumber || respData.id)) {
+        savedCert = {
+          ...cert,
+          ...respData,
+          regNumber: respData.regNumber || respData.id,
+        };
+      }
+    }
+  } catch (e) {
+    console.warn('Network error while saving certificate to backend:', e);
+  }
+
+  // Update local storage for immediate offline & reactive UI access
+  let currentMap: Record<string, StudentCertificate> = {};
+  const stored = localStorage.getItem('ati_certificates');
+  if (stored) {
+    try {
+      currentMap = JSON.parse(stored);
+    } catch {}
+  }
+  if (!currentMap || Object.keys(currentMap).length === 0) {
+    currentMap = getInitialCertificatesMap();
+  }
+
+  const normKey = savedCert.regNumber.toUpperCase().trim();
+  currentMap[normKey] = savedCert;
+  localStorage.setItem('ati_certificates', JSON.stringify(currentMap));
+
+  // Also sync to abhinav_certificates for Super Admin and CertificateManager compatibility
+  try {
+    const abhinavStored = localStorage.getItem('abhinav_certificates');
+    const abhinavList: any[] = abhinavStored ? JSON.parse(abhinavStored) : [];
+    const existingIdx = abhinavList.findIndex(
+      (c) => String(c.id || c.regNumber || '').toUpperCase() === normKey
+    );
+    const superAdminObj = {
+      id: normKey,
+      studentName: savedCert.studentName,
+      fatherName: cert.fatherName || '',
+      course: savedCert.courseName,
+      grade: savedCert.grade,
+      startDate: '01-Aug-2023',
+      endDate: '31-Jul-2024',
+      issueDate: savedCert.issueDate,
+      isValid: savedCert.status === 'Valid',
+      remarks: cert.remarks || '',
+    };
+    if (existingIdx >= 0) {
+      abhinavList[existingIdx] = superAdminObj;
+    } else {
+      abhinavList.unshift(superAdminObj);
+    }
+    localStorage.setItem('abhinav_certificates', JSON.stringify(abhinavList));
   } catch (e) {}
 
-  const all = await fetchCertificates();
-  all[cert.regNumber] = cert;
-  localStorage.setItem('ati_certificates', JSON.stringify(all));
-  return cert;
+  // Dispatch custom and storage event so open modals/pages immediately refresh
+  window.dispatchEvent(new CustomEvent('ati_certificates_updated', { detail: savedCert }));
+  window.dispatchEvent(new Event('storage'));
+
+  return savedCert;
 }
 
 export async function deleteCertificate(regNumber: string): Promise<boolean> {
+  const normKey = regNumber.toUpperCase().trim();
   try {
-    await fetch(`${API_BASE}/certificates/${encodeURIComponent(regNumber)}`, {
+    await fetch(`${API_BASE}/certificates/${encodeURIComponent(normKey)}`, {
       method: 'DELETE',
-      signal: AbortSignal.timeout(3000),
+      signal: AbortSignal.timeout(5000),
     });
-  } catch (e) {}
+  } catch (e) {
+    console.warn('Network error deleting certificate from backend:', e);
+  }
 
-  const all = await fetchCertificates();
-  delete all[regNumber];
-  localStorage.setItem('ati_certificates', JSON.stringify(all));
+  const stored = localStorage.getItem('ati_certificates');
+  if (stored) {
+    try {
+      const all = JSON.parse(stored);
+      delete all[normKey];
+      delete all[regNumber];
+      localStorage.setItem('ati_certificates', JSON.stringify(all));
+    } catch {}
+  }
+
+  try {
+    const abhinavStored = localStorage.getItem('abhinav_certificates');
+    if (abhinavStored) {
+      const abhinavList: any[] = JSON.parse(abhinavStored);
+      const filtered = abhinavList.filter(
+        (c) => String(c.id || c.regNumber || '').toUpperCase() !== normKey
+      );
+      localStorage.setItem('abhinav_certificates', JSON.stringify(filtered));
+    }
+  } catch {}
+
+  window.dispatchEvent(new CustomEvent('ati_certificates_deleted', { detail: normKey }));
+  window.dispatchEvent(new Event('storage'));
   return true;
 }
 

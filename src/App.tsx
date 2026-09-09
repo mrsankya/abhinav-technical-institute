@@ -100,8 +100,35 @@ export default function App() {
         setSiteContent(e.detail);
       }
     };
+
+    const handleCertUpdate = (e: any) => {
+      if (e.detail && (e.detail.regNumber || e.detail.id)) {
+        const c = e.detail;
+        const key = String(c.regNumber || c.id).toUpperCase().trim();
+        setCertificates((prev) => ({ ...prev, [key]: c }));
+      }
+    };
+
+    const handleCertDelete = (e: any) => {
+      if (e.detail) {
+        const key = String(e.detail).toUpperCase().trim();
+        setCertificates((prev) => {
+          const next = { ...prev };
+          delete next[key];
+          return next;
+        });
+      }
+    };
+
     window.addEventListener('ati_cms_updated', handleCmsUpdate);
-    return () => window.removeEventListener('ati_cms_updated', handleCmsUpdate);
+    window.addEventListener('ati_certificates_updated', handleCertUpdate);
+    window.addEventListener('ati_certificates_deleted', handleCertDelete);
+
+    return () => {
+      window.removeEventListener('ati_cms_updated', handleCmsUpdate);
+      window.removeEventListener('ati_certificates_updated', handleCertUpdate);
+      window.removeEventListener('ati_certificates_deleted', handleCertDelete);
+    };
   }, []);
 
   // Unified Route Handler
