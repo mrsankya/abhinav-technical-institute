@@ -198,3 +198,30 @@
     - The institute website is now officially live on the custom domain **[https://abhinavtech.in](https://abhinavtech.in)**.
     - Canonical tags, Open Graph meta tags, Twitter cards, Schema.org LD+JSON structured data, `robots.txt`, and `sitemap.xml` are all synchronized with `abhinavtech.in`.
     - Cloudflare Pages custom domain routing and SSL certificate are fully configured and active.
+32. **Enhanced Certificate Verification System (9 Official Fields + Student Photo + Cloudflare D1 Database Storage):**
+    - Upgraded certificate verification and issuance across the full stack to capture and verify:
+      1. **Name** (`studentName`)
+      2. **Student Date of Birth** (`studentDob`)
+      3. **Enrollment No.** (`enrollmentNo` / `regNumber`)
+      4. **Institute Name** (`instituteName`)
+      5. **Course Name** (`courseName`)
+      6. **Result Status** (`resultStatus`)
+      7. **Total Marks** (`totalMarks`)
+      8. **Duration** (`duration`)
+      9. **Exam Year** (`examYear`)
+      + **Student Photograph** (`photo` / `studentPhoto`): Admin can upload passport-size student photos with client-side compression (`compressAndReadFile`), storing directly into Cloudflare D1 database SQLite `raw_json`.
+    - **Cloudflare Pages Functions & Backend (`functions/api/certificates/index.js`, `functions/api/certificates/[id].js`, `server/server.cjs`):**
+      - Full extraction and JSON serialization of all 9 fields plus photo into D1 SQLite database `certificates.raw_json` and local cache.
+      - Lookup endpoint `/api/certificates/[id]` returns all 9 fields and photo for both alphanumeric registration IDs and standard enrollment numbers.
+    - **Admin Panel Modal (`src/components/AdminPanelModal.tsx`):**
+      - Direct photo upload card with preview thumbnail, change/remove photo buttons.
+      - 9 dedicated input fields with auto-fill defaults and validation.
+      - Issued certificates repository table shows photo thumbnail, enrollment number, student name, DOB, course, result status, marks, exam year, QR code, and print action.
+    - **Verification Portal (`src/components/CertificateVerifyPage.tsx`):**
+      - Header prominently displays student photograph and verified digital seal.
+      - Official 9 verification details grid displaying all 9 fields in high-contrast institutional styling.
+    - **Homepage Widget (`src/components/CertificateVerificationWidget.tsx`):**
+      - Updated result card with student photo thumbnail, enrollment number, and all 9 verification fields.
+    - **Official Print Slip (`src/utils/printUtils.ts`):**
+      - Updated `printCertificateVerificationSlip` to display the student photo at top-right and print an official tabular verification slip with all 9 fields.
+

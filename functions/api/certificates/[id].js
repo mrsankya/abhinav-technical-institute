@@ -59,22 +59,41 @@ export async function onRequestGet(context) {
         } catch {}
       }
 
-      const regNumber = row.reg_number || parsed.regNumber || parsed.id || id;
+      const regNumber = row.reg_number || parsed.regNumber || parsed.enrollmentNo || parsed.id || id;
+      const enrollmentNo = parsed.enrollmentNo || regNumber;
+      const studentName = row.student_name || parsed.studentName || '';
+      const studentDob = parsed.studentDob || parsed.dob || '';
+      const instituteName = parsed.instituteName || row.institute_center || parsed.instituteCenter || 'Abhinav Technical Institute, Jalgaon';
+      const courseName = row.course_name || parsed.courseName || parsed.course || 'Vocational Trade';
+      const resultStatus = parsed.resultStatus || row.grade || parsed.grade || 'Passed';
+      const totalMarks = parsed.totalMarks || row.percentage || parsed.percentage || '';
+      const duration = parsed.duration || '1 Year';
+      const examYear = parsed.examYear || parsed.year || '';
+      const photo = parsed.photo || parsed.studentPhoto || '';
+
       const formatted = {
         ...parsed,
         regNumber,
         id: regNumber,
-        studentName: row.student_name || parsed.studentName || '',
-        fatherName: parsed.fatherName || '',
-        courseName: row.course_name || parsed.courseName || parsed.course || 'Vocational Trade',
-        course: parsed.course || row.course_name || 'Vocational Trade',
-        grade: row.grade || parsed.grade || 'A Grade',
-        percentage: row.percentage || parsed.percentage || '85%',
+        enrollmentNo,
+        studentName,
+        studentDob,
+        instituteName,
+        instituteCenter: instituteName,
+        courseName,
+        course: courseName,
+        resultStatus,
+        grade: resultStatus,
+        totalMarks,
+        percentage: totalMarks || row.percentage || '85%',
+        duration,
+        examYear,
+        photo,
+        studentPhoto: photo,
         issueDate: row.issue_date || parsed.issueDate || '',
         validUntil: row.valid_until || parsed.validUntil || 'Lifetime Valid',
         status: row.status || parsed.status || 'Valid',
         isValid: (row.status || parsed.status) === 'Valid',
-        instituteCenter: row.institute_center || parsed.instituteCenter || 'Abhinav Technical Institute, Main Campus Jalgaon',
         remarks: row.remarks || parsed.remarks || '',
       };
 

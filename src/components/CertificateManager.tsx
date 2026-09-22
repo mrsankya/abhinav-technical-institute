@@ -9,12 +9,22 @@ import { INITIAL_CERTIFICATES } from '../data/initialCertificates';
 
 export interface Certificate {
   id: string;           // e.g. ATI-2024-000123
+  enrollmentNo?: string;
   studentName: string;
-  fatherName: string;
+  studentDob?: string;
+  instituteName?: string;
+  courseName?: string;
+  resultStatus?: string;
+  totalMarks?: string;
+  duration?: string;
+  examYear?: string;
+  photo?: string;
+  studentPhoto?: string;
+  fatherName?: string;
   course: string;
   grade: string;        // A+, A, B+, B, C
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
   issueDate: string;
   isValid: boolean;
   remarks?: string;

@@ -284,6 +284,12 @@ export const printCertificateVerificationSlip = (cert: StudentCertificate, qrDat
   const verifyUrl = `${window.location.origin}/#verify?id=${encodeURIComponent(cert.regNumber)}`;
   const dateStr = cert.issueDate || new Date().toLocaleDateString('en-GB');
 
+  const photoHtml = cert.photo || cert.studentPhoto
+    ? `<div style="text-align: center; margin-bottom: 14px;">
+        <img src="${cert.photo || cert.studentPhoto}" alt="${cert.studentName}" style="width: 100px; height: 120px; object-fit: cover; border-radius: 8px; border: 2px solid #002760; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" />
+      </div>`
+    : '';
+
   const html = `
     <div class="header">
       <h1>ABHINAV TECHNICAL INSTITUTE</h1>
@@ -291,6 +297,8 @@ export const printCertificateVerificationSlip = (cert: StudentCertificate, qrDat
       <div class="reg-info">Govt Recognized • ISO 9001:2015 Certified Vocational Training Center (Est. 1997)</div>
       <div class="badge" style="background: #047857;">OFFICIAL CERTIFICATE VERIFICATION RECORD</div>
     </div>
+
+    ${photoHtml}
 
     <div style="background: #ecfdf5; border: 1.5px solid #10b981; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
       <div>
@@ -302,26 +310,46 @@ export const printCertificateVerificationSlip = (cert: StudentCertificate, qrDat
         </div>
       </div>
       <div style="background: #10b981; color: #fff; font-weight: 900; font-size: 12px; padding: 4px 10px; border-radius: 6px;">
-        STATUS: VALID
+        STATUS: ${cert.status || 'VALID'}
       </div>
     </div>
 
     <table class="grid-table">
       <tr>
-        <td class="label">Certificate / Registration ID</td>
-        <td class="value font-mono" style="color: #002760; font-size: 15px;">${cert.regNumber}</td>
-      </tr>
-      <tr>
         <td class="label">Candidate Full Name</td>
-        <td class="value" style="font-size: 16px; color: #002760; text-transform: uppercase;">${cert.studentName}</td>
+        <td class="value" style="font-size: 16px; color: #002760; text-transform: uppercase; font-weight: 800;">${cert.studentName}</td>
       </tr>
       <tr>
-        <td class="label">Vocational Trade / Course</td>
-        <td class="value" style="color: #1557c0; font-size: 14px;">${cert.courseName}</td>
+        <td class="label">Student Date of Birth</td>
+        <td class="value font-bold">${cert.studentDob || '—'}</td>
       </tr>
       <tr>
-        <td class="label">Performance / Grade Awarded</td>
-        <td class="value" style="color: #047857; font-size: 14px;">${cert.grade} ${cert.percentage ? `(${cert.percentage})` : ''}</td>
+        <td class="label">Enrollment / Registration No.</td>
+        <td class="value font-mono" style="color: #002760; font-size: 15px; font-weight: 800;">${cert.enrollmentNo || cert.regNumber}</td>
+      </tr>
+      <tr>
+        <td class="label">Institute Name</td>
+        <td class="value font-bold" style="color: #002760;">${cert.instituteName || cert.instituteCenter || 'Abhinav Technical Institute, Jalgaon'}</td>
+      </tr>
+      <tr>
+        <td class="label">Course / Trade Name</td>
+        <td class="value" style="color: #1557c0; font-size: 14px; font-weight: bold;">${cert.courseName}</td>
+      </tr>
+      <tr>
+        <td class="label">Result Status</td>
+        <td class="value" style="color: #047857; font-size: 14px; font-weight: 800;">${cert.resultStatus || cert.grade}</td>
+      </tr>
+      <tr>
+        <td class="label">Total Marks / Percentage</td>
+        <td class="value" style="font-weight: 800; color: #002760;">${cert.totalMarks || cert.percentage || '—'}</td>
+      </tr>
+      <tr>
+        <td class="label">Course Duration</td>
+        <td class="value">${cert.duration || '1 Year'}</td>
+      </tr>
+      <tr>
+        <td class="label">Exam Year / Session</td>
+        <td class="value font-bold">${cert.examYear || '—'}</td>
       </tr>
       <tr>
         <td class="label">Date of Issuance</td>
@@ -329,11 +357,7 @@ export const printCertificateVerificationSlip = (cert: StudentCertificate, qrDat
       </tr>
       <tr>
         <td class="label">Credential Validity</td>
-        <td class="value" style="color: #047857;">${cert.validUntil || 'Lifetime Valid'}</td>
-      </tr>
-      <tr>
-        <td class="label">Examination Authority</td>
-        <td class="value">${cert.instituteCenter || 'Abhinav Technical Institute, Main Campus Jalgaon'}</td>
+        <td class="value" style="color: #047857; font-weight: bold;">${cert.validUntil || 'Lifetime Valid'}</td>
       </tr>
     </table>
 

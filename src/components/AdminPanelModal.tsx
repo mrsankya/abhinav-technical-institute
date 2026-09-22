@@ -191,20 +191,51 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   // New certificate form
   const [newCert, setNewCert] = useState<Partial<StudentCertificate> & { fatherName?: string; remarks?: string }>({
     regNumber: `ATI-2025-${Math.floor(100000 + Math.random() * 900000)}`,
+    enrollmentNo: `ATI-2025-${Math.floor(100000 + Math.random() * 900000)}`,
     studentName: '',
-    fatherName: '',
+    studentDob: '',
+    instituteName: 'Abhinav Technical Institute, Jalgaon',
+    instituteCenter: 'Abhinav Technical Institute, Mansing Market, Jalgaon',
     courseName: 'Electrician',
+    resultStatus: 'Passed with Distinction',
     grade: 'A+ (Distinction)',
-    percentage: '88.5%',
+    totalMarks: '850/1000 (85%)',
+    percentage: '85%',
+    duration: '1 Year',
+    examYear: '2025',
+    photo: '',
+    studentPhoto: '',
+    fatherName: '',
     issueDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
     validUntil: 'Lifetime Valid',
     status: 'Valid',
-    instituteCenter: 'Abhinav Technical Institute, Main Campus Jalgaon',
     remarks: 'Distinction in Practical Training & Electrical Machine Lab',
   });
   const [certCreatedSuccess, setCertCreatedSuccess] = useState(false);
   const [selectedQrStudent, setSelectedQrStudent] = useState<StudentCertificate | null>(null);
   const [selectedQrCodeUrl, setSelectedQrCodeUrl] = useState<string>('');
+  const [manualCourseMode, setManualCourseMode] = useState(false);
+  const [customCourseNames, setCustomCourseNames] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('ati_custom_course_names');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const handleAddCustomCourseName = (courseName: string) => {
+    const trimmed = courseName.trim();
+    if (!trimmed) return;
+    if (!customCourseNames.includes(trimmed)) {
+      const next = [...customCourseNames, trimmed];
+      setCustomCourseNames(next);
+      try {
+        localStorage.setItem('ati_custom_course_names', JSON.stringify(next));
+      } catch {}
+    }
+    setNewCert((prev) => ({ ...prev, courseName: trimmed }));
+  };
 
   // Receipt / ID card generator state
   const [receiptData, setReceiptData] = useState({
@@ -954,25 +985,51 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     document.body.removeChild(link);
   };
 
+  const handleCertPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await compressAndReadFile(file, 400, 450, 0.82);
+      setNewCert((prev) => ({
+        ...prev,
+        photo: dataUrl,
+        studentPhoto: dataUrl,
+      }));
+      showToast('Student Photo Attached', `Photo "${file.name}" compressed and attached to record.`, 'success');
+    } catch (err) {
+      alert('Failed to read image file');
+    }
+  };
+
   const handleCreateCertificate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCert.studentName || !newCert.regNumber) {
-      alert('Please provide student name and registration number.');
+    if (!newCert.studentName || (!newCert.regNumber && !newCert.enrollmentNo)) {
+      alert('Please provide student name and enrollment/registration number.');
       return;
     }
 
-    const regNum = newCert.regNumber.trim().toUpperCase();
-    const certToSave: StudentCertificate & { fatherName?: string; remarks?: string } = {
+    const regNum = (newCert.enrollmentNo || newCert.regNumber || '').trim().toUpperCase();
+    const certToSave: StudentCertificate = {
       regNumber: regNum,
+      enrollmentNo: regNum,
       studentName: newCert.studentName.trim(),
-      courseName: newCert.courseName || 'Electrician Trade',
-      grade: newCert.grade || 'A Grade',
-      percentage: newCert.percentage || '85%',
-      issueDate: newCert.issueDate || new Date().toLocaleDateString('en-GB'),
+      studentDob: (newCert.studentDob || '').trim(),
+      instituteName: (newCert.instituteName || 'Abhinav Technical Institute, Jalgaon').trim(),
+      instituteCenter: (newCert.instituteName || 'Abhinav Technical Institute, Jalgaon').trim(),
+      courseName: newCert.courseName || 'Electrician',
+      course: newCert.courseName || 'Electrician',
+      resultStatus: (newCert.resultStatus || newCert.grade || 'Passed with Distinction').trim(),
+      grade: (newCert.resultStatus || newCert.grade || 'A+ (Distinction)').trim(),
+      totalMarks: (newCert.totalMarks || newCert.percentage || '85%').trim(),
+      percentage: (newCert.totalMarks || newCert.percentage || '85%').trim(),
+      duration: (newCert.duration || '1 Year').trim(),
+      examYear: (newCert.examYear || '2025').trim(),
+      photo: newCert.photo || newCert.studentPhoto || '',
+      studentPhoto: newCert.photo || newCert.studentPhoto || '',
+      fatherName: newCert.fatherName?.trim() || '',
+      issueDate: newCert.issueDate || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
       validUntil: newCert.validUntil || 'Lifetime Valid',
       status: 'Valid',
-      instituteCenter: newCert.instituteCenter || 'Abhinav Technical Institute, Main Campus Jalgaon',
-      fatherName: newCert.fatherName?.trim() || '',
       remarks: newCert.remarks?.trim() || '',
     };
 
@@ -987,22 +1044,32 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       setCertCreatedSuccess(true);
       showToast(
         'Certificate Issued & Registered',
-        `Certificate ${saved.regNumber} for ${saved.studentName} is registered in database.`,
+        `Certificate ${saved.enrollmentNo || saved.regNumber} for ${saved.studentName} is saved in Cloudflare database.`,
         'success'
       );
       setTimeout(() => {
         setCertCreatedSuccess(false);
+        const nextId = `ATI-2025-${Math.floor(100000 + Math.random() * 900000)}`;
         setNewCert({
-          regNumber: `ATI-2025-${Math.floor(100000 + Math.random() * 900000)}`,
+          regNumber: nextId,
+          enrollmentNo: nextId,
           studentName: '',
-          fatherName: '',
+          studentDob: '',
+          instituteName: 'Abhinav Technical Institute, Jalgaon',
+          instituteCenter: 'Abhinav Technical Institute, Jalgaon',
           courseName: 'Electrician',
+          resultStatus: 'Passed with Distinction',
           grade: 'A+ (Distinction)',
-          percentage: '88.5%',
+          totalMarks: '850/1000 (85%)',
+          percentage: '85%',
+          duration: '1 Year',
+          examYear: '2025',
+          photo: '',
+          studentPhoto: '',
+          fatherName: '',
           issueDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
           validUntil: 'Lifetime Valid',
           status: 'Valid',
-          instituteCenter: 'Abhinav Technical Institute, Main Campus Jalgaon',
           remarks: 'Distinction in Practical Training & Electrical Machine Lab',
         });
       }, 2500);
@@ -3837,95 +3904,292 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                           Issue New Verified Certificate
                         </h4>
                         <p className="text-xs text-[#172033]/70">
-                          Auto-generates official ATI registration ID and verifiable QR code.
+                          Auto-generates official ATI registration ID, verifiable QR code, and Cloudflare database storage.
                         </p>
                       </div>
                     </div>
 
                     <form onSubmit={handleCreateCertificate} className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="text-[11px] font-bold text-[#172033]/80 uppercase block mb-1">
-                            Registration Number *
-                          </label>
-                          <input
-                            type="text"
-                            value={newCert.regNumber}
-                            onChange={(e) => setNewCert({ ...newCert, regNumber: e.target.value })}
-                            className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-mono font-bold uppercase text-[#002760]"
-                            required
-                          />
+                      {/* Student Photo Upload Card */}
+                      <div className="bg-white border border-[#CBD5E1] rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4">
+                        <div className="shrink-0 w-20 h-24 rounded-xl border-2 border-dashed border-[#CBD5E1] bg-[#F8FAFC] overflow-hidden flex items-center justify-center relative">
+                          {newCert.photo || newCert.studentPhoto ? (
+                            <img
+                              src={newCert.photo || newCert.studentPhoto}
+                              alt="Student Preview"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="text-center p-2 text-[#64748B]">
+                              <span className="material-symbols-outlined text-2xl block text-[#94A3B8]">person</span>
+                              <span className="text-[9px] font-bold block leading-tight">No Photo</span>
+                            </div>
+                          )}
                         </div>
 
+                        <div className="flex-1 text-center sm:text-left space-y-1.5">
+                          <span className="text-[11px] font-bold text-[#002760] uppercase tracking-wider block">
+                            Student Photograph (Passport Size)
+                          </span>
+                          <p className="text-[11px] text-[#64748B]">
+                            Upload photo of student to display on official verification page and printed verification slip. Stored in Cloudflare database.
+                          </p>
+                          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                            <label className="cursor-pointer px-3 py-1.5 bg-[#002760] hover:bg-[#1557C0] text-white font-bold text-xs rounded-xl inline-flex items-center gap-1.5 shadow-xs transition-colors">
+                              <span className="material-symbols-outlined text-sm">photo_camera</span>
+                              <span>{newCert.photo ? 'Change Photo' : 'Upload Student Photo'}</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleCertPhotoUpload}
+                                className="hidden"
+                              />
+                            </label>
+                            {(newCert.photo || newCert.studentPhoto) && (
+                              <button
+                                type="button"
+                                onClick={() => setNewCert({ ...newCert, photo: '', studentPhoto: '' })}
+                                className="px-2.5 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 font-bold text-xs rounded-xl border border-rose-200 transition-colors"
+                              >
+                                Remove Photo
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 9 Required Verification Fields Grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {/* 1. Name */}
                         <div>
                           <label className="text-[11px] font-bold text-[#172033]/80 uppercase block mb-1">
-                            Student Full Name *
+                            1. Student Full Name *
                           </label>
                           <input
                             type="text"
                             value={newCert.studentName}
                             onChange={(e) => setNewCert({ ...newCert, studentName: e.target.value })}
                             placeholder="e.g. Ramesh Suresh Patil"
+                            className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold text-[#002760]"
+                            required
+                          />
+                        </div>
+
+                        {/* 2. Student Date of Birth */}
+                        <div>
+                          <label className="text-[11px] font-bold text-[#172033]/80 uppercase block mb-1">
+                            2. Student Date of Birth *
+                          </label>
+                          <input
+                            type="text"
+                            value={newCert.studentDob}
+                            onChange={(e) => setNewCert({ ...newCert, studentDob: e.target.value })}
+                            placeholder="e.g. 15/08/2002 or 2002-08-15"
                             className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold"
                             required
                           />
                         </div>
 
+                        {/* 3. Enrollment No. */}
                         <div>
                           <label className="text-[11px] font-bold text-[#172033]/80 uppercase block mb-1">
-                            Trade / Course *
+                            3. Enrollment No. *
                           </label>
-                          <select
-                            value={newCert.courseName}
-                            onChange={(e) => setNewCert({ ...newCert, courseName: e.target.value })}
-                            className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold"
-                          >
-                            {activeCourses.map((c) => (
-                              <option key={c.id} value={c.name}>
-                                {c.name}
-                              </option>
-                            ))}
-                          </select>
+                          <input
+                            type="text"
+                            value={newCert.enrollmentNo || newCert.regNumber}
+                            onChange={(e) =>
+                              setNewCert({ ...newCert, enrollmentNo: e.target.value, regNumber: e.target.value })
+                            }
+                            placeholder="e.g. ATI/2025/1042"
+                            className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-mono font-bold uppercase text-[#002760]"
+                            required
+                          />
                         </div>
 
+                        {/* 4. Institute Name */}
                         <div>
                           <label className="text-[11px] font-bold text-[#172033]/80 uppercase block mb-1">
-                            Grade Awarded
+                            4. Institute Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={newCert.instituteName}
+                            onChange={(e) => setNewCert({ ...newCert, instituteName: e.target.value })}
+                            placeholder="Abhinav Technical Institute, Jalgaon"
+                            className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold"
+                            required
+                          />
+                        </div>
+
+                        {/* 5. Course Name with Dropdown and Manual Course Name Button */}
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <label className="text-[11px] font-bold text-[#172033]/80 uppercase block">
+                              5. Course Name *
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setManualCourseMode(!manualCourseMode)}
+                              className="text-[10px] font-bold text-[#1557C0] hover:text-[#002760] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                              title={manualCourseMode ? "Switch to courses dropdown" : "Type course name manually"}
+                            >
+                              <span className="material-symbols-outlined text-[13px]">
+                                {manualCourseMode ? 'list' : 'edit_note'}
+                              </span>
+                              <span>{manualCourseMode ? 'Select from Dropdown' : '+ Type Manually'}</span>
+                            </button>
+                          </div>
+
+                          {manualCourseMode ? (
+                            <div className="flex items-center gap-1.5">
+                              <input
+                                type="text"
+                                value={newCert.courseName}
+                                onChange={(e) => setNewCert({ ...newCert, courseName: e.target.value })}
+                                placeholder="Type manual course name (e.g. Solar Technician)..."
+                                className="flex-1 px-3.5 py-2 bg-white border-2 border-[#1557C0] rounded-xl text-xs font-bold text-[#002760] focus:outline-hidden"
+                                required
+                                autoFocus
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (newCert.courseName && newCert.courseName.trim()) {
+                                    handleAddCustomCourseName(newCert.courseName);
+                                    showToast('Course Saved', `"${newCert.courseName}" saved to course dropdown.`, 'info');
+                                  }
+                                  setManualCourseMode(false);
+                                }}
+                                className="px-2.5 py-2 bg-[#002760] hover:bg-[#1557C0] text-white text-[10px] font-bold rounded-xl transition-colors shrink-0 cursor-pointer"
+                                title="Add this course to dropdown options"
+                              >
+                                Save & Done
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5">
+                              <select
+                                value={newCert.courseName}
+                                onChange={(e) => {
+                                  if (e.target.value === '__custom__') {
+                                    setManualCourseMode(true);
+                                    setNewCert({ ...newCert, courseName: '' });
+                                  } else {
+                                    setNewCert({ ...newCert, courseName: e.target.value });
+                                  }
+                                }}
+                                className="flex-1 px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold text-[#172033]"
+                                required
+                              >
+                                <option value="">-- Select Course / Trade --</option>
+                                <optgroup label="Standard Vocational Trades">
+                                  {activeCourses.map((c) => (
+                                    <option key={c.id} value={c.name}>
+                                      {c.name}
+                                    </option>
+                                  ))}
+                                </optgroup>
+                                {customCourseNames.length > 0 && (
+                                  <optgroup label="Custom Added Courses">
+                                    {customCourseNames.map((name) => (
+                                      <option key={name} value={name}>
+                                        {name}
+                                      </option>
+                                    ))}
+                                  </optgroup>
+                                )}
+                                <option value="__custom__">➕ Type Custom Course Name Manually...</option>
+                              </select>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const customPrompt = window.prompt(
+                                    'Enter custom course name to add manually to certificate:\n(e.g. Solar Energy Technician, Wireman Advance, CNC Specialist)',
+                                    ''
+                                  );
+                                  if (customPrompt && customPrompt.trim()) {
+                                    handleAddCustomCourseName(customPrompt.trim());
+                                    showToast('Course Added', `"${customPrompt.trim()}" selected for certificate.`, 'success');
+                                  }
+                                }}
+                                className="px-2.5 py-2 bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#CBD5E1] text-[#002760] text-[11px] font-bold rounded-xl shrink-0 inline-flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                                title="Add new Course Name manually"
+                              >
+                                <span className="material-symbols-outlined text-[14px]">add</span>
+                                <span>+ Add Course</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 6. Result Status */}
+                        <div>
+                          <label className="text-[11px] font-bold text-[#172033]/80 uppercase block mb-1">
+                            6. Result Status *
                           </label>
                           <select
-                            value={newCert.grade}
-                            onChange={(e) => setNewCert({ ...newCert, grade: e.target.value })}
-                            className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold"
+                            value={newCert.resultStatus}
+                            onChange={(e) =>
+                              setNewCert({ ...newCert, resultStatus: e.target.value, grade: e.target.value })
+                            }
+                            className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold text-emerald-800"
                           >
-                            <option value="A+ (Distinction)">A+ (Distinction)</option>
-                            <option value="A Grade">A Grade (First Class)</option>
-                            <option value="B+ Grade">B+ Grade (Second Class)</option>
+                            <option value="Passed with Distinction">Passed with Distinction</option>
+                            <option value="First Class with Distinction">First Class with Distinction</option>
+                            <option value="First Class">First Class</option>
+                            <option value="Second Class">Second Class</option>
                             <option value="Pass">Pass</option>
                           </select>
                         </div>
 
+                        {/* 7. Total Marks */}
                         <div>
                           <label className="text-[11px] font-bold text-[#172033]/80 uppercase block mb-1">
-                            Percentage / Marks
+                            7. Total Marks *
                           </label>
                           <input
                             type="text"
-                            value={newCert.percentage}
-                            onChange={(e) => setNewCert({ ...newCert, percentage: e.target.value })}
-                            placeholder="88.5%"
+                            value={newCert.totalMarks}
+                            onChange={(e) =>
+                              setNewCert({ ...newCert, totalMarks: e.target.value, percentage: e.target.value })
+                            }
+                            placeholder="e.g. 850/1000 (85%)"
                             className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold"
+                            required
                           />
                         </div>
 
+                        {/* 8. Duration */}
                         <div>
                           <label className="text-[11px] font-bold text-[#172033]/80 uppercase block mb-1">
-                            Date of Issue
+                            8. Duration *
+                          </label>
+                          <select
+                            value={newCert.duration}
+                            onChange={(e) => setNewCert({ ...newCert, duration: e.target.value })}
+                            className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold"
+                          >
+                            <option value="1 Year">1 Year (१ वर्ष)</option>
+                            <option value="2 Years">2 Years (२ वर्षे)</option>
+                            <option value="6 Months">6 Months (६ महिने)</option>
+                            <option value="3 Months">3 Months (३ महिने)</option>
+                          </select>
+                        </div>
+
+                        {/* 9. Exam Year */}
+                        <div>
+                          <label className="text-[11px] font-bold text-[#172033]/80 uppercase block mb-1">
+                            9. Exam Year *
                           </label>
                           <input
                             type="text"
-                            value={newCert.issueDate}
-                            onChange={(e) => setNewCert({ ...newCert, issueDate: e.target.value })}
+                            value={newCert.examYear}
+                            onChange={(e) => setNewCert({ ...newCert, examYear: e.target.value })}
+                            placeholder="e.g. 2024 or 2025"
                             className="w-full px-3.5 py-2 bg-white border border-[#CBD5E1] rounded-xl text-xs font-bold"
+                            required
                           />
                         </div>
                       </div>
@@ -3933,10 +4197,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                       {/* QR Preview & Submit */}
                       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-[#E6ECF3]">
                         {qrCodeDataUrl && (
-                          <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-[#E6ECF3]">
+                          <div className="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-[#E6ECF3]">
                             <img src={qrCodeDataUrl} alt="QR Preview" className="w-12 h-12" />
                             <span className="text-[10px] text-[#172033]/70">
-                              Instant QR code linked to #verify?id={newCert.regNumber}
+                              Instant QR code linked to #verify?id={newCert.enrollmentNo || newCert.regNumber}
                             </span>
                           </div>
                         )}
@@ -3945,13 +4209,13 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                           type="submit"
                           className="px-6 py-2.5 bg-[#002760] hover:bg-[#1557C0] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer ml-auto"
                         >
-                          + Issue & Save Certificate
+                          + Issue & Save Certificate in Cloudflare DB
                         </button>
                       </div>
 
                       {certCreatedSuccess && (
                         <div className="p-3 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl text-center">
-                          ✓ Certificate for {newCert.studentName} issued and synced with verification server!
+                          ✓ Certificate for {newCert.studentName} issued and synced with Cloudflare database!
                         </div>
                       )}
                     </form>
@@ -3977,29 +4241,50 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                         <table className="w-full text-left text-xs border-collapse">
                           <thead className="bg-[#002760] text-white uppercase text-[10px] tracking-wider font-extrabold">
                             <tr>
-                              <th className="p-3.5">Registration ID</th>
-                              <th className="p-3.5">Student Name</th>
-                              <th className="p-3.5">Course / Trade</th>
-                              <th className="p-3.5">Grade</th>
-                              <th className="p-3.5">QR Code</th>
-                              <th className="p-3.5">Issue Date</th>
-                              <th className="p-3.5 text-right">Actions</th>
+                              <th className="p-3 text-center">Photo</th>
+                              <th className="p-3">Enrollment No.</th>
+                              <th className="p-3">Student Name</th>
+                              <th className="p-3">DOB</th>
+                              <th className="p-3">Course / Trade</th>
+                              <th className="p-3">Result Status</th>
+                              <th className="p-3">Marks</th>
+                              <th className="p-3">Exam Year</th>
+                              <th className="p-3">QR Code</th>
+                              <th className="p-3 text-right">Actions</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-[#E6ECF3] bg-white">
                             {filteredCerts.map((cert) => (
                               <tr key={cert.regNumber} className="hover:bg-[#F8FAFC]">
-                                <td className="p-3.5 font-mono font-bold text-[#002760]">
-                                  {cert.regNumber}
+                                <td className="p-2.5 text-center">
+                                  {cert.photo || cert.studentPhoto ? (
+                                    <img
+                                      src={cert.photo || cert.studentPhoto}
+                                      alt={cert.studentName}
+                                      className="w-9 h-11 object-cover rounded-md border border-[#CBD5E1] mx-auto"
+                                    />
+                                  ) : (
+                                    <div className="w-9 h-11 rounded-md bg-gray-100 border border-gray-300 flex items-center justify-center mx-auto text-gray-400">
+                                      <span className="material-symbols-outlined text-sm">person</span>
+                                    </div>
+                                  )}
                                 </td>
-                                <td className="p-3.5 font-bold text-[#172033]">{cert.studentName}</td>
-                                <td className="p-3.5 text-[#172033]/80">{cert.courseName}</td>
-                                <td className="p-3.5">
+                                <td className="p-3 font-mono font-bold text-[#002760]">
+                                  {cert.enrollmentNo || cert.regNumber}
+                                </td>
+                                <td className="p-3 font-bold text-[#172033]">{cert.studentName}</td>
+                                <td className="p-3 text-[#64748B]">{cert.studentDob || '—'}</td>
+                                <td className="p-3 text-[#172033]/80">{cert.courseName}</td>
+                                <td className="p-3">
                                   <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-extrabold text-[11px] border border-emerald-200">
-                                    {cert.grade}
+                                    {cert.resultStatus || cert.grade}
                                   </span>
                                 </td>
-                                <td className="p-3.5">
+                                <td className="p-3 font-semibold text-[#172033]">
+                                  {cert.totalMarks || cert.percentage}
+                                </td>
+                                <td className="p-3 text-[#64748B]">{cert.examYear || '—'}</td>
+                                <td className="p-3">
                                   <button
                                     onClick={() => handleOpenQrModal(cert)}
                                     className="inline-flex items-center gap-1 px-2 py-1 bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#002760] rounded-lg font-bold text-[11px] border border-[#CBD5E1] transition-colors cursor-pointer"
@@ -4009,28 +4294,27 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                                     <span>View QR</span>
                                   </button>
                                 </td>
-                                <td className="p-3.5 text-[#172033]/60">{cert.issueDate}</td>
-                                <td className="p-3.5 text-right space-x-1.5 whitespace-nowrap">
+                                <td className="p-3 text-right space-x-1 whitespace-nowrap">
                                   <button
                                     onClick={() =>
                                       downloadBrandedStudentQrCode(
                                         cert.studentName,
-                                        cert.regNumber,
+                                        cert.enrollmentNo || cert.regNumber,
                                         cert.courseName
                                       )
                                     }
-                                    className="px-2.5 py-1 bg-emerald-600 text-white text-[10px] font-bold rounded-lg hover:bg-emerald-700 inline-flex items-center gap-1 cursor-pointer"
+                                    className="px-2 py-1 bg-emerald-600 text-white text-[10px] font-bold rounded-lg hover:bg-emerald-700 inline-flex items-center gap-1 cursor-pointer"
                                     title={`Download ${cert.studentName}'s QR Sticker`}
                                   >
-                                    <span className="material-symbols-outlined text-[13px]">download</span>
-                                    <span>Download QR</span>
+                                    <span className="material-symbols-outlined text-[12px]">download</span>
+                                    <span>QR</span>
                                   </button>
                                   <button
                                     onClick={() => handlePrintSlip(cert)}
-                                    className="px-2.5 py-1 bg-[#1557C0] text-white text-[10px] font-bold rounded-lg hover:bg-[#002760] inline-flex items-center gap-1 cursor-pointer"
+                                    className="px-2 py-1 bg-[#1557C0] text-white text-[10px] font-bold rounded-lg hover:bg-[#002760] inline-flex items-center gap-1 cursor-pointer"
                                   >
-                                    <span className="material-symbols-outlined text-[13px]">print</span>
-                                    <span>Print Slip</span>
+                                    <span className="material-symbols-outlined text-[12px]">print</span>
+                                    <span>Print</span>
                                   </button>
                                   <button
                                     onClick={() => handleDeleteCertificate(cert.regNumber)}

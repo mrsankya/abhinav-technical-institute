@@ -35,22 +35,41 @@ export async function onRequestGet(context) {
         } catch {}
       }
 
-      const regNumber = r.reg_number || parsed.regNumber || parsed.id || '';
+      const regNumber = r.reg_number || parsed.regNumber || parsed.enrollmentNo || parsed.id || '';
+      const enrollmentNo = parsed.enrollmentNo || regNumber;
+      const studentName = r.student_name || parsed.studentName || '';
+      const studentDob = parsed.studentDob || parsed.dob || '';
+      const instituteName = parsed.instituteName || r.institute_center || parsed.instituteCenter || 'Abhinav Technical Institute, Jalgaon';
+      const courseName = r.course_name || parsed.courseName || parsed.course || 'Vocational Trade';
+      const resultStatus = parsed.resultStatus || r.grade || parsed.grade || 'Passed';
+      const totalMarks = parsed.totalMarks || r.percentage || parsed.percentage || '';
+      const duration = parsed.duration || '1 Year';
+      const examYear = parsed.examYear || parsed.year || '';
+      const photo = parsed.photo || parsed.studentPhoto || '';
+
       return {
         ...parsed,
         regNumber,
         id: regNumber,
-        studentName: r.student_name || parsed.studentName || '',
-        fatherName: parsed.fatherName || '',
-        courseName: r.course_name || parsed.courseName || parsed.course || 'Vocational Trade',
-        course: parsed.course || r.course_name || 'Vocational Trade',
-        grade: r.grade || parsed.grade || 'A Grade',
-        percentage: r.percentage || parsed.percentage || '85%',
+        enrollmentNo,
+        studentName,
+        studentDob,
+        instituteName,
+        instituteCenter: instituteName,
+        courseName,
+        course: courseName,
+        resultStatus,
+        grade: resultStatus,
+        totalMarks,
+        percentage: totalMarks || r.percentage || '85%',
+        duration,
+        examYear,
+        photo,
+        studentPhoto: photo,
         issueDate: r.issue_date || parsed.issueDate || '',
         validUntil: r.valid_until || parsed.validUntil || 'Lifetime Valid',
         status: r.status || parsed.status || 'Valid',
         isValid: (r.status || parsed.status) === 'Valid',
-        instituteCenter: r.institute_center || parsed.instituteCenter || 'Abhinav Technical Institute, Main Campus Jalgaon',
         remarks: r.remarks || parsed.remarks || '',
       };
     }) : [];
@@ -89,9 +108,10 @@ export async function onRequestPost(context) {
 
   try {
     const cert = await request.json();
-    const regNumber = String(cert.regNumber || cert.id || '').toUpperCase().trim();
+    const rawId = cert.enrollmentNo || cert.regNumber || cert.id || '';
+    const regNumber = String(rawId).toUpperCase().trim();
     if (!regNumber) {
-      return new Response(JSON.stringify({ error: 'Missing certificate registration ID (regNumber/id)' }), {
+      return new Response(JSON.stringify({ error: 'Missing Enrollment / Registration Number (enrollmentNo/regNumber)' }), {
         status: 400,
         headers: {
           'Content-Type': 'application/json',
@@ -100,14 +120,22 @@ export async function onRequestPost(context) {
       });
     }
 
-    const studentName = (cert.studentName || cert.student_name || '').trim();
+    const studentName = (cert.studentName || cert.student_name || cert.name || '').trim();
+    const studentDob = (cert.studentDob || cert.dob || '').trim();
+    const enrollmentNo = (cert.enrollmentNo || regNumber).trim();
+    const instituteName = (cert.instituteName || cert.instituteCenter || cert.institute_center || 'Abhinav Technical Institute, Jalgaon').trim();
     const courseName = (cert.courseName || cert.course || 'Vocational Trade').trim();
-    const grade = cert.grade || 'A Grade';
-    const percentage = cert.percentage || '85%';
+    const resultStatus = (cert.resultStatus || cert.grade || 'Passed').trim();
+    const totalMarks = (cert.totalMarks || cert.percentage || '').trim();
+    const duration = (cert.duration || '1 Year').trim();
+    const examYear = (cert.examYear || cert.year || '').trim();
+    const photo = cert.photo || cert.studentPhoto || '';
+    const grade = resultStatus || cert.grade || 'A Grade';
+    const percentage = totalMarks || cert.percentage || '85%';
     const issueDate = cert.issueDate || cert.issue_date || new Date().toLocaleDateString('en-GB');
     const validUntil = cert.validUntil || cert.valid_until || 'Lifetime Valid';
     const status = cert.status || 'Valid';
-    const instituteCenter = cert.instituteCenter || cert.institute_center || 'Abhinav Technical Institute, Main Campus Jalgaon';
+    const instituteCenter = instituteName;
     const remarks = cert.remarks || '';
 
     // Standardized payload to save in raw_json
@@ -115,16 +143,25 @@ export async function onRequestPost(context) {
       ...cert,
       regNumber,
       id: regNumber,
+      enrollmentNo,
       studentName,
+      studentDob,
+      instituteName,
+      instituteCenter,
       courseName,
       course: courseName,
+      resultStatus,
       grade,
+      totalMarks,
       percentage,
+      duration,
+      examYear,
+      photo,
+      studentPhoto: photo,
       issueDate,
       validUntil,
       status,
       isValid: status === 'Valid',
-      instituteCenter,
       remarks,
     };
 

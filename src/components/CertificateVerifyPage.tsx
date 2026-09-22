@@ -237,84 +237,165 @@ export const CertificateVerifyPage: React.FC<CertificateVerifyPageProps> = ({
                 {/* Certificate Details */}
                 <div className="p-6 sm:p-10 space-y-8">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-[#E2E8F0] pb-6">
-                    <div className="flex items-center gap-4">
-                      <InstituteLogo className="w-16 h-16 shrink-0" />
+                    <div className="flex items-center gap-4 sm:gap-6">
+                      {/* Student Photo or Institute Logo Avatar */}
+                      <div className="shrink-0 w-24 h-28 sm:w-28 sm:h-32 rounded-2xl border-2 border-[#1557C0]/30 shadow-md overflow-hidden bg-[#F8FAFC] flex items-center justify-center relative">
+                        {result.photo || result.studentPhoto ? (
+                          <img
+                            src={result.photo || result.studentPhoto}
+                            alt={result.studentName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center justify-center p-2 text-center text-[#64748B]">
+                            <InstituteLogo className="w-12 h-12 mb-1 opacity-80" />
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-[#94A3B8]">Verified</span>
+                          </div>
+                        )}
+                      </div>
+
                       <div>
-                        <span className="text-xs font-mono font-bold text-[#1557C0] uppercase tracking-wider">
-                          Registration ID: {result.regNumber}
-                        </span>
-                        <h2 className="font-['Manrope'] text-2xl sm:text-3xl font-black text-[#002760] mt-0.5">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <span className="text-xs font-mono font-bold text-[#1557C0] uppercase tracking-wider bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
+                            Enrollment No: {result.enrollmentNo || result.regNumber}
+                          </span>
+                          <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                            {result.resultStatus || result.grade}
+                          </span>
+                        </div>
+                        <h2 className="font-['Manrope'] text-2xl sm:text-3xl font-black text-[#002760]">
                           {result.studentName}
                         </h2>
-                        <p className="text-xs text-[#64748B]">{result.instituteCenter}</p>
+                        <p className="text-xs sm:text-sm font-semibold text-[#64748B] mt-0.5">
+                          {result.instituteName || result.instituteCenter || 'Abhinav Technical Institute, Jalgaon'}
+                        </p>
                       </div>
                     </div>
 
                     {qrCodeDataUrl && (
-                      <div className="bg-[#F8FAFC] p-3 rounded-2xl border border-[#E2E8F0] flex items-center gap-3 self-center md:self-auto">
+                      <div className="bg-[#F8FAFC] p-3 rounded-2xl border border-[#E2E8F0] flex items-center gap-3 self-center md:self-auto shrink-0">
                         <img src={qrCodeDataUrl} alt="Security QR" className="w-20 h-20" />
                         <div className="text-left text-[11px] text-[#64748B] max-w-[130px]">
                           <span className="font-bold text-emerald-600 block">✓ Digital Seal</span>
-                          Scanned & verified on institutional blockchain record.
+                          Scanned & verified on official Cloudflare D1 registry.
                         </div>
                       </div>
                     )}
                   </div>
 
-                  {/* Attributes Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
-                      <span className="text-xs font-bold text-[#64748B] block mb-1">
-                        Completed Trade
-                      </span>
-                      <span className="font-['Manrope'] font-bold text-sm sm:text-base text-[#002760]">
-                        {result.courseName}
-                      </span>
-                    </div>
+                  {/* Official 9 Verification Details Grid */}
+                  <div>
+                    <h4 className="font-['Manrope'] text-xs font-bold uppercase tracking-wider text-[#002760] mb-3 flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-base text-[#1557C0]">verified_user</span>
+                      Official Certificate Verification Record
+                    </h4>
 
-                    <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
-                      <span className="text-xs font-bold text-[#64748B] block mb-1">
-                        Performance Grade
-                      </span>
-                      <span className="font-['Manrope'] font-black text-sm sm:text-base text-emerald-700">
-                        {result.grade}
-                      </span>
-                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
+                      {/* 1. Name */}
+                      <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block mb-1">
+                          1. Student Name
+                        </span>
+                        <span className="font-['Manrope'] font-black text-sm sm:text-base text-[#002760] block">
+                          {result.studentName}
+                        </span>
+                      </div>
 
-                    <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
-                      <span className="text-xs font-bold text-[#64748B] block mb-1">
-                        Percentage / Score
-                      </span>
-                      <span className="font-['Manrope'] font-bold text-sm sm:text-base text-[#002760]">
-                        {result.percentage}
-                      </span>
-                    </div>
+                      {/* 2. Student Date of Birth */}
+                      <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block mb-1">
+                          2. Student Date of Birth
+                        </span>
+                        <span className="font-['Manrope'] font-bold text-sm sm:text-base text-[#002760] block">
+                          {result.studentDob || '—'}
+                        </span>
+                      </div>
 
-                    <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
-                      <span className="text-xs font-bold text-[#64748B] block mb-1">
-                        Date of Issue
-                      </span>
-                      <span className="font-semibold text-xs sm:text-sm text-[#002760]">
-                        {result.issueDate}
-                      </span>
-                    </div>
+                      {/* 3. Enrollment No. */}
+                      <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block mb-1">
+                          3. Enrollment No.
+                        </span>
+                        <span className="font-['Manrope'] font-mono font-bold text-sm sm:text-base text-[#1557C0] block">
+                          {result.enrollmentNo || result.regNumber}
+                        </span>
+                      </div>
 
-                    <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
-                      <span className="text-xs font-bold text-[#64748B] block mb-1">
-                        Validity Status
-                      </span>
-                      <span className="font-semibold text-xs sm:text-sm text-emerald-600">
-                        {result.validUntil || 'Lifetime Valid'}
-                      </span>
-                    </div>
+                      {/* 4. Institute Name */}
+                      <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block mb-1">
+                          4. Institute Name
+                        </span>
+                        <span className="font-['Manrope'] font-bold text-xs sm:text-sm text-[#002760] block leading-snug">
+                          {result.instituteName || result.instituteCenter || 'Abhinav Technical Institute, Jalgaon'}
+                        </span>
+                      </div>
 
-                    <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
-                      <span className="text-xs font-bold text-[#64748B] block mb-1">
-                        Institute Verification
-                      </span>
-                      <span className="font-bold text-xs text-[#1557C0]">
-                        Govt. Reg. ISO 9001:2015
-                      </span>
+                      {/* 5. Course Name */}
+                      <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block mb-1">
+                          5. Course Name
+                        </span>
+                        <span className="font-['Manrope'] font-bold text-sm sm:text-base text-[#002760] block">
+                          {result.courseName || result.course}
+                        </span>
+                      </div>
+
+                      {/* 6. Result Status */}
+                      <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block mb-1">
+                          6. Result Status
+                        </span>
+                        <span className="font-['Manrope'] font-black text-sm sm:text-base text-emerald-700 block">
+                          {result.resultStatus || result.grade}
+                        </span>
+                      </div>
+
+                      {/* 7. Total Marks */}
+                      <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block mb-1">
+                          7. Total Marks
+                        </span>
+                        <span className="font-['Manrope'] font-bold text-sm sm:text-base text-[#002760] block">
+                          {result.totalMarks || result.percentage || '—'}
+                        </span>
+                      </div>
+
+                      {/* 8. Duration */}
+                      <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block mb-1">
+                          8. Duration
+                        </span>
+                        <span className="font-['Manrope'] font-bold text-sm sm:text-base text-[#002760] block">
+                          {result.duration || '1 Year'}
+                        </span>
+                      </div>
+
+                      {/* 9. Exam Year */}
+                      <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block mb-1">
+                          9. Exam Year
+                        </span>
+                        <span className="font-['Manrope'] font-bold text-sm sm:text-base text-[#002760] block">
+                          {result.examYear || '—'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Secondary Metadata Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                    <div className="bg-[#F1F5F9] px-4 py-2.5 rounded-xl text-xs flex justify-between items-center">
+                      <span className="text-[#64748B] font-semibold">Date of Issue:</span>
+                      <strong className="text-[#002760]">{result.issueDate}</strong>
+                    </div>
+                    <div className="bg-[#F1F5F9] px-4 py-2.5 rounded-xl text-xs flex justify-between items-center">
+                      <span className="text-[#64748B] font-semibold">Validity:</span>
+                      <strong className="text-emerald-700">{result.validUntil || 'Lifetime Valid'}</strong>
+                    </div>
+                    <div className="bg-[#F1F5F9] px-4 py-2.5 rounded-xl text-xs flex justify-between items-center">
+                      <span className="text-[#64748B] font-semibold">Accreditation:</span>
+                      <strong className="text-[#1557C0]">Govt. Reg. ISO 9001:2015</strong>
                     </div>
                   </div>
 

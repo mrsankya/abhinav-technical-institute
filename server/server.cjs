@@ -71,20 +71,41 @@ app.post('/api/certificates', (req, res) => {
     (c) => String(c.regNumber || c.id || '').toUpperCase() === String(certId).toUpperCase()
   );
 
+  const regNumber = String(cert.enrollmentNo || cert.regNumber || cert.id || '').toUpperCase().trim();
+  const enrollmentNo = cert.enrollmentNo || regNumber;
+  const studentName = cert.studentName || cert.student_name || '';
+  const studentDob = cert.studentDob || cert.dob || '';
+  const instituteName = cert.instituteName || cert.instituteCenter || 'Abhinav Technical Institute, Jalgaon';
+  const courseName = cert.courseName || cert.course || 'Vocational Trade';
+  const resultStatus = cert.resultStatus || cert.grade || 'Passed';
+  const totalMarks = cert.totalMarks || cert.percentage || '';
+  const duration = cert.duration || '1 Year';
+  const examYear = cert.examYear || cert.year || '';
+  const photo = cert.photo || cert.studentPhoto || '';
+
   const formattedCert = {
-    regNumber: cert.regNumber || cert.id,
-    id: cert.id || cert.regNumber,
-    studentName: cert.studentName,
-    fatherName: cert.fatherName || '',
-    courseName: cert.courseName || cert.course || 'Vocational Trade',
-    course: cert.course || cert.courseName || 'Vocational Trade',
-    grade: cert.grade || 'A Grade',
-    percentage: cert.percentage || '85%',
+    ...cert,
+    regNumber,
+    id: regNumber,
+    enrollmentNo,
+    studentName,
+    studentDob,
+    instituteName,
+    instituteCenter: instituteName,
+    courseName,
+    course: courseName,
+    resultStatus,
+    grade: resultStatus,
+    totalMarks,
+    percentage: totalMarks || cert.percentage || '85%',
+    duration,
+    examYear,
+    photo,
+    studentPhoto: photo,
     issueDate: cert.issueDate || new Date().toLocaleDateString(),
     validUntil: cert.validUntil || 'Lifetime Valid',
     status: cert.status || 'Valid',
     isValid: cert.status === 'Valid' || cert.isValid !== false,
-    instituteCenter: cert.instituteCenter || 'Abhinav Technical Institute, Main Campus Jalgaon',
     remarks: cert.remarks || 'Practical Training Certified',
   };
 

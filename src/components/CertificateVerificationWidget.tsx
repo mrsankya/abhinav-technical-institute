@@ -148,43 +148,79 @@ export const CertificateVerificationWidget: React.FC<CertificateVerificationWidg
         {searched && (
           <div className="mt-4 pt-4 border-t border-white/15">
             {result ? (
-              <div className="bg-white text-[#172033] rounded-2xl p-5 shadow-2xl border-2 border-green-500 relative animate-fadeIn">
-                <div className="flex justify-between items-start mb-3">
+              <div className="bg-white text-[#172033] rounded-2xl p-5 shadow-2xl border-2 border-emerald-500 relative animate-fadeIn">
+                <div className="flex justify-between items-start gap-3 mb-3">
                   <div className="flex items-center gap-3">
-                    <InstituteLogo className="w-11 h-11 shrink-0" />
+                    <div className="w-14 h-16 rounded-xl border border-[#CBD5E1] bg-[#F8FAFC] overflow-hidden flex items-center justify-center shrink-0">
+                      {result.photo || result.studentPhoto ? (
+                        <img
+                          src={result.photo || result.studentPhoto}
+                          alt={result.studentName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <InstituteLogo className="w-9 h-9" />
+                      )}
+                    </div>
                     <div>
-                      <span className="text-xs font-bold text-green-700 uppercase tracking-wider flex items-center gap-1">
-                        <span className="material-symbols-outlined text-green-600 text-sm" style={{ fontVariationSettings: '"FILL" 1' }}>
+                      <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1">
+                        <span className="material-symbols-outlined text-emerald-600 text-sm" style={{ fontVariationSettings: '"FILL" 1' }}>
                           verified
                         </span>
-                        Official Certified Record • Valid
+                        Official Verified Record • Valid
                       </span>
-                      <h4 className="font-['Manrope'] font-bold text-base text-[#002760]">
+                      <h4 className="font-['Manrope'] font-black text-base text-[#002760]">
                         {result.studentName}
                       </h4>
+                      <span className="text-[10px] font-mono text-[#1557C0] block font-bold">
+                        Enrollment: {result.enrollmentNo || result.regNumber}
+                      </span>
                     </div>
                   </div>
-                  <span className="bg-green-100 text-green-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
-                    {result.status}
+                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase shrink-0">
+                    {result.resultStatus || result.status || 'Verified'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs py-3 border-y border-gray-200 my-2">
+                {/* 9 Verification Fields */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs py-3 border-y border-gray-200 my-2">
                   <div>
-                    <span className="text-gray-500 block">Registration No:</span>
-                    <strong className="text-[#002760] font-mono">{result.regNumber}</strong>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase block">1. Student Name</span>
+                    <strong className="text-[#002760] truncate block">{result.studentName}</strong>
                   </div>
                   <div>
-                    <span className="text-gray-500 block">Course Completed:</span>
-                    <strong className="text-[#002760]">{result.courseName}</strong>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase block">2. Student DOB</span>
+                    <strong className="text-[#172033]">{result.studentDob || '—'}</strong>
                   </div>
                   <div>
-                    <span className="text-gray-500 block">Grade / Percentage:</span>
-                    <strong className="text-green-700">{result.grade} ({result.percentage})</strong>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase block">3. Enrollment No.</span>
+                    <strong className="text-[#1557C0] font-mono">{result.enrollmentNo || result.regNumber}</strong>
                   </div>
                   <div>
-                    <span className="text-gray-500 block">Issue Date:</span>
-                    <strong>{result.issueDate}</strong>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase block">4. Institute Name</span>
+                    <strong className="text-[#172033] truncate block text-[11px]" title={result.instituteName || result.instituteCenter || 'Abhinav Technical Institute'}>
+                      {result.instituteName || result.instituteCenter || 'Abhinav Technical Institute, Jalgaon'}
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase block">5. Course Name</span>
+                    <strong className="text-[#002760] truncate block">{result.courseName || result.course}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase block">6. Result Status</span>
+                    <strong className="text-emerald-700">{result.resultStatus || result.grade}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase block">7. Total Marks</span>
+                    <strong className="text-[#172033]">{result.totalMarks || result.percentage || '—'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase block">8. Duration</span>
+                    <strong className="text-[#172033]">{result.duration || '1 Year'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase block">9. Exam Year</span>
+                    <strong className="text-[#002760]">{result.examYear || '—'}</strong>
                   </div>
                 </div>
 
@@ -195,7 +231,7 @@ export const CertificateVerificationWidget: React.FC<CertificateVerificationWidg
                     className="text-[#1557C0] hover:underline font-bold flex items-center gap-1 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-sm">print</span>
-                    Print Record
+                    Print Official Slip
                   </button>
                 </div>
               </div>

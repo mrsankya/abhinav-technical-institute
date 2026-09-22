@@ -87,14 +87,26 @@ export interface FaqItem {
 
 export interface StudentCertificate {
   regNumber: string;
+  enrollmentNo?: string;
   studentName: string;
+  studentDob?: string;
+  instituteName?: string;
+  instituteCenter: string;
   courseName: string;
+  course?: string;
+  resultStatus?: string;
   grade: string;
+  totalMarks?: string;
   percentage: string;
+  duration?: string;
+  examYear?: string;
+  photo?: string;
+  studentPhoto?: string;
+  fatherName?: string;
   issueDate: string;
   validUntil: string;
   status: 'Valid' | 'Expired' | 'Under Verification';
-  instituteCenter: string;
+  remarks?: string;
 }
 
 export interface Syllabus {
