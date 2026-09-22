@@ -1,11 +1,12 @@
 # Abhinav Technical Institute — Project Memory & Architecture
 
 ## 🌐 Live URLs & Endpoints
-- **Primary Site:** https://abhinav-institute.pages.dev
+- **Primary Domain:** https://abhinavtech.in
+- **Cloudflare Pages Direct URL:** https://abhinav-institute.pages.dev
 - **GitHub Repository:** https://github.com/mrsankya/abhinav-technical-institute
-- **Certificate Verification Portal:** https://abhinav-institute.pages.dev/#verify
-- **Admin Panel:** https://abhinav-institute.pages.dev/#admin
-- **Super Admin Console:** https://abhinav-institute.pages.dev/#super-admin
+- **Certificate Verification Portal:** https://abhinavtech.in/#verify
+- **Admin Panel:** https://abhinavtech.in/#admin
+- **Super Admin Console:** https://abhinavtech.in/#super-admin
 - **Backend API:** `http://localhost:4000/api` (`/api/certificates`, `/api/inquiries`, `/api/announcements`, `/api/content`)
 
 ---
@@ -193,4 +194,7 @@
     - **Cloudflare Functions Fix:** Rewrote `functions/api/certificates/index.js` and `functions/api/certificates/[id].js` to handle CORS `onRequestOptions` with `204`, map certificate fields strictly to the live D1 schema, use SQLite `ON CONFLICT(reg_number) DO UPDATE SET ...`, and serialize the complete certificate structure into `raw_json`. Also enhanced `[id].js` to allow searching by raw registration ID or sanitized alphanumeric forms (supporting hyphen and slash variations).
     - **Client API & Synchronization:** Updated `src/services/api.ts` so `saveCertificate` checks response status, parses the saved certificate, updates both `ati_certificates` and `abhinav_certificates` localStorage stores, and dispatches reactive window events (`ati_certificates_updated` and `storage`).
     - **Admin Panel & Global App State:** Added dynamic listeners for `ati_certificates_updated` and `ati_certificates_deleted` inside `AdminPanelModal.tsx` and `App.tsx` so issued or modified certificates instantly appear in the certificates table and verification portal without requiring a manual page refresh.
-
+31. **Live Custom Domain Connected (`https://abhinavtech.in`):**
+    - The institute website is now officially live on the custom domain **[https://abhinavtech.in](https://abhinavtech.in)**.
+    - Canonical tags, Open Graph meta tags, Twitter cards, Schema.org LD+JSON structured data, `robots.txt`, and `sitemap.xml` are all synchronized with `abhinavtech.in`.
+    - Cloudflare Pages custom domain routing and SSL certificate are fully configured and active.
