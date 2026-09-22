@@ -59,17 +59,27 @@ const INITIAL_LEADS: Lead[] = [
 // Helper to seed initial certificates map
 function getInitialCertificatesMap(): Record<string, StudentCertificate> {
   const map: Record<string, StudentCertificate> = { ...MOCK_CERTIFICATES };
-  INITIAL_CERTIFICATES.forEach((c) => {
+  INITIAL_CERTIFICATES.forEach((c: any) => {
     map[c.id] = {
       regNumber: c.id,
+      enrollmentNo: c.enrollmentNo || c.id,
       studentName: c.studentName,
-      courseName: c.course,
-      grade: c.grade,
-      percentage: '88.0%',
+      studentDob: c.studentDob || '15/08/2002',
+      instituteName: c.instituteName || 'Abhinav Technical Institute, Jalgaon',
+      courseName: c.courseName || c.course,
+      course: c.courseName || c.course,
+      resultStatus: c.resultStatus || c.grade || 'Passed with Distinction',
+      grade: c.resultStatus || c.grade || 'A+ (Distinction)',
+      totalMarks: c.totalMarks || '850/1000 (85%)',
+      percentage: c.totalMarks || c.percentage || '88.0%',
+      duration: c.duration || '1 Year',
+      examYear: c.examYear || '2024',
+      photo: c.photo || c.studentPhoto || '',
+      studentPhoto: c.photo || c.studentPhoto || '',
       issueDate: c.issueDate,
-      validUntil: 'Lifetime Valid',
+      validUntil: c.validUntil || 'Lifetime Valid',
       status: c.isValid ? 'Valid' : 'Expired',
-      instituteCenter: 'Abhinav Technical Institute, Main Campus Jalgaon',
+      instituteCenter: c.instituteName || 'Abhinav Technical Institute, Main Campus Jalgaon',
     };
   });
   return map;
@@ -89,18 +99,41 @@ export async function fetchCertificates(): Promise<Record<string, StudentCertifi
       if (Array.isArray(data) && data.length > 0) {
         const map: Record<string, StudentCertificate> = {};
         data.forEach((c: any) => {
-          const key = String(c.regNumber || c.id || '').toUpperCase().trim();
+          const key = String(c.enrollmentNo || c.regNumber || c.id || '').toUpperCase().trim();
           if (key) {
+            const studentName = c.studentName || c.student_name || '';
+            const studentDob = c.studentDob || c.dob || '';
+            const enrollmentNo = c.enrollmentNo || c.regNumber || key;
+            const instituteName = c.instituteName || c.instituteCenter || c.institute_center || 'Abhinav Technical Institute, Jalgaon';
+            const courseName = c.courseName || c.course || c.course_name || 'Vocational Trade';
+            const resultStatus = c.resultStatus || c.grade || 'Passed with Distinction';
+            const totalMarks = c.totalMarks || c.percentage || '';
+            const duration = c.duration || '1 Year';
+            const examYear = c.examYear || c.year || '';
+            const photo = c.photo || c.studentPhoto || '';
+
             map[key] = {
+              ...c,
               regNumber: key,
-              studentName: c.studentName || c.student_name || '',
-              courseName: c.courseName || c.course || c.course_name || 'Vocational Trade',
-              grade: c.grade || 'A Grade',
-              percentage: c.percentage || '85%',
+              id: key,
+              enrollmentNo,
+              studentName,
+              studentDob,
+              instituteName,
+              instituteCenter: instituteName,
+              courseName,
+              course: courseName,
+              resultStatus,
+              grade: resultStatus,
+              totalMarks,
+              percentage: totalMarks || c.percentage || '85%',
+              duration,
+              examYear,
+              photo,
+              studentPhoto: photo,
               issueDate: c.issueDate || c.issue_date || 'Recent',
               validUntil: c.validUntil || c.valid_until || 'Lifetime Valid',
               status: c.status || (c.isValid !== false ? 'Valid' : 'Expired'),
-              instituteCenter: c.instituteCenter || c.institute_center || 'Abhinav Technical Institute, Main Campus Jalgaon',
             };
           }
         });
@@ -132,18 +165,43 @@ export async function getCertificateById(id: string): Promise<StudentCertificate
     });
     if (res.ok) {
       const c = await res.json();
-      const key = String(c.regNumber || c.id || cleaned).toUpperCase().trim();
-      return {
-        regNumber: key,
-        studentName: c.studentName || c.student_name || '',
-        courseName: c.courseName || c.course || c.course_name || 'Vocational Trade',
-        grade: c.grade || 'A Grade',
-        percentage: c.percentage || '85%',
-        issueDate: c.issueDate || c.issue_date || 'Recent',
-        validUntil: c.validUntil || c.valid_until || 'Lifetime Valid',
-        status: c.status || (c.isValid !== false ? 'Valid' : 'Expired'),
-        instituteCenter: c.instituteCenter || c.institute_center || 'Abhinav Technical Institute, Main Campus Jalgaon',
-      };
+      if (c && !c.error) {
+        const key = String(c.enrollmentNo || c.regNumber || c.id || cleaned).toUpperCase().trim();
+        const studentName = c.studentName || c.student_name || '';
+        const studentDob = c.studentDob || c.dob || '';
+        const enrollmentNo = c.enrollmentNo || c.regNumber || key;
+        const instituteName = c.instituteName || c.instituteCenter || c.institute_center || 'Abhinav Technical Institute, Jalgaon';
+        const courseName = c.courseName || c.course || c.course_name || 'Vocational Trade';
+        const resultStatus = c.resultStatus || c.grade || 'Passed with Distinction';
+        const totalMarks = c.totalMarks || c.percentage || '';
+        const duration = c.duration || '1 Year';
+        const examYear = c.examYear || c.year || '';
+        const photo = c.photo || c.studentPhoto || '';
+
+        return {
+          ...c,
+          regNumber: key,
+          id: key,
+          enrollmentNo,
+          studentName,
+          studentDob,
+          instituteName,
+          instituteCenter: instituteName,
+          courseName,
+          course: courseName,
+          resultStatus,
+          grade: resultStatus,
+          totalMarks,
+          percentage: totalMarks || c.percentage || '85%',
+          duration,
+          examYear,
+          photo,
+          studentPhoto: photo,
+          issueDate: c.issueDate || c.issue_date || 'Recent',
+          validUntil: c.validUntil || c.valid_until || 'Lifetime Valid',
+          status: c.status || (c.isValid !== false ? 'Valid' : 'Expired'),
+        };
+      }
     }
   } catch (e) {}
 

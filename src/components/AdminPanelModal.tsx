@@ -1078,6 +1078,37 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     }
   };
 
+  const handleEditCertificate = (cert: StudentCertificate) => {
+    const regNum = cert.enrollmentNo || cert.regNumber;
+    setNewCert({
+      regNumber: regNum,
+      enrollmentNo: regNum,
+      studentName: cert.studentName || '',
+      studentDob: cert.studentDob || '',
+      instituteName: cert.instituteName || cert.instituteCenter || 'Abhinav Technical Institute, Jalgaon',
+      instituteCenter: cert.instituteName || cert.instituteCenter || 'Abhinav Technical Institute, Jalgaon',
+      courseName: cert.courseName || cert.course || 'Electrician',
+      resultStatus: cert.resultStatus || cert.grade || 'Passed with Distinction',
+      grade: cert.resultStatus || cert.grade || 'A+ (Distinction)',
+      totalMarks: cert.totalMarks || cert.percentage || '850/1000 (85%)',
+      percentage: cert.totalMarks || cert.percentage || '85%',
+      duration: cert.duration || '1 Year',
+      examYear: cert.examYear || '2025',
+      photo: cert.photo || cert.studentPhoto || '',
+      studentPhoto: cert.photo || cert.studentPhoto || '',
+      fatherName: cert.fatherName || '',
+      issueDate: cert.issueDate || new Date().toLocaleDateString('en-GB'),
+      validUntil: cert.validUntil || 'Lifetime Valid',
+      status: cert.status || 'Valid',
+      remarks: cert.remarks || '',
+    });
+    const formElement = document.getElementById('cert-issue-card');
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth' });
+    }
+    showToast('Loaded for Editing', `Certificate ${regNum} loaded into form. Update photo or details and click Save.`, 'info');
+  };
+
   const handleDeleteCertificate = async (regNumber: string) => {
     if (window.confirm(`Are you sure you want to revoke/delete certificate ${regNumber}?`)) {
       await deleteCertificate(regNumber);
@@ -3897,7 +3928,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               {activeAdminTab === 'certificates' && (
                 <div className="space-y-6">
                   {/* Issue New Certificate Form */}
-                  <div className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-3xl p-5 sm:p-6 shadow-xs">
+                  <div id="cert-issue-card" className="bg-[#F8FAFC] border border-[#E6ECF3] rounded-3xl p-5 sm:p-6 shadow-xs">
                     <div className="flex justify-between items-center mb-4">
                       <div>
                         <h4 className="font-['Manrope'] text-base font-black text-[#002760]">
@@ -4308,6 +4339,14 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                                   >
                                     <span className="material-symbols-outlined text-[12px]">download</span>
                                     <span>QR</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleEditCertificate(cert)}
+                                    className="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold rounded-lg inline-flex items-center gap-1 cursor-pointer transition-colors"
+                                    title="Edit certificate details or attach photo"
+                                  >
+                                    <span className="material-symbols-outlined text-[12px]">edit</span>
+                                    <span>Edit</span>
                                   </button>
                                   <button
                                     onClick={() => handlePrintSlip(cert)}
