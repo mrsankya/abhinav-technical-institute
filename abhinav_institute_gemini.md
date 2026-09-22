@@ -224,4 +224,9 @@
       - Updated result card with student photo thumbnail, enrollment number, and all 9 verification fields.
     - **Official Print Slip (`src/utils/printUtils.ts`):**
       - Updated `printCertificateVerificationSlip` to display the student photo at top-right and print an official tabular verification slip with all 9 fields.
+33. **Certificate Verification Data Extraction Fix & Edit Action (`src/services/api.ts`, `src/components/AdminPanelModal.tsx`):**
+    - **Root Cause of Missing Photo, DOB & Exam Year:** In `src/services/api.ts`, `getCertificateById()` and `fetchCertificates()` were parsing the response from Cloudflare D1 but re-mapping the result object using only the original 7 legacy keys, accidentally discarding `photo`, `studentPhoto`, `studentDob`, and `examYear`.
+    - **Fix in `api.ts`:** Updated both methods to preserve all 9 fields and the student photo (`...c`, `studentDob`, `examYear`, `photo`, `studentPhoto`, `enrollmentNo`, `totalMarks`, `duration`, `resultStatus`).
+    - **Certificate Edit Mode in Admin Panel:** Added an **Edit** button in the Issued Certificates Repository table (`AdminPanelModal.tsx`). Clicking **Edit** loads all certificate fields and photo back into the issuance form, allowing instant updates and re-saving to Cloudflare D1 database.
+
 
